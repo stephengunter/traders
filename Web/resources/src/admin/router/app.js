@@ -43,6 +43,17 @@ const appRoutes = [
          title: '會員管理',
          menu: true
       }        
+   },
+   {
+      name: 'stocks',
+      path: '/stocks',
+      component: () => import('../views/Stocks'), 
+      meta: { 
+         order: 0,
+         icon: 'mdi-compass',
+         title: '權值股管理',
+         menu: true
+      }        
    }
 ];
 

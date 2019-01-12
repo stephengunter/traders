@@ -126,15 +126,5 @@ export default {
 </script>
 
 
-<style scoped>
-.pageSize-select{
-	display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-right: 14px;
-    white-space: nowrap;
-}
-</style>
-
 
 
