@@ -11,9 +11,9 @@ namespace ApplicationCore.Views
 	{
 		public int id { get; set; }
 
-		public int strategyId { get; set; }
-
 		public string name { get; set; }
+
+		public int order { get; set; }
 
 		public string entity { get; set; }
 
@@ -26,8 +26,13 @@ namespace ApplicationCore.Views
 
 		public string defaultParam { get; set; }
 
+		public bool removed { get; set; }
+
+		public bool active { get; set; }
+
 		public bool main { get; set; }
 
 		public string type { get; set; }
 	}
+
 }

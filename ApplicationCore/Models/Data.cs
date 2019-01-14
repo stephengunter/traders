@@ -9,7 +9,7 @@ namespace ApplicationCore.Models
 	{
 		public int IndicatorId { get; set; }
 
-		public int Param { get; set; }
+		public int QuoteId { get; set; }
 
 		public int Date { get; set; }
 
@@ -19,7 +19,7 @@ namespace ApplicationCore.Models
 
 		public int Signal { get; set; }
 
-		public DateTime CreatedAt { get; set; } = DateTime.Now;
+		public Quote Quote { get; set; }
 
 	}
 }

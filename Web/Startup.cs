@@ -185,6 +185,8 @@ namespace Web
 			services.AddScoped<IPermissionService, PermissionService>();
 
 			services.AddScoped<IStockService, StockService>();
+			services.AddScoped<IIndicatorService, IndicatorService>();
+			services.AddScoped<IRealTimeService, RealTimeService>();
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 

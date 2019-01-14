@@ -15,23 +15,30 @@ namespace ApplicationCore.Views
 	{
 		public static IndicatorViewModel MapViewModel(this Indicator indicator)
 		{
-			var model = new IndicatorViewModel();
-			model.id = indicator.Id;
-			model.name = indicator.Name;
-			model.entity = indicator.Entity;
-			model.defaultParam = indicator.DefaultParam;
-			model.main = indicator.Main;
-			model.type = indicator.Type.ToString();
+			var model = new IndicatorViewModel()
+			{
+				id = indicator.Id,
+				name = indicator.Name,
+				entity = indicator.Entity,
+				end = indicator.End,
+				begin = indicator.Begin,
+				main = indicator.Main,
+				type = indicator.Type.ToString(),
+				defaultParam = indicator.DefaultParam,
+				active = indicator.Active,
+				removed = indicator.Removed,
+				order = indicator.Order,
+				paramList = indicator.ResolveParamsValues().ToList()
+			};
 
-			model.begin = indicator.Begin;
-			model.end = indicator.End;
-
-			model.paramList = indicator.ResolveParamsValues().ToList();
 
 			return model;
 		}
 
-
+		public static IEnumerable<Indicator> GetOrdered(this IEnumerable<Indicator> indicators)
+		{
+			return indicators.OrderBy(i => i.Order);
+		}
 
 	}
 }

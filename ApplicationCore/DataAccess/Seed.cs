@@ -38,9 +38,7 @@ namespace ApplicationCore.DataAccess
 				await SeedRoles(roleManager);
 				await SeedUsers(userManager);
 
-
-
-				
+				await SeedIndicators(defaultContext);
 
 				await SeedStocks(dataContext);
 
@@ -164,19 +162,9 @@ namespace ApplicationCore.DataAccess
 
 		private static async Task SeedIndicators(DefaultContext context)
 		{
-			var nums = new List<string>();
-			for (int i = 3; i <= 15; i++)
-			{
-				nums.Add(i.ToString());
-			}
-
-			var numParams = String.Join("|", nums.ToArray());
-
 			var indicators = new List<Indicator>
 			{
-				new Indicator { Name = "主力成本" , Entity = "AvgPrice", Begin = 90000, End = 132500, Main = true, Type = IndicatorType.Curve, Params = numParams , DefaultParam = "3" },
-				new Indicator { Name = "買賣筆均" , Entity = "AvgBcSc", Begin = 90000, End = 132500,Main = false, Type = IndicatorType.None, Params = numParams , DefaultParam = "3" },
-				new Indicator { Name = "50大" , Entity = "AvgFiftyBig", Begin = 90000, End = 132500, Main = false, Type = IndicatorType.None, Params = numParams ,DefaultParam = "3" }
+				new Indicator { Name = "權值股" , Entity = "BlueChips", Begin = 90000, End = 132500, Main = false, Type = IndicatorType.Bar, Params = "1,60" , DefaultParam = "6" }
 			};
 
 			foreach (var indicator in indicators)

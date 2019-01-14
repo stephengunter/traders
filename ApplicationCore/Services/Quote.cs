@@ -33,6 +33,8 @@ namespace ApplicationCore.Services
 
 		Quote GetCloseQuote(int date, int closeTime);
 
+		Task CreateAsync(Quote quote, ICollection<Data> dataList = null);
+
 
 	}
 
@@ -60,6 +62,15 @@ namespace ApplicationCore.Services
 			if (quote == null) return false;
 
 			return quote.Date == date;
+		}
+
+		public async Task CreateAsync(Quote quote, ICollection<Data> dataList = null)
+		{
+			var spec = new QuoteFilterSpecification(quote.Date, quote.Time);
+			var exist = realtimeQuoteRepository.GetSingleBySpec(spec);
+
+			if (exist == null) await realtimeQuoteRepository.AddAsync(quote);
+			else await realtimeQuoteRepository.UpdateAsync(quote);
 		}
 
 		public async Task<IEnumerable<Quote>> FetchAsync()

@@ -35,7 +35,7 @@ namespace ApplicationCore.Views
 
 		public static IEnumerable<Stock> GetOrdered(this IEnumerable<Stock> stocks)
 		{
-			return stocks.OrderBy(u => u.Ignore);
+			return stocks.OrderBy(s => s.Ignore);
 		}
 	}
 }

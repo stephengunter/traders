@@ -19,6 +19,8 @@ namespace ApplicationCore.Models
 	{
 		public string Name { get; set; }
 
+		public int Order { get; set; }
+
 		public int Begin { get; set; } //盤中產生信號開始時間  例如 90000
 
 		public int End { get; set; } //盤中產生信號結束時間  例如 133000
@@ -33,15 +35,24 @@ namespace ApplicationCore.Models
 
 		public IndicatorType Type { get; set; }
 
-		
+		public bool Removed { get; set; }
 
-		[NotMapped]
-		public int Order { get; set; }
+
+		public bool Active => Order >= 0 && !Removed;
 
 		public IEnumerable<int> ResolveParamsValues()
 		{
 			if (this.Params.IsNullOrEmpty()) return null;
-			return Params.Split('|').Select(val => val.ToInt());
+
+			int min = Params.Split(',')[0].ToInt();
+			int max = Params.Split(',')[1].ToInt();
+
+			var result = new List<int>();
+			for (int i = min; i <= max; i++)
+			{
+				result.Add(i);
+			}
+			return result;
 		}
 
 

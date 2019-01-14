@@ -15,13 +15,14 @@ namespace ApplicationCore.Models
 
 		public int Price { get; set; }
 
-		public int Vol { get; set; }
+		public int Open { get; set; }
 
-		public int BC { get; set; }   // 累買成筆
+		public int High { get; set; }   
 
-		public int SC { get; set; }   // 累賣成筆
+		public int Low { get; set; }
 
-		public int FiftyBig { get; set; }   // 50大
+
+		public ICollection<Data> DataList { get; set; } = new List<Data>();
 
 	}
 }

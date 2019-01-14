@@ -1,0 +1,34 @@
+﻿using ApplicationCore.Models;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ApplicationCore.Views
+{
+	public class DataViewModel
+	{
+		public int indicatorId { get; set; }
+
+		public int quoteId { get; set; }
+
+		public int date { get; set; }
+
+		public int time { get; set; }
+
+		public string text { get; set; }
+
+		public int signal { get; set; }
+
+		public void SetValues(Data entity)
+		{
+			entity.Date = date;
+			entity.Time = time;
+			entity.IndicatorId = indicatorId;
+			entity.Text = text;
+			entity.Signal = signal;
+
+		}
+
+	}
+
+}

@@ -18,7 +18,9 @@ namespace ApplicationCore.Views
 			model.date = quote.Date;
 			model.time = quote.Time;
 			model.price = quote.Price;
-			model.vol = quote.Vol;
+			model.open = quote.Open;
+			model.low = quote.Low;
+			model.high = quote.High;
 
 			if (!dataList.IsNullOrEmpty())
 			{
@@ -32,10 +34,10 @@ namespace ApplicationCore.Views
 		{
 			return new DataViewModel()
 			{
+				date = data.Date,
 				time = data.Time,
 				indicatorId = data.IndicatorId,
-				param = data.Param,
-
+				 
 				text = data.Text,
 				signal = data.Signal
 			};
