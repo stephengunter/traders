@@ -2,7 +2,7 @@
 import jwtDecode from 'jwt-decode';
 import Errors from '@/common/errors';
 
-import AuthService from '../services/auth';
+import AuthService from '@/common/authService';
 import BaseService from '@/common/baseService';
 import JwtService from '@/common/jwt';
 

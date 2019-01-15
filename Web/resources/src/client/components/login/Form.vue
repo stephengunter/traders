@@ -21,7 +21,7 @@
       ></v-text-field>
       <v-layout class="mt-1" row wrap>
          <v-flex xs12>
-            <v-btn @click.prevent="onSubmit" color="success" class="cn">登入</v-btn>
+            <v-btn type="submit" @click.prevent="onSubmit" color="success" class="cn">登入</v-btn>
          </v-flex>
       </v-layout>
       

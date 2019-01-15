@@ -1,5 +1,5 @@
-import BaseService from '@/common/baseService';
-import { API_URL } from '@/common/config';
+import BaseService from './baseService';
+import { API_URL } from './config';
 
 const source = `${API_URL}/auth`;
 

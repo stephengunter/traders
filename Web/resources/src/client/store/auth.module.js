@@ -5,7 +5,7 @@ import JwtService from '@/common/jwt';
 import Errors from '@/common/errors';
 import Helper from '@/common/helper';
 
-import AuthService from '../services/auth';
+import AuthService from '@/common/authService';
 import OAuthService from '../services/oAuth';
 import AccountService from '../services/account';
 import PasswordService from '../services/password';

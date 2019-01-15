@@ -38,7 +38,7 @@ import { REFRESH_TOKEN } from '../store/actions.type';
 
 import JwtService from '@/common/jwt';
 
-import AuthService from '../services/auth';
+import AuthService from '@/common/authService';
 
 import UserService from '../services/user';
 export default {

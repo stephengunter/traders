@@ -63,6 +63,7 @@
 <script>
 import { mapState } from 'vuex';
 import { LOGIN, FB_LOGIN, GOOGLE_LOGIN, OAUTH_REGISTER, SEND_CONFIRM_EMAIL } from '../store/actions.type';
+import { ADMIN_URL } from '@/common/config';
 
 import ErrorList from '../components/Errors';
 import LoginForm from '../components/login/Form';
@@ -115,7 +116,13 @@ export default {
          this.redirect();
       },
       redirect(){
-         if(this.returnUrl) this.$router.push({ path: this.returnUrl });
+         if(this.returnUrl){
+            if(this.returnUrl === 'admin') {
+               window.location = ADMIN_URL;
+            }else {
+               this.$router.push({ path: this.returnUrl });
+            }
+         }
          else this.$router.push({ name: 'home' });
       },
       sendEmail(){

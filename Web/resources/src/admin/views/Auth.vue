@@ -26,8 +26,6 @@ export default {
          this.returnUrl = this.$route.query.returnUrl;
 		}
 
-		console.log('beforeMount');
-
 		this.$store.dispatch(CHECK_AUTH).then((user) => {
 			if(user){  
 				let tokenStatus = JwtService.tokenStatus();

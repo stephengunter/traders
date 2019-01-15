@@ -29,9 +29,9 @@ namespace ApplicationCore.Services
 			this.quoteRepository = quoteRepository;
 		}
 
-		public Task CreateAsync(Quote quote) => quoteRepository.AddAsync(quote);
+		public async Task CreateAsync(Quote quote) => await quoteRepository.AddAsync(quote);
 
-		public Task UpdateAsync(Quote quote) => quoteRepository.UpdateAsync(quote);
+		public async Task UpdateAsync(Quote quote) => await quoteRepository.UpdateAsync(quote);
 
 		public Quote GetQuote(int date, int time)
 		{

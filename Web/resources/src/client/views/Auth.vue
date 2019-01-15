@@ -8,7 +8,7 @@
 import { mapGetters } from 'vuex';
 
 import { REFRESH_TOKEN } from '../store/actions.type';
-import AuthService from '../services/auth';
+import AuthService from '@/common/authService';
 import JwtService from '@/common/jwt';
 
 export default {

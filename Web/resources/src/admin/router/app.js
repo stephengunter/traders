@@ -1,7 +1,7 @@
 
 const appRoutes = [
    {
-      name: 'test',
+      name: '',
       path: '/test',
       component: () => import('../views/Test'), 
       meta: { 
@@ -54,7 +54,18 @@ const appRoutes = [
          title: '權值股管理',
          menu: true
       }        
-   }
+   },
+   {
+      name: '',
+      path: '/spec',
+      component: () => import('../views/Spec'), 
+      meta: { 
+         order: 0,
+         icon: 'mdi-file-document-outline',
+         title: '規格說明',
+         menu: true
+      }        
+   },
 ];
 
 
