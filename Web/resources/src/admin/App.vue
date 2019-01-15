@@ -124,7 +124,6 @@ export default {
 }
 .cn {
     font-family: "微軟正黑體", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	 font-size: 14px;
 }
 .errText{
 	color: #fff;
