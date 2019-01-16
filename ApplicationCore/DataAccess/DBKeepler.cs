@@ -35,6 +35,10 @@ namespace ApplicationCore.DataAccess
 
 			await SaveQuotesAsync(quotes);
 
+			realTimeContext.Database.ExecuteSqlCommand("DELETE FROM [Quotes]");
+			realTimeContext.Database.ExecuteSqlCommand("DBCC CHECKIDENT('Quotes', RESEED, 0)");
+			realTimeContext.Database.ExecuteSqlCommand("DBCC CHECKIDENT('Data', RESEED, 0)");
+
 		}
 
 		Quote CopyQuoteValues(Quote source)

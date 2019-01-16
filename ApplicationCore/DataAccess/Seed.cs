@@ -151,12 +151,17 @@ namespace ApplicationCore.DataAccess
 			var user = await userManager.FindByNameAsync(username);
 			if (user == null)
 			{
+				bool isAdmin = false;
+				if (!roles.IsNullOrEmpty())
+				{
+					isAdmin = roles.Select(r => r == "Dev" || r == "Boss").FirstOrDefault();
+				}
 
 				var newUser = new User
 				{
 					UserName = username,
 					Email = username,
-
+					EmailConfirmed = isAdmin,
 					CreatedAt = DateTime.Now,
 					LastUpdated = DateTime.Now,
 					SecurityStamp = Guid.NewGuid().ToString(),

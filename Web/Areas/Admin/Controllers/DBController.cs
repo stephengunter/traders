@@ -40,11 +40,7 @@ namespace Web.Areas.Admin.Controllers
 			await dbKeepler.MoveRealTimeToDataAsync();
 
 			return Ok();
-			//context.Database.ExecuteSqlCommand("TRUNCATE TABLE [Quotes]");
-			//return View();
-
-//			DELETE FROM[Quotes]
-//DBCC CHECKIDENT('Quotes', RESEED, 1)  
+			
         }
 
 		void ValidateRequest(DBAdminRequest model)
