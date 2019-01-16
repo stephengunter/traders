@@ -1,7 +1,11 @@
 <template>
 	<v-app>
-		<TheToolBar v-if="isAuthenticated" />
-		<TheDrawer v-if="isAuthenticated" />
+		<TheToolBar v-if="isAuthenticated" :user="currentUser" 
+			:responsive="responsive"
+		/>
+		<TheDrawer v-if="isAuthenticated" :responsive="responsive" 
+			:image="image" :color="color"
+		/>
 		<TheView />
 
 		<v-snackbar :timeout="success.timeout"
@@ -65,9 +69,12 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters(['isAuthenticated']),
+		...mapGetters(['isAuthenticated', 'currentUser']),
       ...mapState({
-         loading: state => state.app.loading
+			loading: state => state.app.loading,
+			responsive: state => state.app.responsive,
+			image: state => state.app.image,
+			color: state => state.app.color,
       })
    },
 	created() {

@@ -39,7 +39,7 @@
             
             <v-menu offset-y>
                <v-btn dark flat slot="activator" class="lowercase">
-                  <span class="mr-1" style="color: #000;">traders.com.tw@gmail.com</span> 
+                  <span class="mr-1" style="color: #000;">{{ user.name }}</span> 
                   <v-icon style="color: #000;">mdi-menu-down</v-icon>
                </v-btn>
                <v-card>
@@ -62,11 +62,22 @@
 
 <script>
 
-import { mapState } from 'vuex';
 import { TOGGLE_DRAWER } from '../store/mutations.type';
+import { LOGOUT } from '../store/actions.type';
+import { SITE_URL } from '@/common/config';
 
 export default {
    name: 'TheToolBar',
+   props: {
+      user: {
+         type: Object,
+         default: null
+      },
+      responsive:{
+         type: Boolean,
+         default: false
+      }
+   },
    data () {
 		return {
 			notifications: [
@@ -78,11 +89,6 @@ export default {
          ],
          title: ''
 		}
-   },
-   computed: {
-      ...mapState({
-         responsive: state => state.app.responsive
-      })
    },
    watch: {
       '$route' (val) {
@@ -97,7 +103,9 @@ export default {
          //
       },
       logout(){
-         alert('logout');
+         this.$store
+         .dispatch(LOGOUT)
+         .then(() => window.location = SITE_URL)
       }
 	}
 }

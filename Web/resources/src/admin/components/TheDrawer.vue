@@ -34,22 +34,30 @@
 
 <script>
 
-import { mapState } from 'vuex';
 import { SET_DRAWER, TOGGLE_DRAWER } from '../store/mutations.type';
 
 export default {
    name: 'TheDrawer',
+   props: {
+      color: {
+         type: String,
+         default: 'info'
+      },
+      image: {
+         type: String,
+         default: ''
+      },
+      responsive:{
+         type: Boolean,
+         default: false
+      }
+   },
    data () {
 		return {
          
 		}
    },
    computed: {
-      ...mapState({
-         image: state => state.app.image,
-         color: state => state.app.color,
-         responsive: state => state.app.responsive
-      }),
       inputValue: {
          get () {
             return this.$store.state.app.drawer

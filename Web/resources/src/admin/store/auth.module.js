@@ -123,16 +123,12 @@ const mutations = {
       state.errors = new Errors();
       
    },
-   [PURGE_AUTH](state, destroyToken = true) {
+   [PURGE_AUTH](state) {
       state.isAuthenticated = false;
       state.user = {};
     
       state.errors = new Errors();
-
-      if(destroyToken){
-         JwtService.destroyToken();
-      }
-      
+      JwtService.destroyToken();
    }
 };
 
