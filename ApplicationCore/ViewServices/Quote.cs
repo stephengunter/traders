@@ -36,7 +36,7 @@ namespace ApplicationCore.Views
 			{
 				date = data.Date,
 				time = data.Time,
-				indicatorId = data.IndicatorId,
+				indicator = data.Indicator,
 				 
 				text = data.Text,
 				signal = data.Signal

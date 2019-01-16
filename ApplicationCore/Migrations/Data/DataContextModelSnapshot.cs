@@ -26,7 +26,7 @@ namespace ApplicationCore.Migrations.Data
 
                     b.Property<int>("Date");
 
-                    b.Property<int>("IndicatorId");
+                    b.Property<string>("Indicator");
 
                     b.Property<int>("QuoteId");
 

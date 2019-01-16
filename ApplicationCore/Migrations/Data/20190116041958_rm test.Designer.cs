@@ -3,14 +3,16 @@ using ApplicationCore.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace ApplicationCore.Migrations.RealTime
+namespace ApplicationCore.Migrations.Data
 {
-    [DbContext(typeof(RealTimeContext))]
-    partial class RealTimeContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(DataContext))]
+    [Migration("20190116041958_rm test")]
+    partial class rmtest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,7 +28,7 @@ namespace ApplicationCore.Migrations.RealTime
 
                     b.Property<int>("Date");
 
-                    b.Property<string>("Indicator");
+                    b.Property<int>("IndicatorId");
 
                     b.Property<int>("QuoteId");
 
@@ -64,6 +66,29 @@ namespace ApplicationCore.Migrations.RealTime
                     b.HasKey("Id");
 
                     b.ToTable("Quotes");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Models.Stock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Base");
+
+                    b.Property<string>("Code");
+
+                    b.Property<bool>("Ignore");
+
+                    b.Property<string>("Name");
+
+                    b.Property<double>("Price");
+
+                    b.Property<double>("Weight");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Stocks");
                 });
 
             modelBuilder.Entity("ApplicationCore.Models.Data", b =>

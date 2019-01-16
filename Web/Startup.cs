@@ -78,8 +78,9 @@ namespace Web
 			services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 			services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
 			services.Configure<FacebookAuthSettings>(Configuration.GetSection("FacebookAuthSettings"));
+			services.Configure<AdminSettings>(Configuration.GetSection("AdminSettings"));
 
-			
+
 
 			var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["AppSettings:AuthSecret"]));
 
@@ -180,6 +181,9 @@ namespace Web
 			services.AddScoped(typeof(IDefaultRepository<>), typeof(DefaultRepository<>));
 			services.AddScoped(typeof(IDataRepository<>), typeof(DataRepository<>));
 			services.AddScoped(typeof(IRealTimeRepository<>), typeof(RealTimeRepository<>));
+
+			services.AddScoped<IDBSeeder, DBSeeder>();
+			services.AddScoped<IDBKeepler, DBKeepler>();
 
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<IPermissionService, PermissionService>();

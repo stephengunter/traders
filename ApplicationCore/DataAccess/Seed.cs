@@ -13,7 +13,47 @@ using System.Threading.Tasks;
 
 namespace ApplicationCore.DataAccess
 {
-	public class Seed
+	public interface IDBSeeder
+	{
+		Task SeedAsync();
+	}
+	public class DBSeeder : IDBSeeder
+	{
+		private readonly DefaultContext defaultContext;
+		private readonly RealTimeContext realTimeContext;
+		private readonly DataContext dataContext;
+
+		private readonly UserManager<User> userManager;
+		private readonly RoleManager<IdentityRole> roleManager;
+
+		public DBSeeder(DefaultContext defaultContext, RealTimeContext realTimeContext, DataContext dataContext,
+			UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+		{
+			this.defaultContext = defaultContext;
+			this.realTimeContext = realTimeContext;
+			this.dataContext = dataContext;
+
+			this.userManager = userManager;
+			this.roleManager = roleManager;
+
+		}
+
+		public async Task SeedAsync()
+		{
+			defaultContext.Database.Migrate();
+			realTimeContext.Database.Migrate();
+			dataContext.Database.Migrate();
+
+			await AppDBSeed.SeedRoles(roleManager);
+			await AppDBSeed.SeedUsers(userManager);
+
+			await AppDBSeed.SeedIndicators(defaultContext);
+
+			await AppDBSeed.SeedStocks(dataContext);
+		}
+	}
+
+	public class AppDBSeed
 	{
 		public static async Task EnsureSeedData(IServiceProvider serviceProvider)
 		{
@@ -51,7 +91,7 @@ namespace ApplicationCore.DataAccess
 
 		}
 
-		private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+		public static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
 		{
 			var roles = new List<string> { "Dev", "Boss", "Author" };
 			foreach (var item in roles)
@@ -62,7 +102,7 @@ namespace ApplicationCore.DataAccess
 
 		}
 
-		private static async Task AddRoleIfNotExist(RoleManager<IdentityRole> roleManager, string roleName)
+		public static async Task AddRoleIfNotExist(RoleManager<IdentityRole> roleManager, string roleName)
 		{
 			var role = await roleManager.FindByNameAsync(roleName);
 			if (role == null)
@@ -74,7 +114,7 @@ namespace ApplicationCore.DataAccess
 
 		}
 
-		private static async Task SeedUsers(UserManager<User> userManager)
+		public static async Task SeedUsers(UserManager<User> userManager)
 		{
 			string username = "traders.com.tw@gmail.com";
 			string fullname = "何金水";
@@ -105,7 +145,7 @@ namespace ApplicationCore.DataAccess
 		}
 
 
-		private static async Task CreateUserIfNotExist(UserManager<User> userManager, string username, string fullname, string password, IList<string> roles = null)
+		public static async Task CreateUserIfNotExist(UserManager<User> userManager, string username, string fullname, string password, IList<string> roles = null)
 		{
 
 			var user = await userManager.FindByNameAsync(username);
@@ -158,9 +198,9 @@ namespace ApplicationCore.DataAccess
 			}
 		}
 
-		
 
-		private static async Task SeedIndicators(DefaultContext context)
+
+		public static async Task SeedIndicators(DefaultContext context)
 		{
 			var indicators = new List<Indicator>
 			{
@@ -192,7 +232,7 @@ namespace ApplicationCore.DataAccess
 		}
 
 
-		private static async Task SeedStocks(DataContext context)
+		public static async Task SeedStocks(DataContext context)
 		{
 			var stocks = new List<Stock>
 			{

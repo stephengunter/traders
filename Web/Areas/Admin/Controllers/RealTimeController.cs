@@ -80,7 +80,7 @@ namespace Web.Areas.Admin.Controllers
 		{
 			foreach (var item in model.dataList)
 			{
-				var exist = existQuote.DataList.Where(d => d.IndicatorId == item.indicatorId).FirstOrDefault();
+				var exist = existQuote.DataList.Where(d => d.Indicator == item.indicator).FirstOrDefault();
 				if (exist == null)
 				{
 					var data = new Data();

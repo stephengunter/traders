@@ -6,9 +6,8 @@ using System.Text.RegularExpressions;
 
 namespace ApplicationCore.Helpers
 {
-	public static class Extensions
+	public static class CommonHelpers
 	{
-
 		public static bool CaseInsensitiveContains(this string text, string value)
 		{
 			StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase;

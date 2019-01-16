@@ -30,4 +30,11 @@ namespace Web
 		public string AppId { get; set; }
 		public string AppSecret { get; set; }
 	}
+
+	public class AdminSettings
+	{
+		public string DBKey { get; set; }
+		public string QuoteKey { get; set; }
+
+	}
 }

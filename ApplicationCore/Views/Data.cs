@@ -7,7 +7,7 @@ namespace ApplicationCore.Views
 {
 	public class DataViewModel
 	{
-		public int indicatorId { get; set; }
+		public string indicator { get; set; }
 
 		public int quoteId { get; set; }
 
@@ -23,7 +23,7 @@ namespace ApplicationCore.Views
 		{
 			entity.Date = date;
 			entity.Time = time;
-			entity.IndicatorId = indicatorId;
+			entity.Indicator = indicator;
 			entity.Text = text;
 			entity.Signal = signal;
 

@@ -7,7 +7,7 @@ namespace ApplicationCore.Models
 {
 	public class Data : BaseEntity
 	{
-		public int IndicatorId { get; set; }
+		public string Indicator { get; set; }  // Indicator.Entity
 
 		public int QuoteId { get; set; }
 
@@ -18,6 +18,8 @@ namespace ApplicationCore.Models
 		public string Text { get; set; }
 
 		public int Signal { get; set; }
+
+
 
 		public Quote Quote { get; set; }
 

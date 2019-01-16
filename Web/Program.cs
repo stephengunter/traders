@@ -20,7 +20,7 @@ namespace Web
 			var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 			if (environment == EnvironmentName.Development)
 			{
-				Task.Run(() => Seed.EnsureSeedData(host.Services).Wait());				
+				Task.Run(() => AppDBSeed.EnsureSeedData(host.Services).Wait());
 			}
 
 			host.Run();

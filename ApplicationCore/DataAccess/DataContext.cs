@@ -22,6 +22,6 @@ namespace ApplicationCore.DataAccess
 		public DbSet<Data> Data { get; set; }
 
 
-
 	}
+
 }
