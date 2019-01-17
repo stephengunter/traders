@@ -209,7 +209,12 @@ namespace ApplicationCore.DataAccess
 		{
 			var indicators = new List<Indicator>
 			{
-				new Indicator { Name = "權值股" , Entity = "BlueChips", Begin = 90000, End = 132500, Main = false, Type = IndicatorType.Bar, Params = "1,60" , DefaultParam = "6" }
+				new Indicator
+				{
+					Name = "權值股" , Entity = "BlueChips", Begin = 90000, End = 132500,
+					Main = false, Type = IndicatorType.Bar, Source = SourceType.Stock,
+					Params = "1,60" , DefaultParam = "6"
+				}
 			};
 
 			foreach (var indicator in indicators)
@@ -225,6 +230,7 @@ namespace ApplicationCore.DataAccess
 					exist.Begin = indicator.Begin;
 					exist.End = indicator.End;
 					exist.Main = indicator.Main;
+					exist.Source = indicator.Source;
 					exist.Type = indicator.Type;
 					exist.Params = indicator.Params;
 					exist.Entity = indicator.Entity;
@@ -272,27 +278,9 @@ namespace ApplicationCore.DataAccess
 				new Stock { Name = "元大金" , Code = "2885" , Price=15.6 , Weight = 0.6506 },
 				new Stock { Name = "台泥" , Code = "1101", Price= 34.05 , Weight = 0.6208 },
 				new Stock { Name = "彰銀" , Code = "2801" ,Price=17.6, Weight = 0.6149},
-				new Stock { Name = "華碩" , Code = "2357", Price=217, Weight = 0.5779 },
-				new Stock { Name = "研華" , Code = "2395",Price=225 , Weight = 0.5614 },
-				new Stock { Name = "國巨" , Code = "2327" , Price=370, Weight = 0.5442},
-				new Stock { Name = "遠東新" , Code = "1402" , Price=28.45 ,Weight = 0.5407},
-				new Stock { Name = "開發金" , Code = "2883", Price=10,Weight = 0.5333 },
-				new Stock { Name = "聯電" , Code = "2303", Price=11.55,Weight = 0.5099 },
-				new Stock { Name = "台新金" , Code = "2887", Price=13.5, Weight = 0.5028 },
-				new Stock { Name = "和碩" , Code = "4938" , Price= 52.3 , Weight = 0.4886 },
-				new Stock { Name = "正新" , Code = "2105", Price= 41.6, Weight = 0.4813 },
-				new Stock { Name = "豐泰" , Code = "9910", Price=196 ,Weight = 0.4744 },
-				new Stock { Name = "和泰車" , Code = "2207", Price=237,Weight = 0.4513 },
-				new Stock { Name = "新光金" , Code = "2888", Price=10.45, Weight = 0.4501 },
-				new Stock { Name = "中租-KY" , Code = "5871",Price= 96.1, Weight = 0.4381 },
-				new Stock { Name = "友達" , Code = "2409", Price=12.7,Weight = 0.4362 },
-				new Stock { Name = "永豐金" , Code = "2890" , Price=10.5 , Weight = 0.4224 },
-				new Stock { Name = "中壽" , Code = "2823" , Price=29.25, Weight = 0.4147 },
-				new Stock { Name = "亞泥" , Code = "1102", Price=32.65,Weight = 0.3917 },
-				new Stock { Name = "儒鴻" , Code = "1476",Price=387, Weight = 0.3711 },
-				new Stock { Name = "群創" , Code = "3481",Price=10.25, Weight = 0.3676 },
-				new Stock { Name = "寶成" , Code = "9904" ,Price=33.5, Weight = 0.3434 }
-
+				new Stock { Name = "華碩" , Code = "2357" ,Price=228, Weight = 0.5779},
+				new Stock { Name = "研華" , Code = "2395" ,Price=222, Weight = 0.5614},
+				new Stock { Name = "國巨" , Code = "2327" ,Price=313, Weight = 0.5442}
 
 			};
 

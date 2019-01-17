@@ -28,5 +28,63 @@ namespace Web.Areas.Admin.Controllers
 
 			return Ok(stocks.Select(s=>s.MapViewModel()));
 		}
+
+		[HttpPost("")]
+		public async Task<ActionResult> Store([FromBody] StockViewModel model)
+		{
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+			ValidateRequest(model);
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+
+			Stock existStock = stockService.GetByCode(model.code);
+			if (existStock == null)
+			{
+				var stock = new Stock();
+				model.SetValues(stock);
+				await stockService.CreateAsync(stock);
+			}
+			else
+			{
+				model.SetValues(existStock);
+				await stockService.UpdateAsync(existStock);
+			}
+
+			return Ok();
+		}
+
+		void ValidateRequest(StockViewModel model)
+		{
+			if(model.weight < 0 || model.weight > 100) ModelState.AddModelError("weight", "權重有誤");
+			if(model.price <= 0) ModelState.AddModelError("price", "價格有誤");
+		}
+
+
+		[HttpPut("{id}")]
+		public async Task<ActionResult> Update(int id, [FromBody] StockViewModel model)
+		{
+			Stock stock = await stockService.GetByIdAsync(id);
+			if (stock == null) return NotFound();
+
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+			ValidateRequest(model);
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+
+			model.SetValues(stock);
+			await stockService.UpdateAsync(stock);
+
+			return Ok();
+		}
+
+		
+		[HttpDelete("{id}")]
+		public async Task<ActionResult> Delete(int id)
+		{
+			Stock stock = await stockService.GetByIdAsync(id);
+			if (stock == null) return NotFound();
+
+			await stockService.DeleteAsync(stock);
+			return Ok();
+		}
+
 	}
 }

@@ -32,6 +32,8 @@ namespace ApplicationCore.Views
 
 		public bool main { get; set; }
 
+		public string source { get; set; }
+
 		public string type { get; set; }
 	}
 

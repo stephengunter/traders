@@ -15,6 +15,16 @@ namespace ApplicationCore.Services
 	public interface IStockService
 	{
 		Task<IEnumerable<Stock>> FetchStocks(string keyword = "");
+
+		Stock GetByCode(string code);
+
+		Task<Stock> GetByIdAsync(int id);
+
+		Task<Stock> CreateAsync(Stock stock);
+
+		Task UpdateAsync(Stock stock);
+
+		Task DeleteAsync(Stock stock);
 	}
 	public class StockService : IStockService
 	{
@@ -42,7 +52,22 @@ namespace ApplicationCore.Services
 			return stocks;
 		}
 
+		public Stock GetByCode(string code)
+		{
+			var spec = new StockCodeSpecifications(code);
+			return stockRepository.GetSingleBySpec(spec);
+		}
+
+		public async Task<Stock> GetByIdAsync(int id) => await stockRepository.GetByIdAsync(id);
+
+		public async Task<Stock> CreateAsync(Stock stock) => await stockRepository.AddAsync(stock);
+
+		public async Task UpdateAsync(Stock stock) => await stockRepository.UpdateAsync(stock);
+
+		public async Task DeleteAsync(Stock stock) => await stockRepository.DeleteAsync(stock);
+
 		async Task<IEnumerable<Stock>> GetAllAsync() => await stockRepository.ListAllAsync();
+
 
 		async Task<IEnumerable<Stock>> GetByKeywordAsync(string keyword)
 		{

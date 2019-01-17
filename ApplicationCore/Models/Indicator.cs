@@ -15,6 +15,14 @@ namespace ApplicationCore.Models
 		Bar
 	}
 
+	public enum SourceType
+	{
+		Futures,
+		Stock,
+		Complex,
+		Market
+	}
+
 	public class Indicator : BaseRecord
 	{
 		public string Name { get; set; }
@@ -34,6 +42,8 @@ namespace ApplicationCore.Models
 		public bool Main { get; set; }
 
 		public IndicatorType Type { get; set; }
+
+		public SourceType Source { get; set; }
 
 		public bool Removed { get; set; }
 
