@@ -27,6 +27,8 @@ namespace ApplicationCore.Models
 	{
 		public string Name { get; set; }
 
+		public string Description { get; set; }
+
 		public int Order { get; set; }
 
 		public int Begin { get; set; } //盤中產生信號開始時間  例如 90000
@@ -36,8 +38,6 @@ namespace ApplicationCore.Models
 		public string Entity { get; set; }
 
 		public string Params { get; set; }
-
-		public string DefaultParam { get; set; }
 
 		public bool Main { get; set; }
 
@@ -50,18 +50,18 @@ namespace ApplicationCore.Models
 
 		public bool Active => Order >= 0 && !Removed;
 
+
+		public string[] ResolvedParams => Params.Split(',');
+
+		public int DefaultParam => Params.Split(',')[2].ToInt();
+
 		public IEnumerable<int> ResolveParamsValues()
 		{
-			if (this.Params.IsNullOrEmpty()) return null;
-
-			int min = Params.Split(',')[0].ToInt();
-			int max = Params.Split(',')[1].ToInt();
+			int min = ResolvedParams[0].ToInt();
+			int max = ResolvedParams[1].ToInt();
 
 			var result = new List<int>();
-			for (int i = min; i <= max; i++)
-			{
-				result.Add(i);
-			}
+			for (int i = min; i <= max; i++) result.Add(i);
 			return result;
 		}
 

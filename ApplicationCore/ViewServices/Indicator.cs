@@ -15,6 +15,8 @@ namespace ApplicationCore.Views
 	{
 		public static IndicatorViewModel MapViewModel(this Indicator indicator)
 		{
+			var paramList = indicator.ResolveParamsValues().ToList();
+
 			var model = new IndicatorViewModel()
 			{
 				id = indicator.Id,
@@ -24,11 +26,15 @@ namespace ApplicationCore.Views
 				begin = indicator.Begin,
 				main = indicator.Main,
 				type = indicator.Type.ToString(),
-				defaultParam = indicator.DefaultParam,
+				source = indicator.Source.ToString(),
 				active = indicator.Active,
 				removed = indicator.Removed,
 				order = indicator.Order,
-				paramList = indicator.ResolveParamsValues().ToList()
+
+				defaultParam = indicator.DefaultParam,
+				minParam = paramList.Min(),
+				maxParam = paramList.Max(),
+				paramList = paramList
 			};
 
 

@@ -18,6 +18,8 @@ namespace ApplicationCore.DataAccess
 
 		}
 
+		public DbSet<UploadFile> UploadFiles { get; set; }
+
 		public DbSet<Profile> Profiles { get; set; }
 		public DbSet<RefreshToken> RefreshTokens { get; set; }
 		

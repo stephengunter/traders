@@ -192,6 +192,8 @@ namespace Web
 			services.AddScoped<IIndicatorService, IndicatorService>();
 			services.AddScoped<IRealTimeService, RealTimeService>();
 
+			services.AddScoped<IAttachmentService, AttachmentService>();
+
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
 			

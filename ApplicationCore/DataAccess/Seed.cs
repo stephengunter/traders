@@ -211,9 +211,10 @@ namespace ApplicationCore.DataAccess
 			{
 				new Indicator
 				{
-					Name = "權值股" , Entity = "BlueChips", Begin = 90000, End = 132500,
+					Name = "藍籌股指標" , Entity = "BlueChips", Begin = 90000, End = 132500,
 					Main = false, Type = IndicatorType.Bar, Source = SourceType.Stock,
-					Params = "1,60" , DefaultParam = "6"
+					Params = "1,60,5" ,
+					Description ="主要權值股多空力道分析"
 				}
 			};
 
@@ -227,6 +228,8 @@ namespace ApplicationCore.DataAccess
 				}
 				else
 				{
+					exist.Name = indicator.Name;
+					exist.Description = indicator.Description;
 					exist.Begin = indicator.Begin;
 					exist.End = indicator.End;
 					exist.Main = indicator.Main;
@@ -234,7 +237,6 @@ namespace ApplicationCore.DataAccess
 					exist.Type = indicator.Type;
 					exist.Params = indicator.Params;
 					exist.Entity = indicator.Entity;
-					exist.DefaultParam = indicator.DefaultParam;
 					context.SaveChanges();
 				}
 			}

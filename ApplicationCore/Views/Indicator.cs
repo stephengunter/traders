@@ -21,10 +21,13 @@ namespace ApplicationCore.Views
 
 		public int end { get; set; } //盤中產生信號結束時間  例如 133000
 
+		public int minParam { get; set; }
+
+		public int maxParam { get; set; }
+
+		public int defaultParam { get; set; }
 
 		public List<int> paramList { get; set; }
-
-		public string defaultParam { get; set; }
 
 		public bool removed { get; set; }
 

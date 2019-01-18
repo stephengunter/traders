@@ -45,7 +45,7 @@ namespace Infrastructure.DataAccess
 			return DbSet.AsEnumerable();
 		}
 
-		public async Task<IReadOnlyList<T>> ListAllAsync()
+		public async Task<IEnumerable<T>> ListAllAsync()
 		{
 			return await DbSet.ToListAsync();
 		}
@@ -54,7 +54,7 @@ namespace Infrastructure.DataAccess
 		{
 			return ApplySpecification(spec).AsEnumerable();
 		}
-		public async Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec)
+		public async Task<IEnumerable<T>> ListAsync(ISpecification<T> spec)
 		{
 			return await ApplySpecification(spec).ToListAsync();
 		}

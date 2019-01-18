@@ -3,7 +3,7 @@
       
       <v-toolbar-title class="headline">
          <span class="site-title cn">交易者</span>
-         <v-icon>bar_chart</v-icon>
+         <v-icon class="site-icon">mdi-finance</v-icon>
          <span class="site-sub-title cn">台指當沖策略平台</span>         
       </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -108,8 +108,10 @@ export default {
 }
 </script>
 
-
 <style scoped>
+.site-icon{
+   margin-bottom:3px;
+}
 .site-title{
    font-size: 2.2rem!important;
    padding-right: 16px;

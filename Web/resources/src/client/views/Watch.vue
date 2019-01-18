@@ -1,11 +1,8 @@
 <template>
    <div class="container">
       <Bread />
-   
-
-
-      
-      <h1>StrategiesView</h1>
+      <v-icon>mdi-stars</v-icon>
+      <h1>WatchView</h1>
    </div>
    
 </template>
@@ -14,7 +11,7 @@
 import Bread from '../components/TheBread';
 
 export default {
-   name: 'StrategiesView',
+   name: 'WatchView',
    components: {
       Bread
    },

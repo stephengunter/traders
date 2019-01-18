@@ -8,8 +8,8 @@ namespace Infrastructure.Interfaces
 	public interface IAsyncRepository<T> where T : class
 	{
 		Task<T> GetByIdAsync(int id);
-		Task<IReadOnlyList<T>> ListAllAsync();
-		Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec);
+		Task<IEnumerable<T>> ListAllAsync();
+		Task<IEnumerable<T>> ListAsync(ISpecification<T> spec);
 		Task<T> AddAsync(T entity);
 		Task UpdateAsync(T entity);
 		Task DeleteAsync(T entity);

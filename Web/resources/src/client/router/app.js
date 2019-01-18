@@ -25,13 +25,25 @@ const links = [
       }        
    },
    {
-      name: 'strategies',
-      path: '/strategies',
-      component: () => import('../views/Strategies'),
+      name: 'indicators',
+      path: '/indicators',
+      component: () => import('../views/Indicators'),
       meta: { 
          order: 0,
-         icon: 'stars',
-         title: '策略介紹',
+         icon: 'mdi-chart-bar',
+         title: '指標介紹',
+         type: 'all',
+         menu: true
+      } 
+   },
+   {
+      name: 'watch',
+      path: '/watch',
+      component: () => import('../views/Watch'),
+      meta: { 
+         order: 0,
+         icon: 'mdi-monitor-cellphone',
+         title: '看盤室',
          type: 'all',
          menu: true
       } 
