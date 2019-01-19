@@ -19,7 +19,7 @@ namespace Web.Areas.Admin.Controllers
 			this.indicatorService = indicatorService;
 		}
 
-		[HttpGet]
+		[HttpGet("")]
 		public async Task<ActionResult> Index(string keyword = "", bool active = true)
 		{
 			var indicators = await indicatorService.FetchIndicators(keyword);
@@ -28,5 +28,7 @@ namespace Web.Areas.Admin.Controllers
 
 			return Ok(indicators.Select(s => s.MapViewModel()));
 		}
+
+		
 	}
 }

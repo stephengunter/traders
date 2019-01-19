@@ -7,6 +7,10 @@ const StockService = {
    fetch(params) {
       let url = `${source}`;
 		return BaseService.fetch(url, params);
+   },
+   create(){
+      let url = `${source}/create`;
+		return BaseService.fetch(url);
    }
 };
 

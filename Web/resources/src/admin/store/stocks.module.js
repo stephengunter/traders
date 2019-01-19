@@ -1,10 +1,10 @@
 import StockService from '../services/stock';
 
 import {
-   FETCH_STOCKS
+   FETCH_STOCKS, CREATE_STOCK
 } from './actions.type';
 
-import { SET_STOCKS, SET_LOADING
+import { SET_STOCKS, SET_STOCK_MODEL, SET_LOADING
 } from './mutations.type';
 
 
@@ -32,6 +32,19 @@ const actions = {
             Bus.$emit('errors', error);
          });
    },
+   [CREATE_STOCK]() {
+      return new Promise((resolve, reject) => {
+         StockService.create()
+            .then(model => resolve(model))
+            .catch(error => {
+               Bus.$emit('errors', error);
+               reject(error);        
+            })
+      });
+   },
+   
+   
+   
 };
 
 

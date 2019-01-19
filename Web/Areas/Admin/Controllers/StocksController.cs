@@ -29,6 +29,9 @@ namespace Web.Areas.Admin.Controllers
 			return Ok(stocks.Select(s=>s.MapViewModel()));
 		}
 
+		[HttpGet("create")]
+		public ActionResult Create() => Ok(new StockViewModel());
+
 		[HttpPost("")]
 		public async Task<ActionResult> Store([FromBody] StockViewModel model)
 		{

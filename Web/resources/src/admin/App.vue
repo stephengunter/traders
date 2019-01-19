@@ -139,5 +139,9 @@ export default {
 	font-size: 1.2rem;
 	color: #fff;
 }
+.v-btn {
+    padding: 12px 12px;
+    font-size: 16px;
+}
 </style>
 

@@ -2,14 +2,11 @@
 	<v-container fluid grid-list-xl fill-height>
      <v-layout justify-center  align-center>
 			<v-flex xs12>
-				<material-card  color="green">
+				<material-card>
 					<v-card-text >
 						<v-layout row>
 							<v-flex sm6>
-              				
-				 
-							</v-flex>
-							<v-flex sm6>
+								 
 								<form @submit.prevent="search">
 									<v-text-field
 										v-model="params.keyword"
@@ -20,7 +17,19 @@
 									/>
 								</form>
 							</v-flex>
+							<v-flex sm6 class="text-lg-right">
+								<v-tooltip top content-class="top">
+									<v-btn @click.prevent="create" slot="activator"  color="info" icon>
+										<v-icon>mdi-plus-circle</v-icon>
+									</v-btn>
+									<span class="cn">新增</span>
+								</v-tooltip>
+				 				<v-dialog v-model="dialog" max-width="500px">
+									 <stock-edit :model="model" @submit="submit" />
+      						</v-dialog>
+							</v-flex>
 						</v-layout>
+						
 						<v-layout row wrap>
 							<v-flex sm12>
 								<v-data-table :headers="headers" :items="stocks" hide-actions>
@@ -33,6 +42,11 @@
 										<td class="cn">{{ props.item.name }}  <v-icon v-if="props.item.ignore">mdi-cancel</v-icon></td>
 										<td>{{ props.item.code }}</td>
 										<td>{{ props.item.weight }}</td>
+										<td>
+											<v-btn slot="activator" class="v-btn--simple" color="success" icon>
+												<v-icon color="primary">mdi-pencil</v-icon>
+											</v-btn>
+										</td>
 									</template>
 								</v-data-table>
 								
@@ -50,14 +64,16 @@
 
 <script>
 import { mapState } from 'vuex';
-import { FETCH_STOCKS } from '../store/actions.type';
+import { FETCH_STOCKS, CREATE_STOCK } from '../store/actions.type';
 
 import MaterialCard from '../components/material/Card';
+import StockEdit from '../components/stock/Edit';
 
 export default {
 	name: 'StocksView',
 	components: {
-		'material-card' : MaterialCard
+		'material-card' : MaterialCard,
+		'stock-edit' : StockEdit
 	},
 	data () {
 		return {
@@ -81,14 +97,23 @@ export default {
 					sortable: false,
 					text: '權重 (%)',
 					value: 'weight'
+				},
+				{
+					sortable: false,
+					text: '',
+					value: '',
+					width: '60px'
 				}
-			]
+			],
+
+			dialog: false,
+			model: null,
 			
 		}
 	},
 	computed: {
       ...mapState({
-			stocks: state => state.stocks.stocks,
+			stocks: state => state.stocks.stocks
 		})
    },
 	beforeMount(){
@@ -100,7 +125,24 @@ export default {
 		},
 		search(){
 			this.fetchData();
-		}
+		},
+		create(){
+			this.$store.dispatch(CREATE_STOCK)
+				.then(model => {
+					this.model = model;  
+					this.dialog = true;
+				})
+			
+		},
+		edit(){
+
+		},
+      cancelEdit(){
+        
+      },
+      submit(){
+        
+      }
 	}
 }
 </script>
