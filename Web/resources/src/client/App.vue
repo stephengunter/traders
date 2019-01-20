@@ -84,6 +84,9 @@ export default {
 .errText{
 	color: #fff;
 }
+.td-btn {
+	padding: 0px, 12px;
+}
 </style>
 
 

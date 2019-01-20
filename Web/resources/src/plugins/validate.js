@@ -13,12 +13,14 @@ const dictionary = {
         required: ( field )=> '請輸入' + field
       },
       attributes:{
+         name: '名稱',
          email: 'Email',
          oldPassword:'舊密碼',
          password:'密碼',
          confirmPassword:'確認密碼',
          fullname:'姓名',
-         phone: '手機'
+         phone: '手機',
+         code: '代碼'
       }
    }
 };

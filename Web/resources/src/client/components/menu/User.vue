@@ -2,9 +2,9 @@
    <v-menu offset-y>
       <v-btn dark flat slot="activator"  class="lowercase" style="min-width:48px;">
          <div class="hidden-sm-and-down">
-            <span class="mr-1">{{ user.name }}</span>
+            <span>{{ user.name }}</span>
          </div>
-         <v-icon>arrow_drop_down</v-icon>
+         <v-icon>mdi-menu-down</v-icon>
       </v-btn>
       <v-list>
          <v-list-tile v-for="(item, index) in items"  :key="index" 
