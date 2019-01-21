@@ -12,6 +12,11 @@ namespace Infrastructure.Entities
 		public DateTime LastUpdated { get; set; } = DateTime.Now;
 		public string UpdatedBy { get; set; }
 
+		public int Order { get; set; }
+		public bool Removed { get; set; }
+
+		public virtual bool Active => Order >= 0 && !Removed;
+
 		public void SetUpdated(string updatedBy)
 		{
 			this.UpdatedBy = updatedBy;

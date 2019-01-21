@@ -20,7 +20,7 @@ namespace Infrastructure.Entities
 
 		public string Title { get; set; }
 
-		public string PS { get; set; }
+		public string Description { get; set; }
 
 	}
 }

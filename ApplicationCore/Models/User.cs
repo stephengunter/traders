@@ -24,6 +24,8 @@ namespace ApplicationCore.Models
 		public DateTime LastUpdated { get; set; } = DateTime.Now;
 		public string UpdatedBy { get; set; }
 
+		public ICollection<Subscribe> Subscribes { get; set; }
+
 		public ICollection<Strategy> Strategies { get; set; }
 
 

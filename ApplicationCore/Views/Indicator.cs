@@ -7,13 +7,11 @@ using System.Text;
 
 namespace ApplicationCore.Views
 {
-	public class IndicatorViewModel
+	public class IndicatorViewModel : BaseRecordView
 	{
 		public int id { get; set; }
 
 		public string name { get; set; }
-
-		public int order { get; set; }
 
 		public string entity { get; set; }
 
@@ -28,10 +26,6 @@ namespace ApplicationCore.Views
 		public int defaultParam { get; set; }
 
 		public List<int> paramList { get; set; }
-
-		public bool removed { get; set; }
-
-		public bool active { get; set; }
 
 		public bool main { get; set; }
 

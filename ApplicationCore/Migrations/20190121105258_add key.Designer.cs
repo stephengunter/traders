@@ -4,51 +4,22 @@ using ApplicationCore.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApplicationCore.Migrations
 {
     [DbContext(typeof(DefaultContext))]
-    partial class DefaultContextModelSnapshot : ModelSnapshot
+    [Migration("20190121105258_add key")]
+    partial class addkey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("ApplicationCore.Models.Bill", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<decimal>("Amount");
-
-                    b.Property<string>("BankCode");
-
-                    b.Property<string>("BankName");
-
-                    b.Property<string>("Code");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<DateTime>("DeadLine");
-
-                    b.Property<DateTime>("LastUpdated");
-
-                    b.Property<int>("Order");
-
-                    b.Property<bool>("Removed");
-
-                    b.Property<string>("UpdatedBy");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Bills");
-                });
 
             modelBuilder.Entity("ApplicationCore.Models.Indicator", b =>
                 {
@@ -103,10 +74,6 @@ namespace ApplicationCore.Migrations
 
                     b.Property<DateTime>("LastUpdated");
 
-                    b.Property<int>("Order");
-
-                    b.Property<bool>("Removed");
-
                     b.Property<int>("StrategyId");
 
                     b.Property<string>("UpdatedBy");
@@ -135,71 +102,13 @@ namespace ApplicationCore.Migrations
                     b.ToTable("Keys");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Models.Pay", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("BillId");
-
-                    b.Property<string>("Code");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<DateTime>("LastUpdated");
-
-                    b.Property<decimal>("Money");
-
-                    b.Property<int>("Order");
-
-                    b.Property<int>("PayWay");
-
-                    b.Property<bool>("Removed");
-
-                    b.Property<string>("UpdatedBy");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BillId");
-
-                    b.ToTable("Pays");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Models.Plan", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime>("LastUpdated");
-
-                    b.Property<decimal>("Money");
-
-                    b.Property<int>("Month");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("Order");
-
-                    b.Property<bool>("Removed");
-
-                    b.Property<string>("UpdatedBy");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Plans");
-                });
-
             modelBuilder.Entity("ApplicationCore.Models.Profile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<DateTime>("DOB");
 
@@ -207,7 +116,11 @@ namespace ApplicationCore.Migrations
 
                     b.Property<bool>("Gender");
 
+                    b.Property<DateTime>("LastUpdated");
+
                     b.Property<string>("SID");
+
+                    b.Property<string>("UpdatedBy");
 
                     b.Property<string>("UserId");
 
@@ -268,43 +181,6 @@ namespace ApplicationCore.Migrations
                     b.ToTable("Strategies");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Models.Subscribe", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("BillId");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<DateTime?>("EndDate");
-
-                    b.Property<DateTime>("LastUpdated");
-
-                    b.Property<int>("Order");
-
-                    b.Property<int>("PlanId");
-
-                    b.Property<bool>("Removed");
-
-                    b.Property<DateTime?>("StartDate");
-
-                    b.Property<string>("UpdatedBy");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BillId");
-
-                    b.HasIndex("PlanId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Subscribes");
-                });
-
             modelBuilder.Entity("ApplicationCore.Models.UploadFile", b =>
                 {
                     b.Property<int>("Id")
@@ -312,8 +188,6 @@ namespace ApplicationCore.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("Description");
 
                     b.Property<int>("Height");
 
@@ -323,6 +197,8 @@ namespace ApplicationCore.Migrations
 
                     b.Property<int>("Order");
 
+                    b.Property<string>("PS");
+
                     b.Property<string>("Path");
 
                     b.Property<int>("PostId");
@@ -330,8 +206,6 @@ namespace ApplicationCore.Migrations
                     b.Property<int>("PostType");
 
                     b.Property<string>("PreviewPath");
-
-                    b.Property<bool>("Removed");
 
                     b.Property<string>("Title");
 
@@ -527,14 +401,6 @@ namespace ApplicationCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ApplicationCore.Models.Pay", b =>
-                {
-                    b.HasOne("ApplicationCore.Models.Bill", "Bill")
-                        .WithMany("Pays")
-                        .HasForeignKey("BillId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("ApplicationCore.Models.Profile", b =>
                 {
                     b.HasOne("ApplicationCore.Models.User", "User")
@@ -553,23 +419,6 @@ namespace ApplicationCore.Migrations
                 {
                     b.HasOne("ApplicationCore.Models.User")
                         .WithMany("Strategies")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("ApplicationCore.Models.Subscribe", b =>
-                {
-                    b.HasOne("ApplicationCore.Models.Bill", "Bill")
-                        .WithMany("Subscribes")
-                        .HasForeignKey("BillId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ApplicationCore.Models.Plan", "Plan")
-                        .WithMany("Subscribes")
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ApplicationCore.Models.User", "User")
-                        .WithMany("Subscribes")
                         .HasForeignKey("UserId");
                 });
 

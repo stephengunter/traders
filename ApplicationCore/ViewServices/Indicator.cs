@@ -27,9 +27,6 @@ namespace ApplicationCore.Views
 				main = indicator.Main,
 				type = indicator.Type.ToString(),
 				source = indicator.Source.ToString(),
-				active = indicator.Active,
-				removed = indicator.Removed,
-				order = indicator.Order,
 
 				defaultParam = indicator.DefaultParam,
 				minParam = paramList.Min(),
@@ -37,7 +34,7 @@ namespace ApplicationCore.Views
 				paramList = paramList
 			};
 
-
+			model.SetBaseRecordValues(indicator);
 			return model;
 		}
 

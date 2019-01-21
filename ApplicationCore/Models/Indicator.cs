@@ -29,8 +29,6 @@ namespace ApplicationCore.Models
 
 		public string Description { get; set; }
 
-		public int Order { get; set; }
-
 		public int Begin { get; set; } //盤中產生信號開始時間  例如 90000
 
 		public int End { get; set; } //盤中產生信號結束時間  例如 133000
@@ -44,11 +42,6 @@ namespace ApplicationCore.Models
 		public IndicatorType Type { get; set; }
 
 		public SourceType Source { get; set; }
-
-		public bool Removed { get; set; }
-
-
-		public bool Active => Order >= 0 && !Removed;
 
 
 		public string[] ResolvedParams => Params.Split(',');

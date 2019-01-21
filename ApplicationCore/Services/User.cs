@@ -81,11 +81,6 @@ namespace ApplicationCore.Services
 		public async Task UpdateUserAsync(User user)
 		{
 			user.LastUpdated = DateTime.Now;
-			if (user.Profile != null)
-			{
-				user.Profile.LastUpdated = DateTime.Now;
-			}
-
 			await userRepository.UpdateAsync(user);
 
 		}

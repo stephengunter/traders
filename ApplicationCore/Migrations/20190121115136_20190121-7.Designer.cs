@@ -4,14 +4,16 @@ using ApplicationCore.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApplicationCore.Migrations
 {
     [DbContext(typeof(DefaultContext))]
-    partial class DefaultContextModelSnapshot : ModelSnapshot
+    [Migration("20190121115136_20190121-7")]
+    partial class _201901217
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,7 +49,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Bills");
+                    b.ToTable("Bill");
                 });
 
             modelBuilder.Entity("ApplicationCore.Models.Indicator", b =>
@@ -163,7 +165,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasIndex("BillId");
 
-                    b.ToTable("Pays");
+                    b.ToTable("Pay");
                 });
 
             modelBuilder.Entity("ApplicationCore.Models.Plan", b =>
@@ -192,7 +194,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Plans");
+                    b.ToTable("Plan");
                 });
 
             modelBuilder.Entity("ApplicationCore.Models.Profile", b =>
@@ -302,7 +304,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscribes");
+                    b.ToTable("Subscribe");
                 });
 
             modelBuilder.Entity("ApplicationCore.Models.UploadFile", b =>

@@ -12,8 +12,6 @@ namespace ApplicationCore.Models
 
 	public class UploadFile : BsseUploadFile
 	{
-		public int Order { get; set; }
-
 		public PostType PostType { get; set; }
 		public int PostId { get; set; }
 

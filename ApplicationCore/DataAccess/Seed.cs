@@ -52,6 +52,8 @@ namespace ApplicationCore.DataAccess
 			await AppDBSeed.SeedStocks(dataContext);
 
 			await AppDBSeed.SeedStrategies(userManager, defaultContext);
+			await AppDBSeed.SeedPlans(defaultContext);
+			await AppDBSeed.SeedSubscribes(userManager, defaultContext);
 		}
 	}
 
@@ -86,6 +88,9 @@ namespace ApplicationCore.DataAccess
 
 				await SeedStrategies(userManager, defaultContext);
 
+				await SeedPlans(defaultContext);
+
+				await SeedSubscribes(userManager, defaultContext);
 
 			}
 
@@ -174,10 +179,7 @@ namespace ApplicationCore.DataAccess
 					Profile = new Profile
 					{
 						Fullname = fullname,
-						CreatedAt = DateTime.Now,
-						LastUpdated = DateTime.Now,
-						Gender = true,
-
+						Gender = true
 					}
 
 				};
@@ -250,11 +252,12 @@ namespace ApplicationCore.DataAccess
 
 		public static async Task SeedStrategies(UserManager<User> userManager, DefaultContext context)
 		{
-			var userA = await userManager.FindByNameAsync("traders.com.tw@gmail.com");
-			await SeedUserStrategies(context, userA);
-
-			var userB = await userManager.FindByNameAsync("leojuan@gmail.com");
-			await SeedUserStrategies(context, userB);
+			var names = new string[] { "traders.com.tw@gmail.com", "leojuan@gmail.com" };
+			foreach (var name in names)
+			{
+				var user = await userManager.FindByNameAsync(name);
+				await SeedUserStrategies(context, user);
+			}
 		}
 
 		static async Task SeedUserStrategies(DefaultContext context, User user)
@@ -294,6 +297,71 @@ namespace ApplicationCore.DataAccess
 						});
 					}
 				}
+			}
+
+			await context.SaveChangesAsync();
+
+		}
+
+		public static async Task SeedPlans(DefaultContext context)
+		{
+			var plans = new List<Plan>
+			{
+				new Plan { Month = 1 , Money = 1200 },
+				new Plan { Month = 3 , Money = 3500, Order = 1  }
+			};
+
+			foreach (var item in plans)
+			{
+				var exist = context.Plans.Where(p => p.Month == item.Month).FirstOrDefault();
+				if (exist == null)
+				{
+					await context.Plans.AddAsync(item);
+				}
+				else
+				{
+					exist.Money = item.Money;
+					exist.Order = item.Order;
+				}
+			}
+
+			await context.SaveChangesAsync();
+		}
+
+		public static async Task SeedSubscribes(UserManager<User> userManager, DefaultContext context)
+		{
+			var names = new string[] { "traders.com.tw@gmail.com", "leojuan@gmail.com" };
+			foreach (var name in names)
+			{
+				var user = await userManager.FindByNameAsync(name);
+				await SeedSubscribeByUser(context, user);
+			}
+		}
+
+		static async Task SeedSubscribeByUser(DefaultContext context, User user)
+		{
+			var activeSubscribe = context.Subscribes.Where(s => s.UserId == user.Id && s.Active).FirstOrDefault();
+			var plan = context.Plans.Where(p => p.Active).OrderByDescending(p => p.Month).FirstOrDefault();
+			if (activeSubscribe == null)
+			{
+				var subscribe = new Subscribe
+				{
+					Plan = plan,
+					UserId = user.Id
+				};
+
+				var bill = new Bill { Amount = plan.Money };
+				bill.Pays.Add(new Pay { Money = plan.Money, PayWay = PayWay.Bank });
+
+				subscribe.Bill = bill;
+
+				subscribe.OnPayed();
+				context.Subscribes.Add(subscribe);
+
+			}
+			else
+			{
+				activeSubscribe.OnPayed();
 			}
 
 			await context.SaveChangesAsync();
