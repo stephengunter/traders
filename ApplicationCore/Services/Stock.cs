@@ -25,6 +25,8 @@ namespace ApplicationCore.Services
 		Task UpdateAsync(Stock stock);
 
 		Task DeleteAsync(Stock stock);
+
+		Task DeleteAsync(IList<int> ids);
 	}
 	public class StockService : IStockService
 	{
@@ -66,12 +68,25 @@ namespace ApplicationCore.Services
 
 		public async Task DeleteAsync(Stock stock) => await stockRepository.DeleteAsync(stock);
 
+		public async Task DeleteAsync(IList<int> ids)
+		{
+			var stocks = await GetByIdsAsync(ids);
+			stockRepository.DeleteRange(stocks);
+		}
+
 		async Task<IEnumerable<Stock>> GetAllAsync() => await stockRepository.ListAllAsync();
 
 
 		async Task<IEnumerable<Stock>> GetByKeywordAsync(string keyword)
 		{
 			var filter = new StockFilterSpecifications(keyword);
+
+			return await stockRepository.ListAsync(filter);
+		}
+
+		async Task<IEnumerable<Stock>> GetByIdsAsync(IList<int> ids)
+		{
+			var filter = new StockFilterSpecifications(ids);
 
 			return await stockRepository.ListAsync(filter);
 		}

@@ -7,6 +7,7 @@ using ApplicationCore.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationCore.Views;
+using ApplicationCore.Helpers;
 
 namespace Web.Areas.Admin.Controllers
 {
@@ -24,9 +25,11 @@ namespace Web.Areas.Admin.Controllers
 		{
 			var stocks = await stockService.FetchStocks(keyword);
 
-			stocks = stocks.GetOrdered();			
+			stocks = stocks.GetOrdered();
 
-			return Ok(stocks.Select(s=>s.MapViewModel()));
+			var pageList = stocks.GetPagedList();
+
+			return Ok(pageList);
 		}
 
 		[HttpGet("create")]
@@ -61,6 +64,16 @@ namespace Web.Areas.Admin.Controllers
 			if(model.price <= 0) ModelState.AddModelError("price", "價格有誤");
 		}
 
+		[HttpGet("edit/{id}")]
+		public async Task<ActionResult> Edit(int id)
+		{
+			Stock stock = await stockService.GetByIdAsync(id);
+			if (stock == null) return NotFound();
+
+			var model = stock.MapViewModel();
+			return Ok(model);
+		}
+
 
 		[HttpPut("{id}")]
 		public async Task<ActionResult> Update(int id, [FromBody] StockViewModel model)
@@ -80,12 +93,11 @@ namespace Web.Areas.Admin.Controllers
 
 		
 		[HttpDelete("{id}")]
-		public async Task<ActionResult> Delete(int id)
+		public async Task<ActionResult> Delete(string id)
 		{
-			Stock stock = await stockService.GetByIdAsync(id);
-			if (stock == null) return NotFound();
+			var ids = id.Split(',').Select(i => i.ToInt()).ToList();
 
-			await stockService.DeleteAsync(stock);
+			await stockService.DeleteAsync(ids);
 			return Ok();
 		}
 

@@ -52,7 +52,7 @@
 import { mapState } from 'vuex';
 import { RESET_PASSWORD } from '../store/actions.type';
 
-import ErrorList from '../components/Errors';
+import ErrorList from '@/components/Errors';
 
 export default {
    name: 'RwvResetPassword',

@@ -1,11 +1,11 @@
 <template>
-	<v-container fluid grid-list-xl fill-height>
+	<v-container v-if="pageList" fluid grid-list-xl fill-height>
      <v-layout justify-center  align-center>
 			<v-flex xs12>
 				<material-card>
 					<v-card-text >
 						<v-layout row>
-							<v-flex sm6>
+							<v-flex xs12 sm6 md6>
 								 
 								<form @submit.prevent="search">
 									<v-text-field
@@ -17,7 +17,7 @@
 									/>
 								</form>
 							</v-flex>
-							<v-flex sm6 class="text-lg-right">
+							<v-flex xs12 sm6 md6 class="text-lg-right">
 								<v-tooltip top content-class="top">
 									<v-btn :disabled="!canCreate" @click.prevent="create" class="mr-2" slot="activator"  color="info" icon>
 										<v-icon>mdi-plus-circle</v-icon>
@@ -31,6 +31,9 @@
 									<span class="cn">刪除</span>
 								</v-tooltip>
 
+								<v-dialog v-model="deleting" width="480px">
+									<Confirm @ok="submitDelete" @cancel="cancelDelete" />
+								</v-dialog>
 				 				<v-dialog v-model="editting" persistent max-width="500px">
 									<stock-edit v-if="editting" :model="model" 
 									@submit="submit" @cancel="cancelEdit"
@@ -69,6 +72,7 @@
 								
 							</v-flex>
 						</v-layout>
+						<table-pager :model="pageList" :canPage="false"/>
 						
 					</v-card-text>
 				</material-card>
@@ -81,16 +85,21 @@
 
 <script>
 import { mapState } from 'vuex';
-import { FETCH_STOCKS, CREATE_STOCK } from '../store/actions.type';
+import { FETCH_STOCKS, CREATE_STOCK, STORE_STOCK,
+EDIT_STOCK, UPDATE_STOCK, DELETE_STOCK } from '../store/actions.type';
 
 import MaterialCard from '../components/material/Card';
+import TablePager from '../components/TablePager';
 import StockEdit from '../components/stock/Edit';
+import Confirm from '@/components/Confirm';
 
 export default {
 	name: 'StocksView',
 	components: {
 		'material-card' : MaterialCard,
-		'stock-edit' : StockEdit
+		'stock-edit' : StockEdit,
+		'table-pager' : TablePager,
+		Confirm
 	},
 	data () {
 		return {
@@ -125,27 +134,26 @@ export default {
 
 			selected: [],
 			editting: false,
+			deleting: false,
 			model: null,
 			
 		}
 	},
 	computed: {
       ...mapState({
-			stocks: state => state.stocks.stocks
+			pageList: state => state.stocks.pageList,
 		}),
+		stocks(){
+			return this.pageList ? this.pageList.viewList : [];
+		},
 		canRemove(){
 			if(this.editting) return false; 
 			return this.selected.length > 0;
 		},
 		canCreate(){
-			return !this.editting;
+			return !this.editting && !this.deleting;
 		}
 	},
-	watch: {
-		checkAll(val) {
-			alert(val);
-		}
-   },
 	beforeMount(){
 		this.fetchData();
 	},
@@ -167,16 +175,40 @@ export default {
 		},
 		edit(id){
 			this.selected = [];
+			this.$store.dispatch(EDIT_STOCK, id)
+				.then(model => {
+					this.model = model;  
+					this.editting = true;
+				})
 		},
       cancelEdit(){
 			this.model = null;  
          this.editting = false;
 		},
 		remove(){
-
+			this.deleting = true;
+		},
+		submitDelete(){
+			let ids = this.selected.map(item => item.id);
+			this.$store.dispatch(DELETE_STOCK, ids.join(','))
+				.then(() => {
+					this.fetchData();
+					this.model = null;  
+					this.deleting = false;
+				})
+		},
+		cancelDelete(){
+			this.deleting = false;
 		},
       submit(){
-        
+			let action = this.model.id ? UPDATE_STOCK : STORE_STOCK;
+         this.$store.dispatch(action, this.model)
+				.then(() => {
+					this.fetchData();
+					Bus.$emit('success');
+					this.model = null;  
+					this.editting = false;
+				})
       }
 	}
 }

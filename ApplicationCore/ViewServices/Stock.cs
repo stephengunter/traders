@@ -37,5 +37,17 @@ namespace ApplicationCore.Views
 		{
 			return stocks.OrderBy(s => s.Ignore);
 		}
+
+		public static PagedList<Stock, StockViewModel> GetPagedList(this IEnumerable<Stock> stocks, int page = 1, int pageSize = 999)
+		{
+			var pageList = new PagedList<Stock, StockViewModel>(stocks, page, pageSize);
+
+			pageList.ViewList = stocks.Select(s => MapViewModel(s)).ToList();
+
+			pageList.List = null;
+
+			return pageList;
+		}
+
 	}
 }

@@ -9,6 +9,7 @@ using System.Text;
 
 namespace ApplicationCore.Specifications
 {
+	
 	public class StockCodeSpecifications : BaseSpecification<Stock>
 	{
 		public StockCodeSpecifications(string code):base(s => s.Code == code)
@@ -23,6 +24,11 @@ namespace ApplicationCore.Specifications
 																	s.Name.CaseInsensitiveContains(keyword))
 		{
 			
+		}
+
+		public StockFilterSpecifications(IList<int> ids) : base(s => ids.Contains(s.Id))
+		{
+
 		}
 	}
 }

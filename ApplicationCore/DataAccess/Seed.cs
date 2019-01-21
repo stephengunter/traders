@@ -50,6 +50,8 @@ namespace ApplicationCore.DataAccess
 			await AppDBSeed.SeedIndicators(defaultContext);
 
 			await AppDBSeed.SeedStocks(dataContext);
+
+			await AppDBSeed.SeedStrategies(userManager, defaultContext);
 		}
 	}
 
@@ -81,6 +83,8 @@ namespace ApplicationCore.DataAccess
 				await SeedIndicators(defaultContext);
 
 				await SeedStocks(dataContext);
+
+				await SeedStrategies(userManager, defaultContext);
 
 
 			}
@@ -241,6 +245,58 @@ namespace ApplicationCore.DataAccess
 				}
 			}
 
+
+		}
+
+		public static async Task SeedStrategies(UserManager<User> userManager, DefaultContext context)
+		{
+			var userA = await userManager.FindByNameAsync("traders.com.tw@gmail.com");
+			await SeedUserStrategies(context, userA);
+
+			var userB = await userManager.FindByNameAsync("leojuan@gmail.com");
+			await SeedUserStrategies(context, userB);
+		}
+
+		static async Task SeedUserStrategies(DefaultContext context, User user)
+		{
+			var indicators = context.Indicators.Where(i => i.Active);
+			var exist = context.Strategies.Include(s => s.IndicatorSettings).Where(s => s.UserId == user.Id).FirstOrDefault();
+			if (exist == null)
+			{
+				var strategy = new Strategy
+				{
+					UserId = user.Id,
+					Default = true,
+					Name = "我的策略"
+				};
+				foreach (var item in indicators)
+				{
+					strategy.IndicatorSettings.Add(new IndicatorSettings
+					{
+						IndicatorId = item.Id,
+						Arg = item.DefaultParam
+					});
+				}
+				context.Strategies.Add(strategy);
+				
+			}
+			else
+			{
+				foreach (var item in indicators)
+				{
+					var hasIndicators = exist.IndicatorSettings.Where(i => i.IndicatorId == item.Id).FirstOrDefault();
+					if (hasIndicators == null)
+					{
+						exist.IndicatorSettings.Add(new IndicatorSettings
+						{
+							IndicatorId = item.Id,
+							Arg = item.DefaultParam
+						});
+					}
+				}
+			}
+
+			await context.SaveChangesAsync();
 
 		}
 

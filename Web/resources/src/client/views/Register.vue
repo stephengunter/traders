@@ -12,7 +12,7 @@
 import { mapState } from 'vuex';
 import { REGISTER, LOGIN } from '../store/actions.type';
 
-import ErrorList from '../components/Errors';
+import ErrorList from '@/components/Errors';
 import RegisterForm from '../components/register/Form';
 
 export default {

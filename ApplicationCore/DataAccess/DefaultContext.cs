@@ -24,8 +24,9 @@ namespace ApplicationCore.DataAccess
 		public DbSet<RefreshToken> RefreshTokens { get; set; }
 		
 		public DbSet<Indicator> Indicators { get; set; }
-		public DbSet<TradeSettings> TradeSettings { get; set; }
-
+		public DbSet<Strategy> Strategies { get; set; }
+		public DbSet<IndicatorSettings> IndicatorSettings { get; set; }
+		public DbSet<Key> Keys { get; set; }
 
 
 		protected override void OnModelCreating(ModelBuilder builder)

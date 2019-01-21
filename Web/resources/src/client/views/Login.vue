@@ -65,7 +65,7 @@ import { mapState } from 'vuex';
 import { LOGIN, FB_LOGIN, GOOGLE_LOGIN, OAUTH_REGISTER, SEND_CONFIRM_EMAIL } from '../store/actions.type';
 import { ADMIN_URL } from '@/common/config';
 
-import ErrorList from '../components/Errors';
+import ErrorList from '@/components/Errors';
 import LoginForm from '../components/login/Form';
 import FacebookLogin from '../components/login/Facebook';
 import GoogleLogin from '../components/login/Google';

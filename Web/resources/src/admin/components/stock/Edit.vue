@@ -1,11 +1,13 @@
 <template>
 	<form class="cn"  @submit.prevent="onSubmit">
 		<v-card>
-			<v-card-title class="mt-1">
+			<v-card-title>
+				
 				<h3>
 					<span class="cn">{{ title }}</span>
 				</h3>
 			</v-card-title>
+			
 
 			<v-card-text>
 				<v-container grid-list-md>
@@ -19,7 +21,7 @@
 							/>
 						</v-flex>
 						<v-flex xs12 sm6 md4>
-							<v-text-field v-model="model.name" label="代碼"
+							<v-text-field v-model="model.code" label="代碼"
 								v-validate="'required'" 
 								:error-messages="errors.collect('code')"
 								name="code"
@@ -51,13 +53,17 @@
 							/>
 						</v-flex>
 					</v-layout>
+					<v-alert :value="Errors.any()" color="error" outline>
+						<ErrorList :model="Errors" />
+					</v-alert>
 				</v-container>
 			</v-card-text>
 
 			<v-card-actions>
+				
 				<v-spacer></v-spacer>
 				<v-btn @click.prevent="cancel" color="blue darken-1" flat >Cancel</v-btn>
-				<v-btn type="submit" @click.prevent="onSubmit" color="blue darken-1" flat>Save</v-btn>
+				<v-btn type="submit" @click.prevent="onSubmit" color="primary" flat>Save</v-btn>
 			</v-card-actions>
 		</v-card>
 	</form>	
@@ -66,9 +72,14 @@
 
 <script>
 
+import { mapState } from 'vuex';
+import ErrorList from '@/components/Errors';
 
 export default {
 	name: 'StockEdit',
+	components: {
+      ErrorList
+   },
 	props: {
 		model: {
          type: Object,
@@ -80,17 +91,19 @@ export default {
 			
 		}
 	},
+	computed: {
+      ...mapState({
+         Errors: state => state.stocks.errors
+		}),
+		title(){
+			if(this.model && this.model.id) return '編輯權值股';
+			return '新增權值股';			
+		}
+   },
 	beforeMount(){
 		if(!this.model.weight)  this.model.weight = '';
 		if(!this.model.price)  this.model.price = '';
 	},
-	computed: {
-      title(){
-			if(this.model && this.model.id) return '編輯權值股';
-			return '新增權值股';
-			
-		}
-   },
 	methods: {
 		cancel(){
 			this.$emit('cancel');

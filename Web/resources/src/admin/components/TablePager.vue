@@ -1,6 +1,6 @@
 <template>
    <v-layout v-if="model" row>
-      <v-flex sm12>
+      <v-flex v-if="canPage" sm12>
          <div v-if="responsive" class="text-xs-center pt-2">
             <v-select class="d-inline-flex" style="width:80px"
                label="Rows per page"
@@ -38,6 +38,11 @@
             />
          </div>
       </v-flex>
+      <v-flex v-else sm12>
+         <span class="ml-3 mr-3">
+            {{ first }}-{{ last }} of {{model.totalItems}}
+         </span>
+      </v-flex>
    </v-layout>	
 </template>
 
@@ -48,6 +53,10 @@ export default {
       model: {
          type: Object,
          default: null
+      },
+      canPage: {
+         type: Boolean,
+         default: true
       },
       responsive: {
          type: Boolean,

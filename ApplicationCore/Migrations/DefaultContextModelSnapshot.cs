@@ -58,6 +58,31 @@ namespace ApplicationCore.Migrations
                     b.ToTable("Indicators");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Models.IndicatorSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Arg");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<int>("IndicatorId");
+
+                    b.Property<DateTime>("LastUpdated");
+
+                    b.Property<int>("StrategyId");
+
+                    b.Property<string>("UpdatedBy");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StrategyId");
+
+                    b.ToTable("IndicatorSettings");
+                });
+
             modelBuilder.Entity("ApplicationCore.Models.Profile", b =>
                 {
                     b.Property<int>("Id")
@@ -112,7 +137,7 @@ namespace ApplicationCore.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("ApplicationCore.Models.TradeSettings", b =>
+            modelBuilder.Entity("ApplicationCore.Models.Strategy", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,19 +145,60 @@ namespace ApplicationCore.Migrations
 
                     b.Property<bool>("Default");
 
+                    b.Property<string>("Description");
+
                     b.Property<string>("Name");
 
                     b.Property<int>("STPL");
 
                     b.Property<int>("STPW");
 
-                    b.Property<int>("StrategyId");
-
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
-                    b.ToTable("TradeSettings");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Strategies");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Models.UploadFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<int>("Height");
+
+                    b.Property<DateTime>("LastUpdated");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Order");
+
+                    b.Property<string>("PS");
+
+                    b.Property<string>("Path");
+
+                    b.Property<int>("PostId");
+
+                    b.Property<int>("PostType");
+
+                    b.Property<string>("PreviewPath");
+
+                    b.Property<string>("Title");
+
+                    b.Property<string>("Type");
+
+                    b.Property<string>("UpdatedBy");
+
+                    b.Property<int>("Width");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UploadFiles");
                 });
 
             modelBuilder.Entity("ApplicationCore.Models.User", b =>
@@ -308,6 +374,14 @@ namespace ApplicationCore.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Models.IndicatorSettings", b =>
+                {
+                    b.HasOne("ApplicationCore.Models.Strategy")
+                        .WithMany("IndicatorSettings")
+                        .HasForeignKey("StrategyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ApplicationCore.Models.Profile", b =>
                 {
                     b.HasOne("ApplicationCore.Models.User", "User")
@@ -320,6 +394,13 @@ namespace ApplicationCore.Migrations
                     b.HasOne("ApplicationCore.Models.User", "User")
                         .WithOne("RefreshToken")
                         .HasForeignKey("ApplicationCore.Models.RefreshToken", "UserId");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Models.Strategy", b =>
+                {
+                    b.HasOne("ApplicationCore.Models.User")
+                        .WithMany("Strategies")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

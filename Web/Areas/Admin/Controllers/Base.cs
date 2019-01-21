@@ -10,7 +10,7 @@ namespace Web.Areas.Admin.Controllers
 	[Area("Admin")]
 	[Route("admin/[controller]")]
 	[ApiController]
-	//[Authorize(Policy = "Admin")]
+	[Authorize(Policy = "Admin")]
 	public abstract class BaseAdminController : ControllerBase
 	{
 		protected string RemoteIpAddress => Request.HttpContext.Connection.RemoteIpAddress?.ToString();

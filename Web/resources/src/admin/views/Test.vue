@@ -1,76 +1,30 @@
 <template>
-	<v-container fluid grid-list-xl fill-height>
-     <v-layout justify-center  align-center>
-			<v-flex xs12>
-				<material-card>
-					<v-card-text >
-						<v-layout row>
-							<v-flex sm6>
-								 
-								<form @submit.prevent="search">
-									<v-text-field
-										v-model="params.keyword"
-										append-icon="mdi-magnify"
-										label="Search"
-										single-line
-										hide-details
-									/>
-								</form>
-							</v-flex>
-							<v-flex sm6 class="text-lg-right">
-								<v-tooltip top content-class="top">
-									<v-btn @click.prevent="create" slot="activator"  color="info" icon>
-										<v-icon>mdi-plus-circle</v-icon>
-									</v-btn>
-									<span class="cn">新增</span>
-								</v-tooltip>
-				 				<v-dialog v-model="editting" persistent max-width="500px">
-									<stock-edit v-if="editting" :model="model" 
-									@submit="submit" @cancel="cancelEdit"
-									/>
-      						</v-dialog>
-							</v-flex>
-						</v-layout>
-						
-						<v-layout row wrap>
-							<v-flex sm12> 
-								<v-list three-line>
-                           <v-list-tile>
-                              <v-list-tile-action>
-                                 <v-checkbox
-                                    value="0"
-                                    color="green"
-                                 />
-                              </v-list-tile-action>
-                           </v-list-tile>
-                           <v-list-tile-title>
-                              Sign contract for "What are conference organized afraid of?"
-                           </v-list-tile-title>
-                           <div class="d-flex">
-                              <v-tooltip
-                      top
-                      content-class="top">
-                      <v-btn
-                        slot="activator"
-                        class="v-btn--simple"
-                        color="success"
-                        icon
-                      >
-                        <v-icon color="primary">mdi-pencil</v-icon>
-                      </v-btn>
-                      <span>Edit</span>
-                    </v-tooltip>
-                           </div>
-								</v-list>
-								
-							</v-flex>
-						</v-layout>
-						
-					</v-card-text>
-				</material-card>
-			</v-flex>
-     </v-layout>
-	</v-container>
+	<v-card>
+        <v-card-title
+          class="headline red lighten-1"
+          primary-title
+        >
+          <v-icon color="white" class="mr-3">
+					mdi-alert-circle
+				</v-icon>
+				<span class="errText cn">
+					Damn
+				</span>
+        </v-card-title>
+
+        <v-card-text>
+          
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" flat @click="dialog = false">
+            I accept
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     
 	
 </template>
