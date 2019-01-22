@@ -20,13 +20,17 @@ namespace Web.Areas.Api.Controllers
 		private readonly IHttpContextAccessor accessor;
 		private readonly ISubscribeService subscribeService;
 		private readonly IStrategyService strategyService;
+		private readonly IRealTimeService realTimeService;
+		private readonly IDataService dataService;
 
 		public WatchController(IHttpContextAccessor accessor, ISubscribeService subscribeService,
-			IStrategyService strategyService)
+			IStrategyService strategyService, IRealTimeService realTimeService, IDataService dataService)
 		{
 			this.accessor = accessor;
 			this.subscribeService = subscribeService;
 			this.strategyService = strategyService;
+			this.realTimeService = realTimeService;
+			this.dataService = dataService;
 		}
 
 		[HttpGet]
@@ -38,8 +42,21 @@ namespace Web.Areas.Api.Controllers
 				return BadRequest(ModelState);
 			}
 
+			string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
+
+			await subscribeService.CreateKeysAsync(CurrentUserId, ip);
+
+			int date = realTimeService.LatestDate();
+			if(date == 0) date = dataService.LatestDate();
+
+
 			var strategies = await strategyService.FetchByUserAsync(CurrentUserId);
-			var model = new WatchViewModel() { strategies = strategies.Select(s => s.MapViewModel()).ToList() };
+			var model = new WatchViewModel()
+			{
+				date = date,
+				strategies = strategies.Select(s => s.MapViewModel()).ToList(),
+				key = CurrentUserId
+			};
 
 			return Ok(model);
 		}

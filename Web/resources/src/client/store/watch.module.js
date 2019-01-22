@@ -42,6 +42,8 @@ const actions = {
             let errorData = Helper.resolveErrorData(error);
             if(errorData){
                if(errorData.hasOwnProperty('subscribe')){
+                  context.commit(SET_WATCH_MODEL, null);
+                  context.commit(SET_STRATEGY, null);
                   resolve(0);
                }else{
                   reject(error);
@@ -51,7 +53,7 @@ const actions = {
             }
          })
       });  
-   },
+   }
 };
 
 

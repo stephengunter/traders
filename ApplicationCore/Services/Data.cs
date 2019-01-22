@@ -11,22 +11,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCore.Services
 {
-	public interface IRealTimeService
+	public interface IDataService
 	{
 		Task CreateAsync(Quote quote);
 		Task UpdateAsync(Quote quote);
 		Quote GetQuote(int date, int time);
-		Task<IEnumerable<Quote>> FetchAsync();
+		Task<IEnumerable<Quote>> FetchAsync(int date);
 
 		int LatestDate();
 	}
 
-	public class RealTimeService : IRealTimeService
+	public class DataService : IDataService
 	{
-		private readonly IRealTimeRepository<Data> dataRepository;
-		private readonly IRealTimeRepository<Quote> quoteRepository;
+		private readonly IDataRepository<Data> dataRepository;
+		private readonly IDataRepository<Quote> quoteRepository;
 
-		public RealTimeService(IRealTimeRepository<Data> dataRepository, IRealTimeRepository<Quote> quoteRepository)
+		public DataService(IDataRepository<Data> dataRepository, IDataRepository<Quote> quoteRepository)
 		{
 			this.dataRepository = dataRepository;
 			this.quoteRepository = quoteRepository;
@@ -42,9 +42,9 @@ namespace ApplicationCore.Services
 			return quoteRepository.GetSingleBySpec(spec);
 		}
 
-		public async Task<IEnumerable<Quote>> FetchAsync()
+		public async Task<IEnumerable<Quote>> FetchAsync(int date)
 		{
-			var spec = new QuoteFilterSpecification();
+			var spec = new QuoteDateTimeFilterSpecifications(date);
 			return await quoteRepository.ListAsync(spec);
 		}
 

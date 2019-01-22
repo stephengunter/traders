@@ -69,6 +69,22 @@ class Helper {
           text: '女'
        }];
    }
+   static toDateString(val){ 
+      val = String(val);
+      if(val.length != 8) return '';
+
+      let year = val.substring(0, 4);
+      let month = val.substring(4, 6);
+      let day =  val.substring(6, 8);
+      return `${year}-${month}-${day}`;
+   }
+   static dateNumber(val){ 
+      let date = new Date(val);
+      let year = this.toNumberString(date.getFullYear());
+      let month = this.toNumberString(date.getMonth() + 1);
+      let day = this.toNumberString(date.getDate());
+      return `${year}${month}${day}`;
+   }
    
 }
 

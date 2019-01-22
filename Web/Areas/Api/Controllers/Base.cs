@@ -16,6 +16,12 @@ namespace Web.Areas.Api.Controllers
 		protected string CurrentUserName => User.Claims.Where(c => c.Type == "sub").FirstOrDefault().Value;
 
 		protected string CurrentUserId => User.Claims.Where(c => c.Type == "id").FirstOrDefault().Value;
-		
+
+		protected IActionResult RequestError(string key, string msg)
+		{
+			ModelState.AddModelError(key, msg);
+			return BadRequest(ModelState);
+		}
+
 	}
 }

@@ -11,6 +11,6 @@ namespace ApplicationCore.Views
 		public int date { get; set; }
 
 		public ICollection<StrategyViewModel> strategies { get; set; } = new List<StrategyViewModel>();
-
+		
 	}
 }

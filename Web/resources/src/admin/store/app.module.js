@@ -6,7 +6,7 @@ const state = {
    loading: false,
    responsive: false,
    drawer: null,
-   color: 'info',
+color: 'info',
    image: ''
 };
 

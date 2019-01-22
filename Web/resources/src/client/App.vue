@@ -23,6 +23,7 @@
 <script>
 
 import { mapState } from 'vuex';
+import { SET_RESPONSIVE } from './store/mutations.type';
 
 import RwvHeader from './components/TheHeader';
 import RwvFooter from './components/TheFooter';
@@ -44,11 +45,19 @@ export default {
 	},
 	computed: {
       ...mapState({
-         loading: state => state.app.loading
+			loading: state => state.app.loading
       })
    },
 	created() {
       Bus.$on('errors', this.onError);
+		Bus.$on('success', this.onSuccess);
+	},
+	mounted(){
+      this.onResponsiveInverted()
+      window.addEventListener('resize', this.onResponsiveInverted)
+	},
+	beforeDestroy () {
+      window.removeEventListener('resize', this.onResponsiveInverted)
    },
 	methods: {
 		onError(error){
@@ -67,7 +76,18 @@ export default {
 			}else if(error.status === 401){
 				this.$router.push({ name: 'login' })
 			}
-		}
+		},
+		onSuccess(msg){
+			this.success.show = true;
+			this.success.msg = msg ? msg : '存檔成功';
+		},
+		onResponsiveInverted () {
+         if (window.innerWidth < 991) {
+            this.$store.commit(SET_RESPONSIVE, true);
+         } else {
+            this.$store.commit(SET_RESPONSIVE, false);
+         }
+      },
 	}
 }
 </script>

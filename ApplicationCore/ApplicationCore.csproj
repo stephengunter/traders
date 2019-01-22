@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\Quote.cs" />
     <Compile Remove="Specifications\Data.cs" />
   </ItemGroup>
 

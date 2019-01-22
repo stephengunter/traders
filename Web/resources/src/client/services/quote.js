@@ -4,9 +4,9 @@ import { API_URL } from '@/common/config';
 const source = `${API_URL}/quotes`;
 
 const QuoteService = {
-   init() {
+   fetch(params) {
       let url = source;
-      return BaseService.fetch(url);
+      return BaseService.fetch(url, params);
    }
 };
 

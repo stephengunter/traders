@@ -1,6 +1,6 @@
 <template>
    <v-menu offset-y class="hidden-md-and-up">
-      <v-toolbar-side-icon slot="activator"></v-toolbar-side-icon>        
+      <v-toolbar-side-icon slot="activator" />       
       <v-list>
          <v-list-tile v-for="item in links" :key="item.order"  @click.prevent="select(item.name)" >
             <v-list-tile-action>

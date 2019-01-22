@@ -189,10 +189,12 @@ namespace Web
 			services.AddScoped<IPermissionService, PermissionService>();
 
 			services.AddScoped<IStockService, StockService>();
-			services.AddScoped<IIndicatorService, IndicatorService>();
-			services.AddScoped<IRealTimeService, RealTimeService>();
+			services.AddScoped<IIndicatorService, IndicatorService>();			
 			services.AddScoped<ISubscribeService, SubscribeService>();
 			services.AddScoped<IStrategyService, StrategyService>();
+
+			services.AddScoped<IRealTimeService, RealTimeService>();
+			services.AddScoped<IDataService, DataService>();
 
 			services.AddScoped<IAttachmentService, AttachmentService>();
 

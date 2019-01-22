@@ -17,3 +17,4 @@ export const REFRESH_TOKEN = 'refreshToken';
 export const UPDATE_USER = 'updateUser';
 
 export const INIT_WATCH = 'initWatch';
+export const FETCH_QUOTES = 'fetchQuotes';
