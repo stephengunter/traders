@@ -192,6 +192,7 @@ namespace Web
 			services.AddScoped<IIndicatorService, IndicatorService>();
 			services.AddScoped<IRealTimeService, RealTimeService>();
 			services.AddScoped<ISubscribeService, SubscribeService>();
+			services.AddScoped<IStrategyService, StrategyService>();
 
 			services.AddScoped<IAttachmentService, AttachmentService>();
 

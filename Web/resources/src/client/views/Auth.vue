@@ -26,34 +26,30 @@ export default {
          this.returnUrl = this.$route.query.returnUrl;
       }
 
-      if(this.isAuthenticated){
-         this.redirect();
+      let tokenStatus = JwtService.tokenStatus();
+      if(tokenStatus === -1){
+         //token過期
+         this.$store.dispatch(REFRESH_TOKEN).then(token => {	
+            if(token){
+               this.redirect();
+            }else{
+               //REFRESH_TOKEN 失敗
+               this.redirectToLogin();
+            }
+         })	
+      }else if(tokenStatus === 0) {
+         //token 即將到期
+         this.$store.dispatch(REFRESH_TOKEN).then(token => {	
+            if(token){
+               this.redirect();
+            }else{
+               //REFRESH_TOKEN 失敗
+               this.redirectToLogin();
+            }
+         })	   
       }else{
-         let tokenStatus = JwtService.tokenStatus();
-         if(tokenStatus === -1){
-            //token過期
-            this.$store.dispatch(REFRESH_TOKEN).then(token => {	
-               if(token){
-                  this.redirect();
-               }else{
-                  //REFRESH_TOKEN 失敗
-                  this.redirectToLogin();
-               }
-            })	
-         }else if(tokenStatus === 0) {
-            //token 即將到期
-            this.$store.dispatch(REFRESH_TOKEN).then(token => {	
-               if(token){
-                  this.redirect();
-               }else{
-                  //REFRESH_TOKEN 失敗
-                  this.redirectToLogin();
-               }
-            })	   
-         }else{
-            //token正常
-            this.redirect();
-         }
+         //token正常
+         this.redirect();
       }
    },
    methods:{

@@ -10,7 +10,7 @@ namespace ApplicationCore.Views
 
 		public int date { get; set; }
 
-		//public List<StrategyViewModel> strategies { get; set; } = new List<StrategyViewModel>();
+		public ICollection<StrategyViewModel> strategies { get; set; } = new List<StrategyViewModel>();
 
 	}
 }

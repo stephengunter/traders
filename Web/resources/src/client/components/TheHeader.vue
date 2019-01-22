@@ -10,11 +10,11 @@
 
       <!-- 有登入 -->
       <v-toolbar-items v-if="isAuthenticated"  class="hidden-sm-and-down cn">
-         <v-btn v-for="item in links" :key="item.order" class="route-link" flat
+         <v-btn v-for="item in menuLinks" :key="item.order" class="route-link" flat
          :to="item.path"
          > 
-           <v-icon>{{ item.icon }}</v-icon>
-           {{ item.title }}
+            <v-icon>{{ item.icon }}</v-icon>
+            {{ item.title }}
          </v-btn>
 
          <UserMenu v-if="isAuthenticated" :user="currentUser"  :items="userLinks"
@@ -25,7 +25,7 @@
 
       <!-- 沒登入 -->
       <v-toolbar-items v-else class="hidden-sm-and-down cn">
-         <v-btn v-for="item in links" :key="item.order" class="route-link" flat
+         <v-btn v-for="item in menuLinks" :key="item.order" class="route-link" flat
           :to="item.path"
          > 
            <v-icon>{{ item.icon }}</v-icon>
@@ -39,7 +39,7 @@
       </v-toolbar-items>
 
       <MobileMenu :auth="isAuthenticated" :user="currentUser"
-       :links="links"  :user_links="userLinks" :guest_links="guestLinks"
+       :links="menuLinks"  :user_links="userLinks" :guest_links="guestLinks"
        @selected="link"
       />
       
@@ -64,19 +64,19 @@ export default {
    computed: {
       ...mapGetters(['currentUser', 'isAuthenticated']),
       routes(){
-         if(this.$router) return this.$router.options.routes.filter(item => item.meta.menu);
+         if(this.$router) return this.$router.options.routes.filter(item => item.meta.menu != 'none');
          return [];         
       },
-      links(){
-         let items = this.routes.filter(item => item.meta.type === 'all');
+      menuLinks(){
+         let items = this.routes.filter(item => item.meta.menu === 'main');
          return items.map(route => this.mapLink(route));
       },
       guestLinks(){
-         let items = this.routes.filter(item => item.meta.type === 'guest');
+         let items = this.routes.filter(item => item.meta.menu === 'guest');
          return items.map(route => this.mapLink(route));
       },
       userLinks(){
-         let items = this.routes.filter(item => item.meta.type === 'user');
+         let items = this.routes.filter(item => item.meta.menu === 'user');
          return items.map(route => this.mapLink(route));
       }
    },

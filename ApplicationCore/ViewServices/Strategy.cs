@@ -10,7 +10,7 @@ using ApplicationCore.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Infrastructure.Views;
 
-namespace ApplicationCore.ViewServices
+namespace ApplicationCore.Views
 {
 	public static class StrategyViewService
 	{

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Web.Areas.Api.Controllers
 {
+	[Authorize]
 	public class WatchController : BaseApiController
 	{
 		private readonly IHttpContextAccessor accessor;
@@ -37,11 +38,10 @@ namespace Web.Areas.Api.Controllers
 				return BadRequest(ModelState);
 			}
 
-			var strategies = strategyService.FetchByUserAsync(CurrentUserId);
+			var strategies = await strategyService.FetchByUserAsync(CurrentUserId);
+			var model = new WatchViewModel() { strategies = strategies.Select(s => s.MapViewModel()).ToList() };
 
-			
-
-			return Ok();
+			return Ok(model);
 		}
 
 

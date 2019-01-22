@@ -1,29 +1,5 @@
 <template>
-   <div v-if="result === 0" class="container">
-      <v-layout v-if="emailSend" row wrap>
-         <v-flex xs12>
-            <v-alert class="title cn" :value="true"  type="info">
-               <span class="cn">
-                已經Email一封驗證信給您.  請查看您的Email來完成驗證.  
-               </span>  
-            </v-alert>
-         </v-flex>
-      </v-layout>
-      <v-layout v-else row wrap>
-         <v-flex xs12>
-            <v-alert :value="true"  color="error"  icon="warning" outline  class="title">
-               <span class="cn" >
-                  您的Email尚未驗證
-               </span>  
-            </v-alert>
-         </v-flex>
-         <v-flex xs12>
-            <v-btn @click="sendEmail" color="info" class="cn" style="margin: 6px 0px">
-              重發認證信
-            </v-btn>
-         </v-flex>
-      </v-layout>
-   </div>
+   <register-un-confirmed v-if="result === 0" :email="credentials.email" />
    <div v-else class="container">
       <div v-if="register">
          <h1 class="cn">註冊 - 建立您的會員資料</h1>
@@ -62,11 +38,12 @@
 
 <script>
 import { mapState } from 'vuex';
-import { LOGIN, FB_LOGIN, GOOGLE_LOGIN, OAUTH_REGISTER, SEND_CONFIRM_EMAIL } from '../store/actions.type';
+import { LOGIN, FB_LOGIN, GOOGLE_LOGIN, OAUTH_REGISTER } from '../store/actions.type';
 import { ADMIN_URL } from '@/common/config';
 
 import ErrorList from '@/components/Errors';
 import LoginForm from '../components/login/Form';
+import RegisterUnConfirmed from '../components/register/UnConfirmed';
 import FacebookLogin from '../components/login/Facebook';
 import GoogleLogin from '../components/login/Google';
 import RegisterForm from '../components/register/Form';
@@ -78,15 +55,14 @@ export default {
       LoginForm,
       FacebookLogin,
       GoogleLogin,
-      RegisterForm
+      RegisterForm,
+      'register-un-confirmed' : RegisterUnConfirmed
    },
    data () {
       return {
          credentials: null,
          result: -1,
          returnUrl: '',
-
-         emailSend: false,
 
          authWindow: null,
          register: false,
@@ -124,13 +100,6 @@ export default {
             }
          }
          else this.$router.push({ name: 'home' });
-      },
-      sendEmail(){
-         this.$store
-         .dispatch(SEND_CONFIRM_EMAIL, this.credentials.email)
-         .then(() => {
-            this.emailSend = true;       
-         })
       },
       googleLoginFailed(){
          Bus.$emit('errors', { msg: '登入失敗' });

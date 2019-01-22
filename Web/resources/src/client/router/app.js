@@ -1,6 +1,18 @@
 
 const links = [
    {
+      name: 'test',
+      path: '/test',
+      component: () => import('../views/Test'), 
+      meta: { 
+         order: 0,
+         icon: '',
+         title: '',
+         type: 'all',
+         menu: 'none'
+      }        
+   },
+   {
       name: 'auth',
       path: '/auth',
       component: () => import('../views/Auth'), 
@@ -9,7 +21,7 @@ const links = [
          icon: '',
          title: '',
          type: 'all',
-         menu: false
+         menu: 'none'
       }        
    },
    {
@@ -21,7 +33,7 @@ const links = [
          icon: '',
          title: '',
          type: 'all',
-         menu: false
+         menu: 'none'
       }        
    },
    {
@@ -33,7 +45,7 @@ const links = [
          icon: 'mdi-chart-bar',
          title: '指標介紹',
          type: 'all',
-         menu: true
+         menu: 'main'
       } 
    },
    {
@@ -44,8 +56,8 @@ const links = [
          order: 0,
          icon: 'mdi-monitor-cellphone',
          title: '看盤室',
-         type: 'all',
-         menu: true
+         type: 'user',
+         menu: 'main'
       } 
    },
    {
@@ -57,7 +69,7 @@ const links = [
          icon: '',
          title: 'Email確認',
          type: 'all',
-         menu: false
+         menu: 'none'
       } 
    },
 ];
@@ -73,7 +85,7 @@ const guestLinks = [
          icon: '',
          title: '登入',
          type: 'guest',
-         menu: true
+         menu: 'guest'
       }
    },
    {
@@ -85,7 +97,7 @@ const guestLinks = [
          icon: '',
          title: '註冊',
          type: 'guest',
-         menu: false
+         menu: 'guest'
       }
    },
    {
@@ -97,7 +109,7 @@ const guestLinks = [
          icon: '',
          title: '忘記密碼',
          type: 'guest',
-         menu: false
+         menu: 'none'
       }
    },
    {
@@ -109,7 +121,7 @@ const guestLinks = [
          icon: '',
          title: '重設密碼',
          type: 'guest',
-         menu: false
+         menu: 'none'
       }
    },
 ];
@@ -124,7 +136,7 @@ const userLinks = [
          icon: '',
          title: '訂閱紀錄',
          type: 'user',
-         menu: true
+         menu: 'user'
       }
    },
    {
@@ -136,7 +148,7 @@ const userLinks = [
          icon: '',
          title: '變更密碼',
          type: 'user',
-         menu: true
+         menu: 'user'
       }
    },
 ];

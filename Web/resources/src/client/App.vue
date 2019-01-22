@@ -10,7 +10,7 @@
 
 		<v-dialog v-model="err.show" width="480">
          <v-card-title class="headline red lighten-1" >
-				<v-icon class="errIcon">warning</v-icon>
+				<v-icon class="errIcon">mdi-alert</v-icon>
 				<span class="errText cn" >
 					{{ err.msg  }}
 				</span>

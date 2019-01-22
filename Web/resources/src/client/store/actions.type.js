@@ -15,3 +15,5 @@ export const RESET_PASSWORD = 'restPassword';
 export const CHECK_AUTH = 'checkAuth';
 export const REFRESH_TOKEN = 'refreshToken';
 export const UPDATE_USER = 'updateUser';
+
+export const INIT_WATCH = 'initWatch';

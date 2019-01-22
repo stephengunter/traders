@@ -1,46 +1,25 @@
-const source = 'account';
+import BaseService from '@/common/baseService';
+import { API_URL } from '@/common/config';
+
+const source = `${API_URL}/account`;
 
 const AccountService = {
-   
    register(user) {
       let url = source;
       let method = 'post';
-      return new Promise((resolve, reject) => {
-         axios[method](url, user)
-            .then(response => {
-               resolve(response.data);
-            })
-            .catch(error => {
-               reject(error.response);
-            });
-      });
+      return BaseService.submit(method, url, user);
    },
-   sendConfirmEmail(email) {
+   sendConfirmEmail(model) {
       let url = `${source}/SendConfirmEmail`;
       let method = 'post';
-      return new Promise((resolve, reject) => {
-         axios[method](url, { email })
-            .then(response => {
-               resolve(response.data);
-            })
-            .catch(error => {
-               reject(error.response);
-            });
-      });
+      return BaseService.submit(method, url, model);
    },
-   confirmEmail(user) {
+   confirmEmail(model) {
       let url = `${source}/ConfirmEmail`;
       let method = 'post';
-      return new Promise((resolve, reject) => {
-         axios[method](url, user)
-            .then(response => {
-               resolve(response.data);
-            })
-            .catch(error => {
-               reject(error.response);
-            });
-      });
+      return BaseService.submit(method, url, model);
    }
 };
+
 
 export default AccountService;

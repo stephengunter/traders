@@ -177,12 +177,15 @@ const actions = {
       });
    },
    [SEND_CONFIRM_EMAIL](context, email) {
+      context.commit(SET_LOADING, true);
       return new Promise((resolve) => {
          AccountService.sendConfirmEmail(email)
             .then(() => {
+               context.commit(SET_LOADING, false);
                resolve(true);
             })
             .catch(error => {
+               context.commit(SET_LOADING, false);
                Bus.$emit('errors', error);
             })
       });
