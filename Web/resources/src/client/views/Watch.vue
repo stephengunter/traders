@@ -60,7 +60,7 @@
                         沒有這一天的資料
                      </span>  
                   </v-alert>
-                  <charts-default v-else />
+                  <charts-default v-show="!noData" ref="myChart" v-else />
                </v-flex>
             </v-layout>
          </v-card-text>
@@ -141,7 +141,7 @@ export default {
          this.$store.dispatch(FETCH_QUOTES, params)
             .then(result => {
                if(result){
-                  
+                  this.$refs.myChart.init();      
                }else{
                   //沒有資料
                   this.noData = true;

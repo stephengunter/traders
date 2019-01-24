@@ -54,7 +54,7 @@ namespace Web.Areas.Api.Controllers
 			var quotes = await dataService.FetchAsync(date);
 			if (quotes.IsNullOrEmpty())
 			{
-				realTime = true;
+				realTime = true;				
 				quotes = await realTimeService.FetchAsync();
 			}
 
@@ -65,6 +65,7 @@ namespace Web.Areas.Api.Controllers
 			var model = new ChartsViewModel
 			{
 				realTime = realTime,
+				indicators = indicators.Select(i => i.MapViewModel()).ToList(),
 				quotes = quotes.Select(q => q.MapViewModel(q.DataList.Where(d => indicatorEntities.Contains(d.Indicator)))).ToList()
 			};
 

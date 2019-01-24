@@ -10,10 +10,8 @@ export const SET_WATCH_MODEL = 'setWatchModel';
 export const SET_STRATEGY = 'setStrategy';
 
 export const SET_REALTIME = 'setRealTime';
-export const SET_CHART_TIMES = 'setChartTimes';
-export const ADD_CHART_TIME = 'addChartTime';
+export const SET_INDICATORS = 'setIndicators';
 export const SET_CHART_QUOTES = 'setChartQuotes';
-export const ADD_CHART_QUOTE = 'addChartQuote';
 
 export const SET_ERROR = 'setError';
 export const CLEAR_ERROR = 'clearError';

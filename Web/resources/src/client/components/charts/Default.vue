@@ -5,7 +5,10 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import echarts from 'echarts';
+import Charts from '@/models/chart';
+
+import { mapState, mapGetters } from 'vuex';
 
 export default {
    name: 'ChartDefault',
@@ -21,15 +24,23 @@ export default {
    },
    data () {
 		return {
-			
+         chart: null,
+         chartModel: null
 		}
 	},
 	computed: {
       ...mapState({
-         quotes: state => state.chart.quotes,
-         times: state => state.chart.times
+         indicators: state => state.chart.indicators,
+         quotes: state => state.chart.quotes
       }),
    },
+   methods: {
+      init(){
+         this.chartModel = new Charts(this.quotes, this.indicators);
+         this.chart = echarts.init(document.getElementById('chart-watch'));
+         this.chart.setOption(this.chartModel.defaultOptions());
+      }
+   }
 }
 </script>
 
