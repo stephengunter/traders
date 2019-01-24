@@ -11,13 +11,19 @@ namespace ApplicationCore.Specifications
 {
 	public class IndicatorFilterSpecifications : BaseSpecification<Indicator>
 	{
-		public IndicatorFilterSpecifications()
+		public IndicatorFilterSpecifications():base(s => !s.Removed)
 		{
-			Criteria = s => !s.Removed;
+			
 		}
-		public IndicatorFilterSpecifications(string keyword)
+		public IndicatorFilterSpecifications(string keyword) : base(s => !s.Removed && s.Name.CaseInsensitiveContains(keyword))
 		{
-			Criteria = s => !s.Removed && s.Name.CaseInsensitiveContains(keyword);
+		
+
+		}
+
+		public IndicatorFilterSpecifications(IList<int> ids) : base(s => !s.Removed && ids.Contains(s.Id))
+		{
+			
 
 		}
 	}

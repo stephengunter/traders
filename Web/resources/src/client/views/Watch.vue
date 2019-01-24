@@ -53,8 +53,15 @@
                   
                </v-flex>
             </v-layout>
-            <v-layout row>
-               <!-- <charts-default /> -->
+            <v-layout  row>
+               <v-flex xs12>
+                  <v-alert v-if="noData" :value="true"  color="warning"  icon="mdi-alert" outline  class="title">
+                     <span class="cn" >
+                        沒有這一天的資料
+                     </span>  
+                  </v-alert>
+                  <charts-default v-else />
+               </v-flex>
             </v-layout>
          </v-card-text>
       </v-card>
@@ -128,7 +135,8 @@ export default {
       fetchQuotes(){
          let params = {
             user: this.model.key,
-            date: ''//Helper.dateNumber(this.date) 
+            date: Helper.dateNumber(this.date),
+            strategy: this.strategyId  
          };
          this.$store.dispatch(FETCH_QUOTES, params)
             .then(result => {

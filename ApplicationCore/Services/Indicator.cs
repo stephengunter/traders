@@ -15,6 +15,8 @@ namespace ApplicationCore.Services
 	public interface IIndicatorService
 	{
 		Task<IEnumerable<Indicator>> FetchIndicators(string keyword = "");
+
+		Task<IEnumerable<Indicator>> FetchByIdsAsync(IList<int> ids);
 	}
 	public class IndicatorService : IIndicatorService
 	{
@@ -40,6 +42,13 @@ namespace ApplicationCore.Services
 			var indicators = await getIndicatorsTask;
 
 			return indicators;
+		}
+
+		public async Task<IEnumerable<Indicator>> FetchByIdsAsync(IList<int> ids)
+		{
+			var filter = new IndicatorFilterSpecifications(ids);
+
+			return await indicatorRepository.ListAsync(filter);
 		}
 
 		async Task<IEnumerable<Indicator>> GetAllAsync() => await indicatorRepository.ListAllAsync();

@@ -54,6 +54,8 @@ namespace ApplicationCore.DataAccess
 			await AppDBSeed.SeedStrategies(userManager, defaultContext);
 			await AppDBSeed.SeedPlans(defaultContext);
 			await AppDBSeed.SeedSubscribes(userManager, defaultContext);
+
+			await AppDBSeed.SeedDays(defaultContext);
 		}
 	}
 
@@ -91,6 +93,8 @@ namespace ApplicationCore.DataAccess
 				await SeedPlans(defaultContext);
 
 				await SeedSubscribes(userManager, defaultContext);
+
+				await SeedDays(defaultContext);
 
 			}
 
@@ -440,6 +444,49 @@ namespace ApplicationCore.DataAccess
 				}
 			}
 		}
+
+		public static async Task SeedDays(DefaultContext context)
+		{
+			var holidays = new List<Day>
+			{
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190131, Text = "春節" },
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190201, Text = "春節" },
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190204, Text = "春節" },
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190205, Text = "春節" },
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190206, Text = "春節" },
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190207, Text = "春節" },
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190208, Text = "春節" },
+
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190223, Text = "" },
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190228, Text = "" },
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190301, Text = "" },
+
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190404, Text = "" },
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190405, Text = "" },
+
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190501, Text = "" },
+
+				new Day { Type = DayType.Holiday ,Year = 2019 , Date = 20190607, Text = "" },
+			};
+
+			foreach (var item in holidays)
+			{
+				var exist = context.Days.Where(d => d.Date == item.Date).FirstOrDefault();
+				if (exist == null)
+				{
+					context.Days.Add(item);
+				}
+				else
+				{
+					exist.Type = item.Type;
+				}
+			}
+
+			await context.SaveChangesAsync();
+
+		}
+
+		
 
 
 	}

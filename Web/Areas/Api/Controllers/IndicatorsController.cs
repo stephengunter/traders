@@ -4,12 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationCore.Views;
-using Microsoft.AspNetCore.Identity;
-using ApplicationCore.Models;
-using ApplicationCore.Auth;
-using Microsoft.Extensions.Options;
 using ApplicationCore.Services;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Areas.Api.Controllers
 {

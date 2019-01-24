@@ -85,6 +85,21 @@ class Helper {
       let day = this.toNumberString(date.getDate());
       return `${year}${month}${day}`;
    }
+   static toNumberString(val){ 
+      if(val < 10) return '0' + String(val);
+      return String(val);
+   }
+   static timeString(val){ 
+      val = String(val);
+      if(val.length < 6){
+         val = '0' + val;
+      }
+      let h = val.substring(0, 2);
+      let m = val.substring(2, 4);
+      let s = val.substring(4, 6);
+      
+      return `${h}:${m}:${s}`;
+   }
    
 }
 

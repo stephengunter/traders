@@ -34,6 +34,8 @@ namespace ApplicationCore.DataAccess
 		public DbSet<IndicatorSettings> IndicatorSettings { get; set; }
 		public DbSet<Key> Keys { get; set; }
 
+		public DbSet<Day> Days { get; set; }
+
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{

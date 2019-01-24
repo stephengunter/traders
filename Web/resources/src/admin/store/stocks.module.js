@@ -15,7 +15,7 @@ const initialState = {
    errors: new Errors(),
    pageList: null
 };
- 
+
 export const state = { ...initialState };
  
 const getters = {

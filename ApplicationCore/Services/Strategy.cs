@@ -14,6 +14,7 @@ namespace ApplicationCore.Services
 	public interface IStrategyService
 	{
 		Task<IEnumerable<Strategy>> FetchByUserAsync(string userId);
+		Strategy GetById(int id);
 	}
 
 
@@ -30,6 +31,12 @@ namespace ApplicationCore.Services
 		{
 			var spec = new StrategyFilterSpecification(userId);
 			return await strategyRepository.ListAsync(spec);
+		}
+
+		public Strategy GetById(int id)
+		{
+			var spec = new StrategyFilterSpecification(id);
+			return strategyRepository.GetSingleBySpec(spec);
 		}
 	}
 }

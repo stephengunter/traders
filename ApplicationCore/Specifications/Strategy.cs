@@ -8,6 +8,7 @@ using System.Text;
 
 namespace ApplicationCore.Specifications
 {
+	 
 	public class StrategyFilterSpecification : BaseSpecification<Strategy>
 	{
 		public StrategyFilterSpecification()
