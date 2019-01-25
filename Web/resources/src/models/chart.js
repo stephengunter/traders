@@ -1,6 +1,7 @@
 import Helper from '@/common/helper';
 
 class Charts {
+   priceSeriesName = '報價';
    colorRed = '#FD1050';
    colorGreen = '#0CF49B';
    prices = [];
@@ -58,7 +59,7 @@ class Charts {
    
 
    initXAxis(subIndicators){
-      let interval = 60 - 1;
+      let interval = 15-1;
       let xAxis = [{
             type: 'category',
             data: this.times,
@@ -68,7 +69,18 @@ class Charts {
                }
             },
             axisLabel: {
-               interval: interval,
+               interval: function(index, value) {
+                  let vals = value.split(':');
+                  if(vals.length){
+                     let minutes = parseInt(vals[1]);
+                     if(minutes == 0 || minutes == 30){
+                        return true;
+                     }else  return false;
+                     
+                  }else{
+                     return false;
+                  }                  
+               }
             }
       }];
 
@@ -124,13 +136,11 @@ class Charts {
       
       let series = [{
          type: 'candlestick',
-         name: '報價',
+         name: this.priceSeriesName,
          itemStyle: {
             normal: {
                color: this.colorRed,
-               color0: this.colorGreen,
-               // borderColor:this.colorRed,
-               // borderColor0: this.colorGreen
+               color0: this.colorGreen
             }
          },
          data: this.prices,
@@ -172,12 +182,16 @@ class Charts {
 
          let colorRed = this.colorRed;
          let colorGreen = this.colorGreen;
+         let result = indicator.data.map(item => {
+            let vals = item.text.split(',');
+            return parseInt(vals[0]) - parseInt(vals[1]) ;
+         })
          series.push({
                type: 'bar',
                name: indicator.name,
                xAxisIndex: i+1,
                yAxisIndex: i+1,
-               data: indicator.data,
+               data: result,
                itemStyle: {
                   normal: {
                      color: function(params) {
@@ -244,7 +258,7 @@ class Charts {
          tooltip: {
             trigger: 'axis',
             axisPointer: {            
-               type: 'line'       
+               type: 'cross'     
             },
             formatter: function (params) {
                params = params.sort(function (a, b) {
@@ -253,8 +267,17 @@ class Charts {
                
                let tip = params[0].name + '<br/>';
                for (let i = 0; i < params.length; i++) {
-                  tip += `${params[i].marker + params[i].seriesName} : ${params[i].value}<br/>`;
+                  let item = params[i];
+                  if(item.componentSubType === 'candlestick')
+                  {
+                     tip +=  `${item.marker}開${item.value[1]} 高${item.value[4]} 低${item.value[3]} 收${item.value[2]}<br/>`;
+                  }
+                  else{
+                     tip += `${item.marker + item.seriesName} : ${item.value}<br/>`;
+                  }
+                  
                }
+               
                return tip;         
             }
          },
