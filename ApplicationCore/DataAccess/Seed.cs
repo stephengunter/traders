@@ -49,7 +49,7 @@ namespace ApplicationCore.DataAccess
 
 			await AppDBSeed.SeedIndicators(defaultContext);
 
-			await AppDBSeed.SeedStocks(dataContext);
+			await AppDBSeed.SeedStocks(defaultContext);
 
 			await AppDBSeed.SeedStrategies(userManager, defaultContext);
 			await AppDBSeed.SeedPlans(defaultContext);
@@ -86,7 +86,7 @@ namespace ApplicationCore.DataAccess
 
 				await SeedIndicators(defaultContext);
 
-				await SeedStocks(dataContext);
+				await SeedStocks(defaultContext);
 
 				await SeedStrategies(userManager, defaultContext);
 
@@ -373,7 +373,7 @@ namespace ApplicationCore.DataAccess
 		}
 
 
-		public static async Task SeedStocks(DataContext context)
+		public static async Task SeedStocks(DefaultContext context)
 		{
 			var stocks = new List<Stock>
 			{

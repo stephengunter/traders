@@ -38,13 +38,13 @@ namespace ApplicationCore.Services
 
 		public Quote GetQuote(int date, int time)
 		{
-			var spec = new QuoteDateTimeFilterSpecifications(date, time);
+			var spec = new QuoteFilterSpecification(date, time);
 			return quoteRepository.GetSingleBySpec(spec);
 		}
 
 		public async Task<IEnumerable<Quote>> FetchAsync(int date)
 		{
-			var spec = new QuoteDateTimeFilterSpecifications(date);
+			var spec = new QuoteFilterSpecification(date);
 			return await quoteRepository.ListAsync(spec);
 		}
 

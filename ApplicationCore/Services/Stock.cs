@@ -30,9 +30,9 @@ namespace ApplicationCore.Services
 	}
 	public class StockService : IStockService
 	{
-		private readonly IDataRepository<Stock> stockRepository;
+		private readonly IDefaultRepository<Stock> stockRepository;
 
-		public StockService(IDataRepository<Stock> stockRepository)
+		public StockService(IDefaultRepository<Stock> stockRepository)
 		{
 			this.stockRepository = stockRepository;
 		}

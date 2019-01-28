@@ -53,9 +53,7 @@
 							/>
 						</v-flex>
 					</v-layout>
-					<v-alert :value="Errors.any()" color="error" outline>
-						<ErrorList :model="Errors" />
-					</v-alert>
+					<ErrorList  />
 				</v-container>
 			</v-card-text>
 
@@ -73,7 +71,7 @@
 <script>
 
 import { mapState } from 'vuex';
-import ErrorList from '@/components/Errors';
+import ErrorList from '@/components/ErrorList';
 
 export default {
 	name: 'StockEdit',

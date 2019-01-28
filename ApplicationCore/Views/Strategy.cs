@@ -37,4 +37,13 @@ namespace ApplicationCore.Views
 
 		public int arg { get; set; }
 	}
+
+
+	public class StrategyEditForm
+	{
+		public StrategyViewModel model { get; set; }
+
+		public ICollection<IndicatorViewModel> indicators { get; set; }
+	}
+
 }

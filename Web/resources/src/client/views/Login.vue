@@ -1,28 +1,24 @@
 <template>
-   <register-un-confirmed v-if="result === 0" :email="credentials.email" />
+   <register-un-confirmed v-if="result.emailUnConfirmed" :email="credentials.email" />
    <div v-else class="container">
       <div v-if="register">
          <h1 class="cn">註冊 - 建立您的會員資料</h1>
-         <v-alert :value="Errors.any()" color="error" outline>
-            <ErrorList :model="Errors" />
-         </v-alert>
+         <ErrorList />
          <RegisterForm :model="registerModel" @submit="onSubmitRegister" />         
       </div>
       <div v-else>
          <h1 class="cn">登入</h1>
-         <v-alert :value="Errors.any()" color="error" outline>
-            <ErrorList :model="Errors" />
-         </v-alert>
+         <ErrorList />
          <LoginForm @submit="onSubmit" />
          <v-layout class="mt-3 cn" row wrap>
             <v-flex xs12 >
                <FacebookLogin 
-                @success="onFBLoginSuccess" @failed="facebookLoginFailed"
+                @success="onFBLoginSuccess" @failed="oAuthLoginFailed"
                />
             </v-flex>
             <v-flex xs12 class="mt-3">
                <GoogleLogin 
-                @success="onGoogleLoginSuccess" @failed="googleLoginFailed"
+                @success="onGoogleLoginSuccess" @failed="oAuthLoginFailed"
                />
             </v-flex>
             <v-flex xs12 class="mt-3">
@@ -38,10 +34,11 @@
 
 <script>
 import { mapState } from 'vuex';
+import { SET_ERROR } from '../store/mutations.type';
 import { LOGIN, FB_LOGIN, GOOGLE_LOGIN, OAUTH_REGISTER } from '../store/actions.type';
 import { ADMIN_URL } from '@/common/config';
 
-import ErrorList from '@/components/Errors';
+import ErrorList from '@/components/ErrorList';
 import LoginForm from '../components/login/Form';
 import RegisterUnConfirmed from '../components/register/UnConfirmed';
 import FacebookLogin from '../components/login/Facebook';
@@ -61,12 +58,16 @@ export default {
    data () {
       return {
          credentials: null,
-         result: -1,
          returnUrl: '',
-
-         authWindow: null,
+        
          register: false,
-         registerModel: null
+         registerModel: null,
+
+         result:{
+            emailUnConfirmed: false
+         }
+
+
       }
    },
    computed: {
@@ -80,13 +81,23 @@ export default {
    methods: {
       onSubmit(credentials) {
          this.credentials = credentials;
-
          this.$store
          .dispatch(LOGIN, credentials)
-         .then((result) => {
-            this.result = result;
-            if(result > 0) this.onSuccess();            
+         .then(() => {
+            this.onSuccess();              
+         }).catch(error => {
+            if(!error)  Bus.$emit('errors', error);
+            else this.resolveError(error);
          })
+      },
+      resolveError(error){       
+         if(error.hasOwnProperty('email_confirm')){
+            //email驗證
+            this.result.emailUnConfirmed = true;
+         }else{
+            //輸入錯誤
+            this.$store.commit(SET_ERROR, error);
+         }
       },
       onSuccess(){
          this.redirect();
@@ -101,7 +112,7 @@ export default {
          }
          else this.$router.push({ name: 'home' });
       },
-      googleLoginFailed(){
+      oAuthLoginFailed(){
          Bus.$emit('errors', { msg: '登入失敗' });
       },
       onGoogleLoginSuccess(token){
@@ -109,26 +120,29 @@ export default {
             .dispatch(GOOGLE_LOGIN, token)
             .then(model => {
                if(model){
-                  this.initRegister(model);
-               }else{
-                  //登入成功
-                  this.onSuccess();  
-               }        
-            })
-      },
-      facebookLoginFailed(){
-         Bus.$emit('errors', { msg: '登入失敗' });
-      },
-      onFBLoginSuccess(token){
-         this.$store
-            .dispatch(FB_LOGIN, { token })
-            .then(model => {
-               if(model){
+                  //還沒註冊
                   this.initRegister(model);
                }else{
                   //登入成功
                   this.onSuccess();  
                }            
+            }).catch(error => {
+               this.oAuthLoginFailed();
+            })
+      },
+      onFBLoginSuccess(token){
+         this.$store
+            .dispatch(FB_LOGIN, token)
+            .then(model => {
+               if(model){
+                  //還沒註冊
+                  this.initRegister(model);
+               }else{
+                  //登入成功
+                  this.onSuccess();  
+               }            
+            }).catch(error => {
+               this.oAuthLoginFailed();
             })
       },
       initRegister(model){
@@ -138,9 +152,10 @@ export default {
       onSubmitRegister(user){
          this.$store
          .dispatch(OAUTH_REGISTER, user)
-         .then((result) => {
-            this.result = result;
-            if(result > 0) this.onSuccess();            
+         .then(() => {
+            this.onSuccess();            
+         }).catch(error => {
+            this.oAuthLoginFailed();
          })
       }
    },

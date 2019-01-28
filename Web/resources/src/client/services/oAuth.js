@@ -5,10 +5,10 @@ const source =`${API_URL}/oauth`;
 
 const OAuthService = {
    
-   fbLogin(user) {
+   fbLogin(token) {
       let url = `${source}/facebook`;
       let method = 'post';
-      return BaseService.submit(method, url, user);
+      return BaseService.submit(method, url, { token });
    },
    googleLogin(token) {
       let url = `${source}/google`;

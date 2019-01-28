@@ -17,7 +17,7 @@ namespace ApplicationCore.DataAccess
 
 		}
 
-		public DbSet<Stock> Stocks { get; set; }
+		
 		public DbSet<Quote> Quotes { get; set; }
 		public DbSet<Data> Data { get; set; }
 

@@ -11,7 +11,7 @@
             </v-alert>
          </v-flex>
       </v-layout>
-      <v-card v-if="model">
+      <v-card>
          <v-card-text>
             <v-layout row wrap>
                <v-flex xs12 sm10 md10 class="d-inline-flex">
@@ -25,27 +25,27 @@
                   lazy  transition="scale-transition" offset-y
                   >
                      <v-text-field readonly
-                     slot="activator" v-model="date" label="日期"
+                     slot="activator" v-model="dateString" label="日期"
                      prepend-icon="mdi-canlendar"
                      />
-                     <v-date-picker v-model="date" locale="zh-cn" @input="onDateChanged" />
+                     <v-date-picker v-model="dateString" locale="zh-cn" @input="onDateChanged" />
                   </v-menu>
                </v-flex>
                <v-flex xs12 sm2 md2 class="text-sm-right">
                   <v-tooltip top content-class="top">
-                     <v-btn class="mr-1" slot="activator"  color="info" icon>
+                     <v-btn @click.prevent="refresh" class="mr-1" slot="activator"  color="info" icon>
                         <v-icon>mdi-refresh</v-icon>
                      </v-btn>
                      <span class="cn">重新整理</span>
                   </v-tooltip>
                   <v-tooltip top content-class="top">
-                     <v-btn class="mr-1" slot="activator"  color="success" icon>
+                     <v-btn @click.prevent="settings" class="mr-1" slot="activator"  color="success" icon>
                         <v-icon>mdi-settings</v-icon>
                      </v-btn>
                      <span class="cn">策略設定</span>
                   </v-tooltip>
                   <v-tooltip top content-class="top">
-                     <v-btn slot="activator"  color="primary" icon>
+                     <v-btn @click.prevent="createStrategy" slot="activator"  color="primary" icon>
                         <v-icon>mdi-plus</v-icon>
                      </v-btn>
                      <span class="cn">新增策略</span>
@@ -53,7 +53,7 @@
                   
                </v-flex>
             </v-layout>
-            <v-layout  row>
+            <!-- <v-layout row>
                <v-flex xs12>
                   <v-alert v-if="noData" :value="true"  color="warning"  icon="mdi-alert" outline  class="title">
                      <span class="cn" >
@@ -62,7 +62,7 @@
                   </v-alert>
                   <charts-default v-show="!noData" ref="myChart" v-else />
                </v-flex>
-            </v-layout>
+            </v-layout> -->
          </v-card-text>
       </v-card>
    </div>
@@ -87,20 +87,20 @@ export default {
       return {
          noSubscribe: false,
          strategyId: 0,
-         date: '',
+         dateString: '',
          showDatePicker: false,
          noData: false
       }
    },
    computed: {
       ...mapState({
-         responsive: state => state.app.responsive,
-         model: state => state.watch.model,
+         key: state => state.watch.key,
+         date: state => state.watch.date,
          strategy: state => state.watch.strategy,
+         strategies: state => state.watch.strategies,
       }),
       strategyOptions(){
-         if(!this.model) return [];
-         return this.model.strategies.map(item => ({
+         return this.strategies.map(item => ({
                value: item.id, text: item.name 
              }))
       }
@@ -110,20 +110,26 @@ export default {
    },
    methods: {
 		init(){
-         this.initResult = -1;
          this.$store.dispatch(INIT_WATCH)
-            .then(result => {
-               if(result){
-                  this.strategyId = this.strategy.id;
-                  this.date = Helper.toDateString(this.model.date);
-                  this.fetchQuotes();
-               }else{
-                  //沒有訂閱
-                  this.noSubscribe = true;
-               }        
+            .then(() => {
+               this.noSubscribe = false;
+               this.dateString = Helper.toDateString(this.date);
+               //this.fetchQuotes();       
             }).catch(error => {
-               Bus.$emit('errors', error);
+               //let result = this.resolveError(error);
+               //if(!result) Bus.$emit('errors', error);
+              //  Bus.$emit('errors', error);
             })
+      },
+      resolveError(error){
+         
+         if(errorData){
+            if(errorData.hasOwnProperty('subscribe')){
+               this.noSubscribe = true;
+               return true;
+            }
+         }
+         return false; 
       },
       onStrategyChanged(){
          alert(this.strategyId);
@@ -138,6 +144,25 @@ export default {
             date: Helper.dateNumber(this.date),
             strategy: this.strategyId  
          };
+         this.$store.dispatch(FETCH_QUOTES, params)
+            .then(result => {
+               if(result){
+                  this.$refs.myChart.init();      
+               }else{
+                  //沒有資料
+                  this.noData = true;
+               }        
+            }).catch(error => {
+               Bus.$emit('errors', error);
+            })
+      },
+      refresh(){
+         this.fetchQuotes();
+      },
+      settings(){
+         
+      },
+      createStrategy(){
          this.$store.dispatch(FETCH_QUOTES, params)
             .then(result => {
                if(result){

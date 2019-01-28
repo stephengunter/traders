@@ -11,42 +11,43 @@ namespace ApplicationCore.Specifications
 {
 	public class UserFilterSpecification : BaseSpecification<User>
 	{
-		public UserFilterSpecification(Expression<Func<User, bool>> criteria = null) : base(criteria)
+		public UserFilterSpecification()
 		{
 			AddInclude(u => u.Profile);
 		}
 	}
 
-	public class UserEmailFilterSpecifications : UserFilterSpecification
+	public class UserEmailFilterSpecifications : BaseSpecification<User>
 	{
 		public UserEmailFilterSpecifications(string email) : base(u => u.Email == email)
 		{
-			
+			AddInclude(u => u.Profile);
 		}
 	}
 
-	public class UserIdFilterSpecifications : UserFilterSpecification
+	public class UserIdFilterSpecifications : BaseSpecification<User>
 	{
 		public UserIdFilterSpecifications(string id) : base(u => u.Id == id)
 		{
-		
+
 		}
 	}
 
-	public class UserKeywordFilterSpecifications : UserFilterSpecification
+	public class UserKeywordFilterSpecifications : BaseSpecification<User>
 	{
 		public UserKeywordFilterSpecifications(string keyword)
+			: base(u => u.Profile.Fullname.CaseInsensitiveContains(keyword)
+						|| u.UserName.CaseInsensitiveContains(keyword))
 		{
-			Criteria = u => u.Profile.Fullname.CaseInsensitiveContains(keyword) ||
-						   u.UserName.CaseInsensitiveContains(keyword);
+
 		}
 	}
 
-	public class UserNameFilterSpecifications : UserFilterSpecification
+	public class UserNameFilterSpecifications : BaseSpecification<User>
 	{
-		public UserNameFilterSpecifications(string username)
+		public UserNameFilterSpecifications(string username) : base(u => u.UserName == username)
 		{
-			Criteria = u => u.UserName == username;
+
 		}
 	}
 

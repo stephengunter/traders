@@ -18,3 +18,9 @@ export const UPDATE_USER = 'updateUser';
 
 export const INIT_WATCH = 'initWatch';
 export const FETCH_QUOTES = 'fetchQuotes';
+
+export const CREATE_STRATEGY = 'createStrategy';
+export const STORE_STRATEGY = 'storeStrategy';
+export const EDIT_STRATEGY = 'editStrategy';
+export const UPDATE_STRATEGY = 'updateStrategy';
+

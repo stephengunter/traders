@@ -262,6 +262,29 @@ namespace ApplicationCore.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Models.Stock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Base");
+
+                    b.Property<string>("Code");
+
+                    b.Property<bool>("Ignore");
+
+                    b.Property<string>("Name");
+
+                    b.Property<double>("Price");
+
+                    b.Property<double>("Weight");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Stocks");
+                });
+
             modelBuilder.Entity("ApplicationCore.Models.Strategy", b =>
                 {
                     b.Property<int>("Id")

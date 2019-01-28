@@ -8,9 +8,7 @@
    </div>
    <div v-else class="container">
       <h1 class="cn">重設密碼</h1>
-      <v-alert :value="Errors.any()" color="error" outline>
-         <ErrorList :model="Errors" />
-      </v-alert>
+      <ErrorList />
       <form  @submit.prevent="onSubmit">
          <v-text-field
             v-validate="'required|email'"
@@ -52,7 +50,7 @@
 import { mapState } from 'vuex';
 import { RESET_PASSWORD } from '../store/actions.type';
 
-import ErrorList from '@/components/Errors';
+import ErrorList from '@/components/ErrorList';
 
 export default {
    name: 'RwvResetPassword',

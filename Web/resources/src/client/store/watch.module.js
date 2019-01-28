@@ -9,15 +9,16 @@ import {
 } from './actions.type';
 
 import { 
-   SET_ERROR, CLEAR_ERROR, SET_LOADING, SET_WATCH_MODEL,
-   SET_STRATEGY 
+   SET_LOADING, SET_KEY, SET_DATE,
+   SET_STRATEGY, SET_STRATEGIES 
 } from './mutations.type';
 
  
 const state = {
-   errors: new Errors(),
-   model: null,
-   strategy: null
+   key: '',
+   date: '',
+   strategy: null,
+   strategies: [],
 };
 
 const getters = {
@@ -30,27 +31,18 @@ const actions = {
       return new Promise((resolve, reject) => {
          WatchService.init()
          .then(model => {
-            context.commit(SET_WATCH_MODEL, model);
+            context.commit(SET_KEY, model.key);
+            context.commit(SET_DATE, model.date);
             context.commit(SET_STRATEGY, model.strategies[0]);
+            context.commit(SET_STRATEGIES, model.strategies);
+
             context.commit(SET_LOADING, false);
-            resolve(1);
+            resolve(true);
          })
          .catch(error => {
-            context.commit(SET_LOADING, false);  
-            context.commit(SET_WATCH_MODEL, null);
-            context.commit(SET_STRATEGY, null);
-            let errorData = Helper.resolveErrorData(error);
-            if(errorData){
-               if(errorData.hasOwnProperty('subscribe')){
-                  context.commit(SET_WATCH_MODEL, null);
-                  context.commit(SET_STRATEGY, null);
-                  resolve(0);
-               }else{
-                  reject(error);
-               }
-            }else{
-               reject(error);
-            }
+            
+            context.commit(SET_LOADING, false); 
+            reject(error);            
          })
       });  
    }
@@ -58,17 +50,17 @@ const actions = {
 
 
 const mutations = {
-   [SET_ERROR](state, errors) {
-      state.errors.record(errors);
+   [SET_KEY](state, key) {
+      state.key = key;
    },
-   [CLEAR_ERROR](state) {
-      state.errors.clear();   
-   },
-   [SET_WATCH_MODEL](state, model) {
-      state.model = model;
+   [SET_DATE](state, date) {
+      state.date = date;
    },
    [SET_STRATEGY](state, strategy) {
       state.strategy = strategy;
+   },
+   [SET_STRATEGIES](state, strategies) {
+      state.strategies = strategies;
    }
 };
 

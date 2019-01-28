@@ -1,9 +1,7 @@
 <template>
    <div class="container">
       <h1 class="cn">註冊 - 建立您的會員資料</h1>
-      <v-alert :value="Errors.any()" color="error" outline>
-         <ErrorList :model="Errors" />
-      </v-alert>
+      <ErrorList />
       <registerForm @submit="onSubmit" />
    </div>
 </template>
@@ -12,7 +10,7 @@
 import { mapState } from 'vuex';
 import { REGISTER, LOGIN } from '../store/actions.type';
 
-import ErrorList from '@/components/Errors';
+import ErrorList from '@/components/ErrorList';
 import RegisterForm from '../components/register/Form';
 
 export default {

@@ -22,7 +22,7 @@ namespace Web.Areas.Admin.Controllers
 		[HttpGet("")]
 		public async Task<ActionResult> Index(string keyword = "", bool active = true)
 		{
-			var indicators = await indicatorService.FetchIndicators(keyword);
+			var indicators = await indicatorService.FetchAsync(keyword);
 
 			indicators = indicators.Where(i=>i.Active == active).GetOrdered();
 

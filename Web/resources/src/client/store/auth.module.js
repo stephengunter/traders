@@ -32,11 +32,12 @@ import { SET_AUTH, PURGE_AUTH, SET_USER,
 } from './mutations.type';
 
  
-const state = {
-   errors: new Errors(),
+const initialState = {
    user: {},
    isAuthenticated: !!JwtService.getToken()
 };
+
+export const state = { ...initialState };
 
 const getters = {
    currentUser(state) {
@@ -59,30 +60,19 @@ const actions = {
                refreshToken: model.refreshToken
             }); 
             context.commit(SET_LOADING, false);
-            resolve(1);
+            resolve(true);
          })
          .catch(error => {
-            context.commit(SET_LOADING, false);  
-            let errorData = Helper.resolveErrorData(error);
-            if(errorData){
-               if(errorData.hasOwnProperty('email_confirm')){
-                  resolve(0);
-               }else{
-                  context.commit(SET_ERROR, errorData);
-                  reject(error);
-               }
-            }else{
-               Bus.$emit('errors', error);
-               reject(error);
-            }
+            context.commit(SET_LOADING, false); 
+            reject(Helper.resolveErrorData(error));
          })
       });     
    },
-   [FB_LOGIN](context, user) {
+   [FB_LOGIN](context, token) {
       context.commit(CLEAR_ERROR);
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
-         OAuthService.fbLogin(user)
+         OAuthService.fbLogin(token)
          .then(model => {
             if(model.accessToken){
                context.commit(SET_AUTH, {
@@ -97,22 +87,15 @@ const actions = {
             }
          })
          .catch(error => {
-            context.commit(SET_LOADING, false);   
-            let errorData = Helper.resolveErrorData(error);
-            if(errorData){
-               context.commit(SET_ERROR, errorData);
-               reject(error);
-            }else{
-               Bus.$emit('errors', error);
-               reject(error);
-            }
+            context.commit(SET_LOADING, false);
+            reject(error);
          })
       });     
    },
    [GOOGLE_LOGIN](context, token) {
       context.commit(CLEAR_ERROR);
       context.commit(SET_LOADING, true);
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
          OAuthService.googleLogin(token)
          .then(model => {
             if(model.accessToken){
@@ -128,20 +111,15 @@ const actions = {
             }
          })
          .catch(error => {
-            context.commit(SET_LOADING, false);  
-            let errorData = Helper.resolveErrorData(error);
-            if(errorData){
-               context.commit(SET_ERROR, errorData);
-            }else{
-               Bus.$emit('errors', error);
-            }
+            context.commit(SET_LOADING, false);
+            reject(error);
          })
       });     
    },
    [OAUTH_REGISTER](context, user) {
       context.commit(CLEAR_ERROR);
       context.commit(SET_LOADING, true);
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
          OAuthService.register(user)
          .then(model => {
             context.commit(SET_AUTH, {
@@ -149,11 +127,11 @@ const actions = {
                refreshToken: model.refreshToken
             }); 
             context.commit(SET_LOADING, false);
-            resolve(1);
+            resolve(true);
          })
          .catch(error => {
             context.commit(SET_LOADING, false);   
-            Bus.$emit('errors', error);
+            reject(error);
          })
       });     
    },
@@ -320,12 +298,12 @@ const actions = {
 
 
 const mutations = {
-   [SET_ERROR](state, errors) {
-      state.errors.record(errors);
-   },
-   [CLEAR_ERROR](state) {
-      state.errors.clear();   
-   },
+   // [SET_ERROR](state, errors) {
+   //    state.errors.record(errors);
+   // },
+   // [CLEAR_ERROR](state) {
+   //    state.errors.clear();   
+   // },
    [SET_USER](state, user) {
       state.user = user;
    },
@@ -340,14 +318,12 @@ const mutations = {
       };
 
       state.isAuthenticated = true;
-      state.errors = new Errors();
       
    },
    [PURGE_AUTH](state) {
       state.isAuthenticated = false;
       state.user = {};
     
-      state.errors = new Errors();
       JwtService.destroyToken();
    }
 };

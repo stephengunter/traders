@@ -8,24 +8,22 @@ using System.Text;
 
 namespace ApplicationCore.Specifications
 {
+
 	public class QuoteFilterSpecification : BaseSpecification<Quote>
 	{
-		public QuoteFilterSpecification(Expression<Func<Quote, bool>> criteria = null) : base(criteria)
+		public QuoteFilterSpecification()
 		{
 			AddInclude(q => q.DataList);
 		}
-	}
 
-	public class QuoteDateTimeFilterSpecifications : QuoteFilterSpecification
-	{
-		public QuoteDateTimeFilterSpecifications(int date) : base(quote => quote.Date == date)
+		public QuoteFilterSpecification(int date) : base(quote => quote.Date == date)
 		{
-
+			AddInclude(q => q.DataList);
 		}
 
-		public QuoteDateTimeFilterSpecifications(int date, int time) : base(quote => quote.Date == date && quote.Time == time)
+		public QuoteFilterSpecification(int date, int time) : base(quote => quote.Date == date && quote.Time == time)
 		{
-
+			AddInclude(q => q.DataList);
 		}
 	}
 

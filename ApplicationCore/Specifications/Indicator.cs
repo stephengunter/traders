@@ -11,7 +11,7 @@ namespace ApplicationCore.Specifications
 {
 	public class IndicatorFilterSpecifications : BaseSpecification<Indicator>
 	{
-		public IndicatorFilterSpecifications():base(s => !s.Removed)
+		public IndicatorFilterSpecifications(bool active) : base(s => !s.Removed && s.Active)
 		{
 			
 		}

@@ -8,9 +8,7 @@
    </div>
    <div v-else class="container">
       <h1 class="cn">變更密碼</h1>
-      <v-alert :value="Errors.any()" color="error" outline>
-         <ErrorList :model="Errors" />
-      </v-alert>
+      <ErrorList :model="Errors" />
       <form  @submit.prevent="onSubmit">
          <v-text-field
             type="password"
@@ -54,7 +52,7 @@
 import { mapState } from 'vuex';
 import { CHANGE_PASSWORD } from '../store/actions.type';
 
-import ErrorList from '@/components/Errors';
+import ErrorList from '@/components/ErrorList';
 
 export default {
    name: 'RwvChangePassword',

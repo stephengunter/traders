@@ -15,6 +15,7 @@ namespace ApplicationCore.DataAccess
 
 		}
 
+		
 		public DbSet<Quote> Quotes { get; set; }
 		public DbSet<Data> Data { get; set; }
 

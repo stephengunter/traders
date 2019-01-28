@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using ApplicationCore.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using ApplicationCore.Helpers;
 
 namespace Web.Areas.Api.Controllers
 {
@@ -33,9 +34,14 @@ namespace Web.Areas.Api.Controllers
 			this.dataService = dataService;
 		}
 
+		 
+
 		[HttpGet]
 		public async Task<IActionResult> Index()
 		{
+			ModelState.AddModelError("subscribe", "沒有訂閱");
+			return BadRequest(ModelState);
+
 			if (!await subscribeService.HasActiveSubscribeAsync(CurrentUserId))
 			{
 				ModelState.AddModelError("subscribe", "沒有訂閱");
@@ -46,9 +52,7 @@ namespace Web.Areas.Api.Controllers
 
 			await subscribeService.CreateKeysAsync(CurrentUserId, ip);
 
-			int date = realTimeService.LatestDate();
-			if(date == 0) date = dataService.LatestDate();
-
+			int date = GetLatestDate();
 
 			var strategies = await strategyService.FetchByUserAsync(CurrentUserId);
 			var model = new WatchViewModel()
@@ -62,6 +66,14 @@ namespace Web.Areas.Api.Controllers
 		}
 
 
+		int GetLatestDate()
+		{
+			int date = realTimeService.LatestDate();
+			if (date == 0) date = dataService.LatestDate();
+			if (date == 0) date = DateTime.Today.ToDateNumber();
+
+			return date;
+		}
 
 	}
 }

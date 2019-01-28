@@ -27,8 +27,8 @@ namespace ApplicationCore.DataAccess
 		public DbSet<Subscribe> Subscribes { get; set; }
 		public DbSet<Bill> Bills { get; set; }
 		public DbSet<Pay> Pays { get; set; }
-		
 
+		public DbSet<Stock> Stocks { get; set; }
 		public DbSet<Indicator> Indicators { get; set; }
 		public DbSet<Strategy> Strategies { get; set; }
 		public DbSet<IndicatorSettings> IndicatorSettings { get; set; }

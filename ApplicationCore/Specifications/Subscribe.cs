@@ -8,44 +8,37 @@ using System.Text;
 
 namespace ApplicationCore.Specifications
 {
-	public abstract class BaseSubscribeFilterSpecification : BaseSpecification<Subscribe>
+	public class SubscribeFilterSpecification : BaseSpecification<Subscribe>
 	{
-		protected BaseSubscribeFilterSpecification() : base(s => !s.Removed)
+		public SubscribeFilterSpecification() : base(s => !s.Removed)
 		{
 			AddInclude(subscribe => subscribe.Bill.Pays);
 			AddInclude(subscribe => subscribe.Plan);
 			AddInclude(subscribe => subscribe.User.Profile);
 		}
-	}
-
-	public class SubscribeFilterSpecification : BaseSubscribeFilterSpecification
-	{
-		public SubscribeFilterSpecification()
+		public SubscribeFilterSpecification(int id) : base(s => !s.Removed && s.Id == id)
 		{
-
-		}
-		public SubscribeFilterSpecification(int id)
-		{
-			var compiled = Criteria.Compile();
-			Criteria = s => compiled(s) && s.Id == id;
-
+			AddInclude(subscribe => subscribe.Bill.Pays);
+			AddInclude(subscribe => subscribe.Plan);
+			AddInclude(subscribe => subscribe.User.Profile);
 		}
 
-		public SubscribeFilterSpecification(string userId)
+		public SubscribeFilterSpecification(string userId) : base(s => !s.Removed && s.UserId == userId)
 		{
-			var compiled = Criteria.Compile();
-			Criteria = s => compiled(s) && s.UserId == userId;
+			AddInclude(subscribe => subscribe.Bill.Pays);
+			AddInclude(subscribe => subscribe.Plan);
+			AddInclude(subscribe => subscribe.User.Profile);
 		}
 
 	}
 
-	public class SubscribeKeywordFilterSpecification : BaseSubscribeFilterSpecification
+	public class SubscribeKeywordFilterSpecification : BaseSpecification<Subscribe>
 	{
-		public SubscribeKeywordFilterSpecification(string keyword)
+		public SubscribeKeywordFilterSpecification(string keyword) : base(s => !s.Removed && s.User.Profile.Fullname.CaseInsensitiveContains(keyword))
 		{
-			var compiled = Criteria.Compile();
-			Criteria = subscribe => compiled(subscribe) &&
-						subscribe.User.Profile.Fullname.CaseInsensitiveContains(keyword);
+			AddInclude(subscribe => subscribe.Bill.Pays);
+			AddInclude(subscribe => subscribe.Plan);
+			AddInclude(subscribe => subscribe.User.Profile);
 
 		}
 	}
