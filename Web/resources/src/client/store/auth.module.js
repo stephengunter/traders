@@ -51,7 +51,7 @@ const actions = {
    [LOGIN](context, credentials) {
       context.commit(CLEAR_ERROR);
       context.commit(SET_LOADING, true);
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
          AuthService.login(credentials)
          .then(model => {
             context.commit(SET_AUTH, {
@@ -69,18 +69,20 @@ const actions = {
                   resolve(0);
                }else{
                   context.commit(SET_ERROR, errorData);
+                  reject(error);
                }
             }else{
                Bus.$emit('errors', error);
+               reject(error);
             }
          })
       });     
    },
-   [FB_LOGIN](context, token) {
+   [FB_LOGIN](context, user) {
       context.commit(CLEAR_ERROR);
       context.commit(SET_LOADING, true);
-      return new Promise((resolve) => {
-         OAuthService.fbLogin(token)
+      return new Promise((resolve, reject) => {
+         OAuthService.fbLogin(user)
          .then(model => {
             if(model.accessToken){
                context.commit(SET_AUTH, {
@@ -99,8 +101,10 @@ const actions = {
             let errorData = Helper.resolveErrorData(error);
             if(errorData){
                context.commit(SET_ERROR, errorData);
+               reject(error);
             }else{
                Bus.$emit('errors', error);
+               reject(error);
             }
          })
       });     

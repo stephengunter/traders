@@ -11,6 +11,7 @@ Vue.component('loading', Loading);
 import '@/plugins/vuetify';
 import '@/plugins/validate';
 import '@/plugins/googleAuth';
+import '@/plugins/fbAuth';
 
 
 import router from './router';

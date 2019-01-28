@@ -15,16 +15,16 @@
          </v-alert>
          <LoginForm @submit="onSubmit" />
          <v-layout class="mt-3 cn" row wrap>
-            <!-- <v-flex xs12 >
+            <v-flex xs12 >
                <FacebookLogin 
-                @success="handleFacebookLogin" @failed="facebookLoginFailed"
+                @success="onFBLoginSuccess" @failed="facebookLoginFailed"
                />
             </v-flex>
             <v-flex xs12 class="mt-3">
                <GoogleLogin 
-                @success="handleGoogleLogin" @failed="googleLoginFailed"
+                @success="onGoogleLoginSuccess" @failed="googleLoginFailed"
                />
-            </v-flex> -->
+            </v-flex>
             <v-flex xs12 class="mt-3">
                <a href="#/forgot-password" class="links v-breadcrumbs__item">忘記密碼</a>
                
@@ -104,7 +104,7 @@ export default {
       googleLoginFailed(){
          Bus.$emit('errors', { msg: '登入失敗' });
       },
-      handleGoogleLogin(token){
+      onGoogleLoginSuccess(token){
          this.$store
             .dispatch(GOOGLE_LOGIN, token)
             .then(model => {
@@ -119,16 +119,16 @@ export default {
       facebookLoginFailed(){
          Bus.$emit('errors', { msg: '登入失敗' });
       },
-      handleFacebookLogin(token){
+      onFBLoginSuccess(token){
          this.$store
-            .dispatch(FB_LOGIN, token)
+            .dispatch(FB_LOGIN, { token })
             .then(model => {
                if(model){
                   this.initRegister(model);
                }else{
                   //登入成功
                   this.onSuccess();  
-               }        
+               }            
             })
       },
       initRegister(model){

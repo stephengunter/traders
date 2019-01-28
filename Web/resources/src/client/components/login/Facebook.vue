@@ -1,6 +1,12 @@
 <template>
-   <button @click.prevent="fbLogin" class="loginBtn loginBtn--facebook">
+   <button class="loginBtn loginBtn--facebook">
+      <fb-signin-button
+         :params="fbSignInParams"
+         @success="onSignInSuccess"
+         @error="onSignInError"
+      >
       使用 facebook 登入
+      </fb-signin-button>
    </button>
 </template>
 
@@ -12,44 +18,23 @@ export default {
    name: 'FacebookLogin',
    data() {
       return {
-         authWindow: null,
+         fbSignInParams: {
+            scope: 'email',
+            return_scopes: true
+         }
       }
    },
    created(){
-      if (window.addEventListener) {
-         window.addEventListener('message', this.handleMessage.bind(this), false);
-      } else {
-         window.attachEvent('onmessage', this.handleMessage.bind(this));
-      }
+      
    },
    methods: {
-      fbLogin(){
-         this.authWindow = window.open(Config.FB_LOGIN_URL, '', 'width=600,height=400');         
+      onSignInSuccess (response) {
+         let accessToken = response.authResponse.accessToken;
+         this.$emit('success', accessToken);
       },
-      handleMessage(event){
-        
-         if (event.origin !== Config.SITE_URL){
-            return;
-         }  
-
-         try { 
-            const result = JSON.parse(event.data);
-            if(result.type === 'fbAuth'){
-               this.handleFBLogin(result);
-            }
-         }
-         catch (e) {}//與login無關,忽略 
-      },
-      handleFBLogin(result){
-         if (this.authWindow) {
-            this.authWindow.close();
-         }
-         if (!result.status) {
-            this.$emit('failed');
-         } else {
-            this.$emit('success', result.accessToken);
-         }
-      },
+      onSignInError (error) {
+         this.$emit('failed');
+      }
    }
 };
 </script>

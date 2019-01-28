@@ -3,7 +3,8 @@
       <g-signin-button 
       :params="googleSignInParams"
       @success="onSignInSuccess"
-      @error="onSignInError">
+      @error="onSignInError"
+      >
       使用 google 登入
       </g-signin-button>
    </button>
@@ -12,13 +13,13 @@
 
 
 <script>
-
+import { GOOGLE_API } from '@/common/config';
 export default {
    name: 'GoogleLogin',
    data() {
       return {
          googleSignInParams: {
-            client_id:  `${Config.GOOGLE_API.client_id}.apps.googleusercontent.com`
+            client_id:  `${GOOGLE_API.client_id}.apps.googleusercontent.com`
          }
       }
    },

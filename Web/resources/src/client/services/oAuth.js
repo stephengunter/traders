@@ -1,45 +1,24 @@
-const source = 'oauth';
+import BaseService from '@/common/baseService';
+import { API_URL } from '@/common/config';
+
+const source =`${API_URL}/oauth`;
 
 const OAuthService = {
    
-   fbLogin(token) {
+   fbLogin(user) {
       let url = `${source}/facebook`;
       let method = 'post';
-      return new Promise((resolve, reject) => {
-         axios[method](url, { token })
-            .then(response => {
-               resolve(response.data);
-            })
-            .catch(error => {
-               reject(error.response);
-            });
-      });
+      return BaseService.submit(method, url, user);
    },
    googleLogin(token) {
       let url = `${source}/google`;
       let method = 'post';
-      return new Promise((resolve, reject) => {
-         axios[method](url, { token })
-            .then(response => {
-               resolve(response.data);
-            })
-            .catch(error => {
-               reject(error.response);
-            });
-      });
+      return BaseService.submit(method, url, { token });
    },
    register(user){
       let url = `${source}/register`;
       let method = 'post';
-      return new Promise((resolve, reject) => {
-         axios[method](url, user)
-            .then(response => {
-               resolve(response.data);
-            })
-            .catch(error => {
-               reject(error.response);
-            });
-      });
+      return BaseService.submit(method, url, user);
    }
 };
 

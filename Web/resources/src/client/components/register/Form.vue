@@ -98,6 +98,7 @@
 
 
 <script>
+import Helper from '@/common/helper';
 
 export default {
    name: 'RegisterForm',
@@ -134,7 +135,7 @@ export default {
    beforeMount(){
       if(this.model != null){
          this.oAuthUser = { ...this.model };
-         this.oAuthUser.gender = Helper.tryParseInt(this.oAuthUser.gender);
+         this.oAuthUser.gender = 1;
          this.oAuth = true;
       }
    },

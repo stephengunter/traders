@@ -52,15 +52,17 @@ namespace Web.Areas.Api.Controllers
 		string RequestUserInfoUrl(string userToken) =>
 			 $"https://graph.facebook.com/v2.8/me?fields=id,email,first_name,last_name,name,gender,locale,birthday,picture&access_token={userToken}";
 
+
 		//POST api/oauth/facebook
 		[HttpPost("facebook")]
 		public async Task<ActionResult> Facebook([FromBody] OAuthLoginRequest model)
 		{
+			string token = model.token;
 			// 1.generate an app access token
 			var appAccessTokenResponse = await Client.GetStringAsync(AppAccessTokenUrl);
 			var appAccessToken = JsonConvert.DeserializeObject<FacebookAppAccessToken>(appAccessTokenResponse);
 			// 2. validate the user access token
-			var userAccessTokenValidationResponse = await Client.GetStringAsync(UserValidateTokenUrl(model.token, appAccessToken.AccessToken));
+			var userAccessTokenValidationResponse = await Client.GetStringAsync(UserValidateTokenUrl(token, appAccessToken.AccessToken));
 
 
 			var userAccessTokenValidation = JsonConvert.DeserializeObject<FacebookUserAccessTokenValidation>(userAccessTokenValidationResponse);
@@ -101,13 +103,14 @@ namespace Web.Areas.Api.Controllers
 			return Ok(responseView);
 
 		}
+		
 
-		//POST api/oauth/facebook
+		//POST api/oauth/google
 		[HttpPost("google")]
 		public async Task<ActionResult> Google([FromBody] OAuthLoginRequest model)
 		{
 			var payload = await GoogleJsonWebSignature.ValidateAsync(model.token, new GoogleJsonWebSignature.ValidationSettings());
-			
+		
 			var user = await userManager.FindByEmailAsync(payload.Email);
 			if (user == null)
 			{
@@ -156,30 +159,6 @@ namespace Web.Areas.Api.Controllers
 
 		}
 
-
-		void AddErrors(IdentityResult result)
-		{
-			foreach (var error in result.Errors)
-			{
-				if (error.Code == "PasswordRequiresDigit")
-				{
-					ModelState.AddModelError(string.Empty, "密碼必須有至少一個數字");
-				}
-				else if (error.Code.ToLower() == "DuplicateUsername".ToLower())
-				{
-					ModelState.AddModelError(string.Empty, "這個Email已經有人使用了");
-				}
-				else if (error.Code.ToLower() == "DuplicateEmail".ToLower())
-				{
-
-				}
-				else
-				{
-					ModelState.AddModelError(string.Empty, error.Description);
-				}
-
-			}
-		}
 
 
 	}
