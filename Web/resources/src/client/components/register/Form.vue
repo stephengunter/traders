@@ -91,7 +91,7 @@
          />
       </v-radio-group>
       
-      <v-btn @click.prevent="onSubmit" color="success" class="cn">註冊</v-btn>
+      <v-btn type="submit" @click.prevent="onSubmit" color="success" class="cn">註冊</v-btn>
    </form>
 </template>
 

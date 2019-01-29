@@ -46,15 +46,14 @@ export default {
       submit(){
          this.$store
          .dispatch(CONFIRM_EMAIL, this.user)
-         .then((ok) => {
-            if(ok){
-               this.alert.type = 'success';
-               this.alert.msg = 'Email確認成功.';
-               this.ready = true;
-               this.onSuccess();
-            }else{
-               this.ready = true;  
-            }
+         .then(() => {
+            this.alert.type = 'success';
+            this.alert.msg = 'Email確認成功.';
+            this.ready = true;
+            this.onSuccess();
+         })
+         .catch(error => {
+            this.ready = true;
          })
       },
       onSuccess(){        

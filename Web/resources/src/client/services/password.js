@@ -23,10 +23,10 @@ const PasswordService = {
       let method = 'post';
       return BaseService.submit(method, url, model);
    },
-   register(user){
-      let url = `${source}/register`;
+   reset(model){
+      let url = `${source}/reset`;
       let method = 'post';
-      return BaseService.submit(method, url, user);
+      return BaseService.submit(method, url, model);
    }
 };
 

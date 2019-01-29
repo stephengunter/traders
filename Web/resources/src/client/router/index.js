@@ -6,5 +6,8 @@ import appRoutes from './app';
 Vue.use(Router);
 
 export default new Router({
-   routes: appRoutes
+   routes: appRoutes,
+   scrollBehavior () {
+      return { x: 0, y: 0 }
+   }
 });

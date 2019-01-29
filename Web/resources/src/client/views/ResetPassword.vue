@@ -41,7 +41,7 @@
             data-vv-name="confirmPassword"
             required
          />
-         <v-btn @click.prevent="onSubmit" color="success" class="cn">確認</v-btn>
+         <v-btn type="submit" @click.prevent="onSubmit" color="success" class="cn">確認</v-btn>
       </form>
    </div>
 </template>
@@ -49,6 +49,7 @@
 <script>
 import { mapState } from 'vuex';
 import { RESET_PASSWORD } from '../store/actions.type';
+import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 
 import ErrorList from '@/components/ErrorList';
 
@@ -68,11 +69,6 @@ export default {
          ok: false
       }
    },
-   computed: {
-      ...mapState({
-         Errors: state => state.auth.errors
-      })
-   },
    beforeMount(){
       if(this.$route.query.code) this.user.code = this.$route.query.code;
    },
@@ -83,10 +79,15 @@ export default {
          });
       },
       submit(){
+         this.$store.commit(CLEAR_ERROR);
          this.$store
          .dispatch(RESET_PASSWORD, this.user)
          .then(() => {
             this.ok = true;
+         })
+         .catch(error => {
+            if(!error)  Bus.$emit('errors');
+            else this.$store.commit(SET_ERROR, error);
          })
       }
    },

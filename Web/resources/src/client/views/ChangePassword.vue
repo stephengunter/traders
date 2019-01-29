@@ -120,12 +120,9 @@ export default {
          })
          .catch(error => {
             if(!error)  Bus.$emit('errors');
-            else this.resolveError(error);
+            else this.$store.commit(SET_ERROR, error);
          })
-      },
-      resolveError(error){       
-         this.$store.commit(SET_ERROR, error);
-      },
+      }
    },
    
 };

@@ -70,11 +70,6 @@ export default {
 
       }
    },
-   computed: {
-      ...mapState({
-         Errors: state => state.auth.errors
-      })
-   },
    beforeMount(){
       this.returnUrl = this.$route.query.returnUrl;
    },

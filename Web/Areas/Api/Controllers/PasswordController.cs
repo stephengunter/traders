@@ -40,8 +40,6 @@ namespace Web.Areas.Api.Controllers
 		[HttpPost("forgot")]
 		public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest model)
 		{
-			ModelState.AddModelError("", "啟動密碼重設程序失敗");
-			return BadRequest(ModelState);
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
 			var user = await userManager.FindByEmailAsync(model.email);

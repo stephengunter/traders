@@ -41,11 +41,6 @@ export default {
          ok: false
       }
    },
-   computed: {
-      ...mapState({
-         Errors: state => state.auth.errors
-      })
-   },
    methods: {
       onSubmit() {
          this.$validator.validate().then(valid => {

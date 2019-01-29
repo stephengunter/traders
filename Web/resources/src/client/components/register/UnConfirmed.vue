@@ -17,7 +17,7 @@
                </span>  
             </v-alert>
          </v-flex>
-         <v-flex xs12>
+         <v-flex v-if="email" xs12>
             <v-btn @click="sendEmail" color="info" class="cn" style="margin: 6px 0px">
                重發認證信
             </v-btn>
@@ -35,6 +35,10 @@ export default {
       email: {
          type: String,
          default: ''
+      },
+      has_send: {
+         type: Boolean,
+         default: false
       }
    },
    data () {
@@ -42,12 +46,18 @@ export default {
          emailSend: false
       }
    },
+   beforeMount(){
+      this.emailSend = this.has_send;
+   },
    methods: {
       sendEmail(){
          this.$store
          .dispatch(SEND_CONFIRM_EMAIL, { email: this.email })
          .then(() => {
             this.emailSend = true;       
+         })
+         .catch(error => {
+            Bus.$emit('errors');
          })
       },
    }

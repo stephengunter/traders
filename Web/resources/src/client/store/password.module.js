@@ -59,10 +59,10 @@ const actions = {
             });
       });
    },
-   [FORGOT_PASSWORD](context, user) {
+   [FORGOT_PASSWORD](context, model) {
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
-         PasswordService.forgot(user)
+         PasswordService.forgot(model)
             .then(() => {
                resolve(true);
             })
@@ -74,10 +74,10 @@ const actions = {
             });
       });
    },
-   [RESET_PASSWORD](context, user) {
+   [RESET_PASSWORD](context, model) {
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
-         PasswordService.reset(user)
+         PasswordService.reset(model)
             .then(() => {
                resolve(true);
             })

@@ -13,7 +13,7 @@ import { SET_LOADING } from './mutations.type';
 const actions = {
    [REGISTER](context, user) {
       context.commit(SET_LOADING, true);
-      return new Promise((resolve) => {
+      return new Promise((resolve,reject) => {
          AccountService.register(user)
             .then(() => {
                resolve(true);
@@ -28,7 +28,7 @@ const actions = {
    },
    [SEND_CONFIRM_EMAIL](context, email) {
       context.commit(SET_LOADING, true);
-      return new Promise((resolve) => {
+      return new Promise((resolve,reject) => {
          AccountService.sendConfirmEmail(email)
             .then(() => {
                resolve(true);
@@ -42,7 +42,7 @@ const actions = {
       });
    },
    [CONFIRM_EMAIL](context, user) {
-      return new Promise((resolve) => {
+      return new Promise((resolve,reject) => {
          AccountService.confirmEmail(user)
             .then(() => {
                resolve(true);
