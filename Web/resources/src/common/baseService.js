@@ -17,7 +17,7 @@ const BaseService = {
 					resolve(response.data);
 				})
 				.catch(error => {
-					reject(error);
+					reject(error.response);
 				})
       })
    },

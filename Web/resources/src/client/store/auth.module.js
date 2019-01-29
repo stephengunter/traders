@@ -2,33 +2,25 @@ import jwtDecode from 'jwt-decode';
 
 import BaseService from '@/common/baseService';
 import JwtService from '@/common/jwt';
-import Errors from '@/common/errors';
 import Helper from '@/common/helper';
 
 import AuthService from '@/common/authService';
 import OAuthService from '../services/oAuth';
-import AccountService from '../services/account';
-import PasswordService from '../services/password';
 
 
 import {
+   CHECK_AUTH,
+   REFRESH_TOKEN,
+   LOGIN,
    FB_LOGIN,
    GOOGLE_LOGIN,
-   LOGIN,
-   LOGOUT,
    OAUTH_REGISTER,
-   REGISTER,
-   SEND_CONFIRM_EMAIL,
-   CONFIRM_EMAIL,
-   CHECK_AUTH,
-   FORGOT_PASSWORD,
-   RESET_PASSWORD,
-   CHANGE_PASSWORD,
-   REFRESH_TOKEN
+   LOGOUT
+   
 } from './actions.type';
 
 import { SET_AUTH, PURGE_AUTH, SET_USER, 
-   SET_ERROR, CLEAR_ERROR, SET_LOADING 
+   SET_LOADING 
 } from './mutations.type';
 
  
@@ -49,145 +41,6 @@ const getters = {
 };
 
 const actions = {
-   [LOGIN](context, credentials) {
-      context.commit(CLEAR_ERROR);
-      context.commit(SET_LOADING, true);
-      return new Promise((resolve, reject) => {
-         AuthService.login(credentials)
-         .then(model => {
-            context.commit(SET_AUTH, {
-               token: model.accessToken.token,
-               refreshToken: model.refreshToken
-            }); 
-            context.commit(SET_LOADING, false);
-            resolve(true);
-         })
-         .catch(error => {
-            context.commit(SET_LOADING, false); 
-            reject(Helper.resolveErrorData(error));
-         })
-      });     
-   },
-   [FB_LOGIN](context, token) {
-      context.commit(CLEAR_ERROR);
-      context.commit(SET_LOADING, true);
-      return new Promise((resolve, reject) => {
-         OAuthService.fbLogin(token)
-         .then(model => {
-            if(model.accessToken){
-               context.commit(SET_AUTH, {
-                  token: model.accessToken.token,
-                  refreshToken: model.refreshToken
-               }); 
-               context.commit(SET_LOADING, false);
-               resolve(null);
-            }else{
-               context.commit(SET_LOADING, false);
-               resolve(model);              
-            }
-         })
-         .catch(error => {
-            context.commit(SET_LOADING, false);
-            reject(error);
-         })
-      });     
-   },
-   [GOOGLE_LOGIN](context, token) {
-      context.commit(CLEAR_ERROR);
-      context.commit(SET_LOADING, true);
-      return new Promise((resolve, reject) => {
-         OAuthService.googleLogin(token)
-         .then(model => {
-            if(model.accessToken){
-               context.commit(SET_AUTH, {
-                  token: model.accessToken.token,
-                  refreshToken: model.refreshToken
-               }); 
-               context.commit(SET_LOADING, false);
-               resolve(null);
-            }else{
-               context.commit(SET_LOADING, false);
-               resolve(model);              
-            }
-         })
-         .catch(error => {
-            context.commit(SET_LOADING, false);
-            reject(error);
-         })
-      });     
-   },
-   [OAUTH_REGISTER](context, user) {
-      context.commit(CLEAR_ERROR);
-      context.commit(SET_LOADING, true);
-      return new Promise((resolve, reject) => {
-         OAuthService.register(user)
-         .then(model => {
-            context.commit(SET_AUTH, {
-               token: model.accessToken.token,
-               refreshToken: model.refreshToken
-            }); 
-            context.commit(SET_LOADING, false);
-            resolve(true);
-         })
-         .catch(error => {
-            context.commit(SET_LOADING, false);   
-            reject(error);
-         })
-      });     
-   },
-   [LOGOUT](context) {
-     	context.commit(PURGE_AUTH);
-   },
-   [REGISTER](context, user) {
-      context.commit(CLEAR_ERROR);
-      context.commit(SET_LOADING, true);
-      return new Promise((resolve) => {
-         AccountService.register(user)
-            .then(() => {
-               context.commit(SET_LOADING, false);
-               resolve(true);
-            })
-            .catch(error => {
-               context.commit(SET_LOADING, false);   
-               let errorData = Helper.resolveErrorData(error);
-               if(errorData){
-                  context.commit(SET_ERROR, errorData);
-               }else{
-                  Bus.$emit('errors', error);
-               }
-            })
-      });
-   },
-   [SEND_CONFIRM_EMAIL](context, email) {
-      context.commit(SET_LOADING, true);
-      return new Promise((resolve) => {
-         AccountService.sendConfirmEmail(email)
-            .then(() => {
-               context.commit(SET_LOADING, false);
-               resolve(true);
-            })
-            .catch(error => {
-               context.commit(SET_LOADING, false);
-               Bus.$emit('errors', error);
-            })
-      });
-   },
-   [CONFIRM_EMAIL](context, user) {
-      return new Promise((resolve) => {
-         AccountService.confirmEmail(user)
-            .then(() => {
-               resolve(true);
-            })
-            .catch(error => {
-               let errorData = Helper.resolveErrorData(error);
-               if(errorData){
-                  resolve(false);
-               }else{
-                  Bus.$emit('errors', error);
-               }
-            })
-      });
-   },
    [CHECK_AUTH](context) {
       return new Promise((resolve) => {
          let accessToken = JwtService.getToken();
@@ -217,93 +70,112 @@ const actions = {
                   token: model.accessToken.token,
                   refreshToken: model.refreshToken
                });
-               context.commit(SET_LOADING, false);
                resolve(true);
             })
             .catch(err => {
-               context.commit(SET_LOADING, false);
                context.commit(PURGE_AUTH);
                resolve(false);           
             })
+            .finally(() => { 
+               context.commit(SET_LOADING, false);
+            });
          } else {
             context.commit(PURGE_AUTH);
             resolve(false);
          }
       });
    },
-   [FORGOT_PASSWORD](context, user) {
-      context.commit(CLEAR_ERROR);
+   [LOGIN](context, credentials) {
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
-         PasswordService.forgot(user)
-            .then(() => {
-               context.commit(SET_LOADING, false);
-               resolve(true);
-            })
-            .catch(error => {
-               context.commit(SET_LOADING, false);  
-               let errorData = Helper.resolveErrorData(error);
-               if(errorData){
-                  context.commit(SET_ERROR, errorData);
-               }else{
-                  Bus.$emit('errors', error);
-                  reject();
-               }
-            })
-      });
+         AuthService.login(credentials)
+         .then(model => {
+            context.commit(SET_AUTH, {
+               token: model.accessToken.token,
+               refreshToken: model.refreshToken
+            }); 
+            resolve(true);
+         })
+         .catch(error => {
+            reject(Helper.resolveErrorData(error));
+         })
+         .finally(() => { 
+            context.commit(SET_LOADING, false);
+         });
+      });     
    },
-   [RESET_PASSWORD](context, user) {
-      context.commit(CLEAR_ERROR);
+   [FB_LOGIN](context, token) {
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
-         PasswordService.reset(user)
-            .then(() => {
-               context.commit(SET_LOADING, false);
-               resolve(true);
-            })
-            .catch(error => {
-               context.commit(SET_LOADING, false);  
-               let errorData = Helper.resolveErrorData(error);
-               if(errorData){
-                  context.commit(SET_ERROR, errorData);
-               }else{
-                  Bus.$emit('errors', error);
-                  reject();
-               }
-            })
-      });
+         OAuthService.fbLogin(token)
+         .then(model => {
+            if(model.accessToken){
+               context.commit(SET_AUTH, {
+                  token: model.accessToken.token,
+                  refreshToken: model.refreshToken
+               }); 
+               resolve(null);
+            }else{
+               resolve(model);              
+            }
+         })
+         .catch(error => {
+            reject(error);
+         })
+         .finally(() => { 
+            context.commit(SET_LOADING, false);
+         });
+      });     
    },
-   [CHANGE_PASSWORD](context, user) {
-      context.commit(CLEAR_ERROR);
+   [GOOGLE_LOGIN](context, token) {
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
-         PasswordService.change(user)
-            .then(() => {
-               context.commit(SET_LOADING, false);
-               resolve(true);
-            })
-            .catch(error => {
-               context.commit(SET_LOADING, false);   
-               let errorData = Helper.resolveErrorData(error);
-               if(errorData){
-                  context.commit(SET_ERROR, errorData);
-               }else{
-                  Bus.$emit('errors', error);
-                  reject();
-               }
-            })
-      });
-   }
+         OAuthService.googleLogin(token)
+         .then(model => {
+            if(model.accessToken){
+               context.commit(SET_AUTH, {
+                  token: model.accessToken.token,
+                  refreshToken: model.refreshToken
+               }); 
+               resolve(null);
+            }else{
+               resolve(model);              
+            }
+         })
+         .catch(error => {
+            reject(error);
+         })
+         .finally(() => { 
+            context.commit(SET_LOADING, false);
+         });
+      });     
+   },
+   [OAUTH_REGISTER](context, user) {
+      context.commit(SET_LOADING, true);
+      return new Promise((resolve, reject) => {
+         OAuthService.register(user)
+         .then(model => {
+            context.commit(SET_AUTH, {
+               token: model.accessToken.token,
+               refreshToken: model.refreshToken
+            }); 
+            resolve(true);
+         })
+         .catch(error => { 
+            reject(error);
+         })
+         .finally(() => { 
+            context.commit(SET_LOADING, false);
+         });
+      });     
+   },
+   [LOGOUT](context) {
+     	context.commit(PURGE_AUTH);
+   },
 };
 
 
 const mutations = {
-   // [SET_ERROR](state, errors) {
-   //    state.errors.record(errors);
-   // },
-   // [CLEAR_ERROR](state) {
-   //    state.errors.clear();   
-   // },
    [SET_USER](state, user) {
       state.user = user;
    },

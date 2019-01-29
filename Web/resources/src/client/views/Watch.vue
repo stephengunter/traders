@@ -2,7 +2,7 @@
    <div class="container">
       
       <Bread />
-      <v-layout v-if="noSubscribe" row wrap>
+      <v-layout v-if="result.noSubscribe" row wrap>
          <v-flex xs12>
             <v-alert :value="true"  color="error"  icon="mdi-alert" outline  class="title">
                <span class="cn" >
@@ -85,11 +85,15 @@ export default {
    },
    data () {
       return {
-         noSubscribe: false,
+        
          strategyId: 0,
          dateString: '',
          showDatePicker: false,
-         noData: false
+
+         result:{
+            noSubscribe: false,
+            noData: false
+         }
       }
    },
    computed: {
@@ -112,24 +116,20 @@ export default {
 		init(){
          this.$store.dispatch(INIT_WATCH)
             .then(() => {
-               this.noSubscribe = false;
+               this.result.noSubscribe = false;
                this.dateString = Helper.toDateString(this.date);
                //this.fetchQuotes();       
             }).catch(error => {
-               //let result = this.resolveError(error);
-               //if(!result) Bus.$emit('errors', error);
-              //  Bus.$emit('errors', error);
+               if(!error)  Bus.$emit('errors');
+               else this.resolveError(error);
             })
       },
       resolveError(error){
-         
-         if(errorData){
-            if(errorData.hasOwnProperty('subscribe')){
-               this.noSubscribe = true;
-               return true;
-            }
+        //console.log(error);
+         if(error.hasOwnProperty('subscribe')){
+             alert('noSubscribe');
+            this.result.noSubscribe = true;
          }
-         return false; 
       },
       onStrategyChanged(){
          alert(this.strategyId);

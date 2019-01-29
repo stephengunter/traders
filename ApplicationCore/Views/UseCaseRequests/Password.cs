@@ -33,6 +33,21 @@ namespace ApplicationCore.Views
 		public string code { get; set; }
 	}
 
+	public class SetPasswordRequest
+	{
+		[Required(ErrorMessage = "請輸入密碼")]
+		[Display(Name = "密碼")]
+		[StringLength(100, ErrorMessage = "密碼長度最少6位", MinimumLength = 6)]
+		[DataType(DataType.Password)]
+		public string password { get; set; }
+
+		[DataType(DataType.Password)]
+		[Display(Name = "確認密碼")]
+		[Compare("password", ErrorMessage = "確認密碼與密碼不相符")]
+		public string confirmPassword { get; set; }
+
+	}
+
 	public class ChangePasswordRequest
 	{
 		[Required(ErrorMessage = "請輸入舊密碼")]

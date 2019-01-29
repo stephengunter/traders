@@ -51,6 +51,7 @@ namespace ApplicationCore.DataAccess
 					.WithOne(p => p.User)
 					.HasForeignKey<Profile>(p => p.UserId);
 
+
 			builder.HasOne(u => u.RefreshToken)
 					.WithOne(rt => rt.User)
 					.HasForeignKey<RefreshToken>(rt => rt.UserId);

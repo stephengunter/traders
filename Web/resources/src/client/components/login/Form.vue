@@ -1,5 +1,5 @@
 <template>
-   <form  @submit.prevent="onSubmit">
+   <form @submit.prevent="onSubmit">
       <v-text-field
          v-validate="'required|email'"
          v-model="credentials.email"

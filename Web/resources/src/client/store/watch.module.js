@@ -1,5 +1,4 @@
 import Helper from '@/common/helper';
-import Errors from '@/common/errors';
 
 import WatchService from '../services/watch';
 
@@ -35,15 +34,14 @@ const actions = {
             context.commit(SET_DATE, model.date);
             context.commit(SET_STRATEGY, model.strategies[0]);
             context.commit(SET_STRATEGIES, model.strategies);
-
-            context.commit(SET_LOADING, false);
             resolve(true);
          })
          .catch(error => {
-            
-            context.commit(SET_LOADING, false); 
-            reject(error);            
+            reject(Helper.resolveErrorData(error));           
          })
+         .finally(() => { 
+            context.commit(SET_LOADING, false);
+         });
       });  
    }
 };

@@ -40,6 +40,8 @@ namespace Web.Areas.Api.Controllers
 		[HttpPost("forgot")]
 		public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest model)
 		{
+			ModelState.AddModelError("", "啟動密碼重設程序失敗");
+			return BadRequest(ModelState);
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
 			var user = await userManager.FindByEmailAsync(model.email);
@@ -84,36 +86,67 @@ namespace Web.Areas.Api.Controllers
 			return BadRequest(ModelState);
 		}
 
+		[Authorize]
+		[HttpGet("change")]
+		public async Task<IActionResult> ChangePassword()
+		{
+			var user = await userManager.FindByIdAsync(CurrentUserId);
+
+			var hasPassword = await userManager.HasPasswordAsync(user);
+			if(hasPassword) return Ok(new ChangePasswordRequest());
+
+			return Ok(new SetPasswordRequest());
+		}
+
 		//POST api/password/change
 		[Authorize]
 		[HttpPost("change")]
 		public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest model)
 		{
 			
-			if (!ModelState.IsValid) return BadRequest(ModelState);
-			
+			if (!ModelState.IsValid) return BadRequest(ModelState);			
 
 			var user = await userManager.FindByIdAsync(CurrentUserId);
-			
 
 			var hasPassword = await userManager.HasPasswordAsync(user);
 			if (!hasPassword)
 			{
-				throw new Exception();
-				//return RedirectToAction(nameof(SetPassword));
+				ModelState.AddModelError("no_password", "還沒有密碼");
+				return BadRequest(ModelState);
 			}
 
 			var result = await userManager.ChangePasswordAsync(user, model.oldPassword, model.password);
-			if (result.Succeeded)
-			{
-				return Ok();
-			}
+
+			if (result.Succeeded) return Ok();
+
 
 			AddChangePasswordErrors(result);
 			return BadRequest(ModelState);
 		}
 
+		//POST api/password/set
+		[Authorize]
+		[HttpPost("set")]
+		public async Task<IActionResult> SetPassword([FromBody] SetPasswordRequest model)
+		{
+			if (!ModelState.IsValid) return BadRequest(ModelState);
 
+			var user = await userManager.FindByIdAsync(CurrentUserId);
+
+			var hasPassword = await userManager.HasPasswordAsync(user);
+
+			if (hasPassword)
+			{
+				ModelState.AddModelError("has_password", "舊密碼錯誤");
+				return BadRequest(ModelState);
+			}
+
+			var result = await userManager.AddPasswordAsync(user, model.password);
+			if (result.Succeeded) return Ok();
+
+			AddChangePasswordErrors(result);
+			return BadRequest(ModelState);
+		}
 
 
 		string ResetPasswordCallbackLink(string code)

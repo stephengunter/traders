@@ -19,9 +19,18 @@ namespace Web.Areas.Api.Controllers
 			this.hostingEnv = hostingEnv;
 		}
 
-		[HttpGet("env")]
+		[HttpGet("")]
 		public IActionResult Index()
+		{
+
+			ModelState.AddModelError("subscribe", "沒有訂閱");
+			return BadRequest(ModelState);
+		}
+
+		[HttpGet("env")]
+		public IActionResult Environment()
         {
+		
 			return Ok(hostingEnv.EnvironmentName);
         }
     }

@@ -34,7 +34,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { SET_ERROR } from '../store/mutations.type';
+import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 import { LOGIN, FB_LOGIN, GOOGLE_LOGIN, OAUTH_REGISTER } from '../store/actions.type';
 import { ADMIN_URL } from '@/common/config';
 
@@ -81,12 +81,15 @@ export default {
    methods: {
       onSubmit(credentials) {
          this.credentials = credentials;
+         
+         this.$store.commit(CLEAR_ERROR);
          this.$store
          .dispatch(LOGIN, credentials)
          .then(() => {
             this.onSuccess();              
-         }).catch(error => {
-            if(!error)  Bus.$emit('errors', error);
+         })
+         .catch(error => {
+            if(!error)  Bus.$emit('errors');
             else this.resolveError(error);
          })
       },
@@ -95,7 +98,7 @@ export default {
             //email驗證
             this.result.emailUnConfirmed = true;
          }else{
-            //輸入錯誤
+            //輸入錯誤, 登入失敗
             this.$store.commit(SET_ERROR, error);
          }
       },
@@ -115,32 +118,31 @@ export default {
       oAuthLoginFailed(){
          Bus.$emit('errors', { msg: '登入失敗' });
       },
+      oAuthLoginSuccess(model){
+         if(model){
+            //還沒註冊
+            this.initRegister(model);
+         }else{
+            //登入成功
+            this.onSuccess();  
+         }  
+      },
       onGoogleLoginSuccess(token){
+         this.$store.commit(CLEAR_ERROR);
          this.$store
             .dispatch(GOOGLE_LOGIN, token)
             .then(model => {
-               if(model){
-                  //還沒註冊
-                  this.initRegister(model);
-               }else{
-                  //登入成功
-                  this.onSuccess();  
-               }            
+               this.oAuthLoginSuccess(model);          
             }).catch(error => {
                this.oAuthLoginFailed();
             })
       },
       onFBLoginSuccess(token){
+         this.$store.commit(CLEAR_ERROR);
          this.$store
             .dispatch(FB_LOGIN, token)
             .then(model => {
-               if(model){
-                  //還沒註冊
-                  this.initRegister(model);
-               }else{
-                  //登入成功
-                  this.onSuccess();  
-               }            
+               this.oAuthLoginSuccess(model);                 
             }).catch(error => {
                this.oAuthLoginFailed();
             })
@@ -150,6 +152,7 @@ export default {
          this.register = true;
       },
       onSubmitRegister(user){
+         this.$store.commit(CLEAR_ERROR);
          this.$store
          .dispatch(OAUTH_REGISTER, user)
          .then(() => {

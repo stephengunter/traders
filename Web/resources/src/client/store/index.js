@@ -3,6 +3,8 @@ import Vuex from 'vuex';
 
 import app from './app.module';
 import auth from './auth.module';
+import password from './password.module';
+import account from './account.module';
 import watch from './watch.module';
 import chart from './chart.module';
 
@@ -13,6 +15,8 @@ export default new Vuex.Store({
    modules: {
       app,
       auth,
+      password,
+      account,
       watch,
       chart
    }

@@ -18,13 +18,14 @@
             data-vv-name="email"
             required
          />
-         <v-btn @click.prevent="onSubmit" color="success" class="cn">確認</v-btn>
+         <v-btn type="submit" @click.prevent="onSubmit" color="success" class="cn">確認</v-btn>
       </form>
    </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 import { FORGOT_PASSWORD } from '../store/actions.type';
 
 import ErrorList from '@/components/ErrorList';
@@ -52,10 +53,15 @@ export default {
          });
       },
       submit(){
+         this.$store.commit(CLEAR_ERROR);
          this.$store
          .dispatch(FORGOT_PASSWORD, { email: this.email })
          .then(() => {
             this.ok = true;
+         })
+         .catch(error => {
+            if(!error)  Bus.$emit('errors');
+            else this.$store.commit(SET_ERROR, error);
          })
       }
    },
