@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace ApplicationCore.DataAccess
 {
 
-	public class DataContext : DbContext
+	public class HistoryContext : DbContext
 	{
 		
-		public DataContext(DbContextOptions<DataContext> options) : base(options)
+		public HistoryContext(DbContextOptions<HistoryContext> options) : base(options)
 		{
 		}
 
-		public DataContext(string connectionString) : base(new DbContextOptionsBuilder<DataContext>().UseSqlServer(connectionString).Options)
+		public HistoryContext(string connectionString) : base(new DbContextOptionsBuilder<HistoryContext>().UseSqlServer(connectionString).Options)
 		{
 
 		}

@@ -43,6 +43,8 @@ namespace ApplicationCore.Models
 
 		public SourceType Source { get; set; }
 
+		public bool WithAvg { get; set; }
+
 
 		public string[] ResolvedParams => Params.Split(',');
 

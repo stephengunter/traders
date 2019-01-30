@@ -30,11 +30,11 @@ namespace ApplicationCore.Migrations.RealTime
 
                     b.Property<int>("QuoteId");
 
-                    b.Property<int>("Signal");
-
                     b.Property<string>("Text");
 
                     b.Property<int>("Time");
+
+                    b.Property<string>("Val");
 
                     b.HasKey("Id");
 

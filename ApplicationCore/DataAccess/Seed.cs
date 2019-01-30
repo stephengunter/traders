@@ -21,12 +21,12 @@ namespace ApplicationCore.DataAccess
 	{
 		private readonly DefaultContext defaultContext;
 		private readonly RealTimeContext realTimeContext;
-		private readonly DataContext dataContext;
+		private readonly HistoryContext dataContext;
 
 		private readonly UserManager<User> userManager;
 		private readonly RoleManager<IdentityRole> roleManager;
 
-		public DBSeeder(DefaultContext defaultContext, RealTimeContext realTimeContext, DataContext dataContext,
+		public DBSeeder(DefaultContext defaultContext, RealTimeContext realTimeContext, HistoryContext dataContext,
 			UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
 		{
 			this.defaultContext = defaultContext;
@@ -74,7 +74,7 @@ namespace ApplicationCore.DataAccess
 				var realTimeContext = scope.ServiceProvider.GetRequiredService<RealTimeContext>();
 				realTimeContext.Database.Migrate();
 
-				var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+				var dataContext = scope.ServiceProvider.GetRequiredService<HistoryContext>();
 				dataContext.Database.Migrate();
 
 
@@ -223,7 +223,7 @@ namespace ApplicationCore.DataAccess
 				{
 					Name = "藍籌股指標" , Entity = "BlueChips", Begin = 90000, End = 132500,
 					Main = false, Type = IndicatorType.Bar, Source = SourceType.Stock,
-					Params = "1,60,5" ,
+					Params = "1,60,5" , WithAvg = true,
 					Description ="主要權值股多空力道分析"
 				}
 			};
@@ -247,6 +247,7 @@ namespace ApplicationCore.DataAccess
 					exist.Type = indicator.Type;
 					exist.Params = indicator.Params;
 					exist.Entity = indicator.Entity;
+					exist.WithAvg = indicator.WithAvg;
 					context.SaveChanges();
 				}
 			}

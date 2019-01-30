@@ -17,8 +17,7 @@ namespace ApplicationCore.Models
 
 		public string Text { get; set; }
 
-		public int Signal { get; set; }
-
+		public string Val { get; set; }
 
 
 		public Quote Quote { get; set; }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApplicationCore.Migrations.Data
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(HistoryContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -30,11 +30,11 @@ namespace ApplicationCore.Migrations.Data
 
                     b.Property<int>("QuoteId");
 
-                    b.Property<int>("Signal");
-
                     b.Property<string>("Text");
 
                     b.Property<int>("Time");
+
+                    b.Property<string>("Val");
 
                     b.HasKey("Id");
 

@@ -11,22 +11,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCore.Services
 {
-	public interface IDataService
+	public interface IHistoryService
 	{
 		Task CreateAsync(Quote quote);
 		Task UpdateAsync(Quote quote);
 		Quote GetQuote(int date, int time);
 		Task<IEnumerable<Quote>> FetchAsync(int date);
 
+		Task<IEnumerable<Quote>> FetchAllAsync();
+
 		int LatestDate();
 	}
 
-	public class DataService : IDataService
+	public class HistoryService : IHistoryService
 	{
-		private readonly IDataRepository<Data> dataRepository;
-		private readonly IDataRepository<Quote> quoteRepository;
+		private readonly IHistoryRepository<Data> dataRepository;
+		private readonly IHistoryRepository<Quote> quoteRepository;
 
-		public DataService(IDataRepository<Data> dataRepository, IDataRepository<Quote> quoteRepository)
+		public HistoryService(IHistoryRepository<Data> dataRepository, IHistoryRepository<Quote> quoteRepository)
 		{
 			this.dataRepository = dataRepository;
 			this.quoteRepository = quoteRepository;
@@ -45,6 +47,12 @@ namespace ApplicationCore.Services
 		public async Task<IEnumerable<Quote>> FetchAsync(int date)
 		{
 			var spec = new QuoteFilterSpecification(date);
+			return await quoteRepository.ListAsync(spec);
+		}
+
+		public async Task<IEnumerable<Quote>> FetchAllAsync()
+		{
+			var spec = new QuoteFilterSpecification();
 			return await quoteRepository.ListAsync(spec);
 		}
 

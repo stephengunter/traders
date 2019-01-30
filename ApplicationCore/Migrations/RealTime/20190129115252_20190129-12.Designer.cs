@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace ApplicationCore.Migrations.Data
+namespace ApplicationCore.Migrations.RealTime
 {
-    [DbContext(typeof(HistoryContext))]
-    [Migration("20190129043505_init")]
-    partial class init
+    [DbContext(typeof(RealTimeContext))]
+    [Migration("20190129115252_20190129-12")]
+    partial class _2019012912
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,11 +32,11 @@ namespace ApplicationCore.Migrations.Data
 
                     b.Property<int>("QuoteId");
 
-                    b.Property<int>("Signal");
-
                     b.Property<string>("Text");
 
                     b.Property<int>("Time");
+
+                    b.Property<string>("Val");
 
                     b.HasKey("Id");
 

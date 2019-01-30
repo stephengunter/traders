@@ -27,6 +27,7 @@ namespace ApplicationCore.Views
 				main = indicator.Main,
 				type = indicator.Type.ToString(),
 				source = indicator.Source.ToString(),
+				withAvg = indicator.WithAvg,
 
 				defaultParam = indicator.DefaultParam,
 				minParam = paramList.Min(),

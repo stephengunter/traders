@@ -22,10 +22,10 @@ namespace Web.Areas.Api.Controllers
 		private readonly ISubscribeService subscribeService;
 		private readonly IStrategyService strategyService;
 		private readonly IRealTimeService realTimeService;
-		private readonly IDataService dataService;
+		private readonly IHistoryService dataService;
 
 		public WatchController(IHttpContextAccessor accessor, ISubscribeService subscribeService,
-			IStrategyService strategyService, IRealTimeService realTimeService, IDataService dataService)
+			IStrategyService strategyService, IRealTimeService realTimeService, IHistoryService dataService)
 		{
 			this.accessor = accessor;
 			this.subscribeService = subscribeService;

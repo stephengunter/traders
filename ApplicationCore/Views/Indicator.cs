@@ -32,6 +32,8 @@ namespace ApplicationCore.Views
 		public string source { get; set; }
 
 		public string type { get; set; }
+
+		public bool withAvg { get; set; }
 	}
 
 }

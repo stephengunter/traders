@@ -52,8 +52,8 @@ namespace Web
 				options.UseSqlServer(Configuration.GetConnectionString("Default"),
 				b => b.MigrationsAssembly("ApplicationCore"))
 			);
-			services.AddDbContext<DataContext>(options =>
-				options.UseSqlServer(Configuration.GetConnectionString("Data"),
+			services.AddDbContext<HistoryContext>(options =>
+				options.UseSqlServer(Configuration.GetConnectionString("History"),
 				b => b.MigrationsAssembly("ApplicationCore"))
 			);
 			services.AddDbContext<RealTimeContext>(options =>
@@ -179,7 +179,7 @@ namespace Web
 			services.AddScoped<IAuthorizationHandler, HasPermissionHandler>();
 
 			services.AddScoped(typeof(IDefaultRepository<>), typeof(DefaultRepository<>));
-			services.AddScoped(typeof(IDataRepository<>), typeof(DataRepository<>));
+			services.AddScoped(typeof(IHistoryRepository<>), typeof(HistoryRepository<>));
 			services.AddScoped(typeof(IRealTimeRepository<>), typeof(RealTimeRepository<>));
 
 			services.AddScoped<IDBSeeder, DBSeeder>();
@@ -195,7 +195,7 @@ namespace Web
 			services.AddScoped<IDayService, DayService>();
 
 			services.AddScoped<IRealTimeService, RealTimeService>();
-			services.AddScoped<IDataService, DataService>();
+			services.AddScoped<IHistoryService, HistoryService>();
 
 			services.AddScoped<IAttachmentService, AttachmentService>();
 

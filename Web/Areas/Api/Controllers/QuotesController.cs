@@ -22,11 +22,11 @@ namespace Web.Areas.Api.Controllers
 		private readonly IStrategyService strategyService;
 		private readonly IIndicatorService indicatorService;
 		private readonly IRealTimeService realTimeService;
-		private readonly IDataService dataService;
+		private readonly IHistoryService dataService;
 
 		public QuotesController(IHttpContextAccessor accessor, ISubscribeService subscribeService, 
 			IStrategyService strategyService, IIndicatorService indicatorService,
-			IRealTimeService realTimeService, IDataService dataService)
+			IRealTimeService realTimeService, IHistoryService dataService)
 		{
 			this.accessor = accessor;
 			this.subscribeService = subscribeService;

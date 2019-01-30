@@ -39,7 +39,7 @@ namespace ApplicationCore.Views
 				indicator = data.Indicator,
 				 
 				text = data.Text,
-				signal = data.Signal
+				val = data.Val
 			};
 
 		}

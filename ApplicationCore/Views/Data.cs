@@ -17,6 +17,8 @@ namespace ApplicationCore.Views
 
 		public string text { get; set; }
 
+		public string val { get; set; }
+
 		public int signal { get; set; }
 
 		public void SetValues(Data entity)
@@ -25,7 +27,7 @@ namespace ApplicationCore.Views
 			entity.Time = time;
 			entity.Indicator = indicator;
 			entity.Text = text;
-			entity.Signal = signal;
+			entity.Val = val;
 
 		}
 
