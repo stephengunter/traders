@@ -1,20 +1,31 @@
 import Helper from '@/common/helper';
+import Indicator from './indicator';
+import Strategy from './strategy';
 
 class Charts {
+   strategy = null;
    priceSeriesName = '報價';
-   colorRed = '#FD1050';
-   colorGreen = '#0CF49B';
+   colorUp = '#FD1050';
+   colorDown ='#FFFFFF';
    prices = [];
    times = [];
    indicators = [];
 
 
-   constructor(quotes, indicators) {
-      this.indicators = indicators.map(item => this.mapIndicator(item));
+   constructor(strategy, indicators, quotes) {
+      this.strategy = new Strategy(strategy);
+      this.indicators = indicators.map(indicator => {
+         let settings = this.strategy.getIndicatorSettings(indicator.id);
+         return new Indicator(indicator, settings.arg);
+      });
 
       quotes.forEach(qoute => {
          this.addQuote(qoute);
       });
+
+      this.indicators.forEach(indicator => {
+         indicator.calculate();
+      })
 
       let mainIndicators = this.getMainIndicators();
       let subIndicators = this.getSubIndicators();
@@ -32,21 +43,10 @@ class Charts {
          let indicator = this.indicators.find(i => i.entity == data.indicator);
          indicator.data.push(data);
       })
-      
    }
 
    mapQuote(item) {
       return [item.open, item.price, item.low, item.high];
-   }
-
-   mapIndicator(item) {
-      return {
-         name: item.name,
-         type: item.type,
-         entity: item.entity,
-         main: item.main,
-         data:[]
-      }
    }
 
    getMainIndicators(){
@@ -59,7 +59,6 @@ class Charts {
    
 
    initXAxis(subIndicators){
-      let interval = 15-1;
       let xAxis = [{
             type: 'category',
             data: this.times,
@@ -139,8 +138,8 @@ class Charts {
          name: this.priceSeriesName,
          itemStyle: {
             normal: {
-               color: this.colorRed,
-               color0: this.colorGreen
+               color: this.colorUp,
+               color0: this.colorDown
             }
          },
          data: this.prices,
@@ -180,32 +179,49 @@ class Charts {
       {
          let indicator = subIndicators[i];
 
-         let colorRed = this.colorRed;
-         let colorGreen = this.colorGreen;
-         let result = indicator.data.map(item => {
-            let vals = item.text.split(',');
-            return parseInt(vals[0]) - parseInt(vals[1]) ;
+         let colorUp = this.colorUp;
+         let colorDown = this.colorDown;
+         let vals = indicator.data.map(item => {
+            return item.val;
+         })
+         let avgs = indicator.data.map(item => {
+            return item.avg;
          })
          series.push({
                type: 'bar',
                name: indicator.name,
                xAxisIndex: i+1,
                yAxisIndex: i+1,
-               data: result,
+               data: vals,
                itemStyle: {
                   normal: {
                      color: function(params) {
                         var col;
                         if (params.data >= 0) {
-                           col = colorRed;
+                           col = colorUp;
                         } else {
-                           col = colorGreen;
+                           col = colorDown;
                         }
                         return col;
                      }
                   }
                }
-          });
+         });
+
+         series.push({
+            type: 'line',
+            smooth: true,
+            name: indicator.name + '(MA6)',
+            xAxisIndex: i+1,
+            yAxisIndex: i+1,
+            data: avgs,
+            lineStyle: {
+               normal: { opacity: 0.5 , color: '#FFD700' }
+            }
+            
+         });
+
+          
        
       }
      

@@ -2,16 +2,16 @@
    <div class="container">
       
       <Bread />
-      <v-layout v-if="result.noSubscribe" row wrap>
+      <v-layout v-if="result < 0" row wrap>
          <v-flex xs12>
             <v-alert :value="true"  color="error"  icon="mdi-alert" outline  class="title">
                <span class="cn" >
-                  您還沒有完成訂閱或者不在訂閱期間內
+                  {{ errMsg }}
                </span>  
             </v-alert>
          </v-flex>
       </v-layout>
-      <v-card>
+      <v-card v-if="result > 0">
          <v-card-text>
             <v-layout row wrap>
                <v-flex xs12 sm10 md10 class="d-inline-flex">
@@ -53,16 +53,16 @@
                   
                </v-flex>
             </v-layout>
-            <!-- <v-layout row>
+            <v-layout row>
                <v-flex xs12>
                   <v-alert v-if="noData" :value="true"  color="warning"  icon="mdi-alert" outline  class="title">
                      <span class="cn" >
                         沒有這一天的資料
                      </span>  
                   </v-alert>
-                  <charts-default v-show="!noData" ref="myChart" v-else />
+                  <charts-default v-show="!noData" :strategy="strategy" ref="myChart" />
                </v-flex>
-            </v-layout> -->
+            </v-layout>
          </v-card-text>
       </v-card>
    </div>
@@ -74,6 +74,8 @@ import Helper from '@/common/helper';
 import { mapState } from 'vuex';
 
 import { INIT_WATCH, FETCH_QUOTES } from '../store/actions.type';
+import { SET_DATE, SET_STRATEGY } from '../store/mutations.type';
+
 import Bread from '../components/TheBread';
 import ChartsDefault from '../components/charts/Default';
 
@@ -90,10 +92,9 @@ export default {
          dateString: '',
          showDatePicker: false,
 
-         result:{
-            noSubscribe: false,
-            noData: false
-         }
+         result:0,
+         errMsg: '',
+         noData: false
       }
    },
    computed: {
@@ -116,44 +117,60 @@ export default {
 		init(){
          this.$store.dispatch(INIT_WATCH)
             .then(() => {
-               this.result.noSubscribe = false;
+               this.result = 1;
                this.dateString = Helper.toDateString(this.date);
-               //this.fetchQuotes();       
+               this.strategyId = this.strategies[0].id;
+
+               this.fetchQuotes();       
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
                else this.resolveError(error);
             })
       },
       resolveError(error){
-        //console.log(error);
          if(error.hasOwnProperty('subscribe')){
-             alert('noSubscribe');
-            this.result.noSubscribe = true;
+            this.errMsg = '您還沒有完成訂閱或者不在訂閱期間內';
+            this.result = -1;
+         }else if(error.hasOwnProperty('user')){
+            this.errMsg = '權限不足或重複登入';
+            this.result = -1;
+         }else{
+            Bus.$emit('errors');
          }
+
+         
       },
-      onStrategyChanged(){
-         alert(this.strategyId);
+      onStrategyChanged(val){
+         let strategy = this.strategies.find(item => item.id == val);
+         if(strategy.id !== this.strategy.id){
+            this.$store.commit(SET_STRATEGY, strategy);
+            this.fetchQuotes();
+         }
+        
       },
       onDateChanged(){
          this.showDatePicker = false;
-         alert(this.date);
+         this.$store.commit(SET_DATE, Helper.dateNumber(this.dateString));
+         this.fetchQuotes();
       },
       fetchQuotes(){
          let params = {
-            user: this.model.key,
-            date: Helper.dateNumber(this.date),
-            strategy: this.strategyId  
+            user: this.key,
+            date: this.date,
+            strategy: this.strategy.id  
          };
          this.$store.dispatch(FETCH_QUOTES, params)
             .then(result => {
                if(result){
+                  this.noData = false;
                   this.$refs.myChart.init();      
                }else{
                   //沒有資料
                   this.noData = true;
                }        
             }).catch(error => {
-               Bus.$emit('errors', error);
+               if(!error)  Bus.$emit('errors');
+               else this.resolveError(error);
             })
       },
       refresh(){

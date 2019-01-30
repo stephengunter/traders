@@ -22,11 +22,11 @@ namespace Web.Areas.Api.Controllers
 		private readonly IStrategyService strategyService;
 		private readonly IIndicatorService indicatorService;
 		private readonly IRealTimeService realTimeService;
-		private readonly IHistoryService dataService;
+		private readonly IHistoryService historyService;
 
 		public QuotesController(IHttpContextAccessor accessor, ISubscribeService subscribeService, 
 			IStrategyService strategyService, IIndicatorService indicatorService,
-			IRealTimeService realTimeService, IHistoryService dataService)
+			IRealTimeService realTimeService, IHistoryService historyService)
 		{
 			this.accessor = accessor;
 			this.subscribeService = subscribeService;
@@ -35,7 +35,7 @@ namespace Web.Areas.Api.Controllers
 			this.indicatorService = indicatorService;
 
 			this.realTimeService = realTimeService;
-			this.dataService = dataService;
+			this.historyService = historyService;
 		}
 
 		[HttpGet]
@@ -51,7 +51,7 @@ namespace Web.Areas.Api.Controllers
 			var indicatorEntities = indicators.Select(i => i.Entity).ToList();
 
 			bool realTime = false;
-			var quotes = await dataService.FetchAsync(date);
+			var quotes = await historyService.FetchAsync(date);
 			if (quotes.IsNullOrEmpty())
 			{
 				realTime = true;				

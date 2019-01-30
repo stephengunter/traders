@@ -1,3 +1,4 @@
+import Helper from '@/common/helper';
 import QuoteService from '../services/quote';
 
 
@@ -34,17 +35,20 @@ const actions = {
       return new Promise((resolve, reject) => {
          QuoteService.fetch(params)
          .then(model => {
-            context.commit(SET_REALTIME, model.realTime);
-            context.commit(SET_INDICATORS, model.indicators);
-            context.commit(SET_CHART_QUOTES, model.quotes);
+            if(model.quotes.length){
+               context.commit(SET_REALTIME, model.realTime);
+               context.commit(SET_INDICATORS, model.indicators);
+               context.commit(SET_CHART_QUOTES, model.quotes);
+            }
 
-            context.commit(SET_LOADING, false);
             resolve(model.quotes.length);
          })
-         .catch(error => {
-            context.commit(SET_LOADING, false);  
-            reject(error);
+         .catch(error => { 
+            reject(Helper.resolveErrorData(error)); 
          })
+         .finally(() => { 
+            context.commit(SET_LOADING, false);
+         });
       });  
    },
 };

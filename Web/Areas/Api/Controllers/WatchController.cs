@@ -39,9 +39,6 @@ namespace Web.Areas.Api.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Index()
 		{
-			ModelState.AddModelError("subscribe", "沒有訂閱");
-			return BadRequest(ModelState);
-
 			if (!await subscribeService.HasActiveSubscribeAsync(CurrentUserId))
 			{
 				ModelState.AddModelError("subscribe", "沒有訂閱");
