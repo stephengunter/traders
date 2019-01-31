@@ -22,10 +22,12 @@ class Indicator {
             if(this.isDataInTime(item)){
                item.val = sum;
                item.avg = this.countAvg(i);
+               item.signal = this.createSignal(i);
               
             }else{
                item.val = 0;
                item.avg = 0;
+               item.signal = 0;
             }
          }
       }
@@ -44,6 +46,17 @@ class Indicator {
          sum += this.data[i].val;
       }
       return sum == 0 ? 0 : sum / this.param;
+   }
+
+   createSignal(index){
+      let data = this.data[index];
+      if(this.entity === 'BlueChips'){
+         if(data.val > data.avg) return 1;
+         else if(data.val < data.avg) return -1;
+         else return 0;
+      }
+      
+
    }
 
    

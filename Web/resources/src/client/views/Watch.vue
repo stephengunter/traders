@@ -60,8 +60,11 @@
                         沒有這一天的資料
                      </span>  
                   </v-alert>
-                  <charts-default v-show="!noData" :strategy="strategy" ref="myChart" />
+                  <charts-default v-show="!noData" ref="myChart" 
+                  :strategy="strategy" 
+                  />
                </v-flex>
+               
             </v-layout>
          </v-card-text>
       </v-card>
@@ -87,14 +90,18 @@ export default {
    },
    data () {
       return {
-        
          strategyId: 0,
          dateString: '',
          showDatePicker: false,
 
          result:0,
          errMsg: '',
-         noData: false
+         noData: false,
+
+         chart: {
+            width: 940,
+            height: 600
+         }
       }
    },
    computed: {

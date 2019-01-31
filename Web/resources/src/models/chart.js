@@ -1,6 +1,7 @@
 import Helper from '@/common/helper';
 import Indicator from './indicator';
 import Strategy from './strategy';
+import { red } from 'ansi-colors';
 
 class Charts {
    strategy = null;
@@ -142,20 +143,7 @@ class Charts {
                color0: this.colorDown
             }
          },
-         data: this.prices,
-         //smooth: true,
-         //symbol: 'none',
-         //sampling: 'average',
-         // markPoint: {
-         //    label: {
-         //       normal: {
-         //          formatter: function (param) {
-         //             return param != null ? Math.round(param.value) : '';
-         //          }
-         //       }
-         //    },
-         //    data: markPointData
-         // }
+         data: this.prices
       }];
      
       for(let i = 0; i < mainIndicators.length; i++)
@@ -187,6 +175,24 @@ class Charts {
          let avgs = indicator.data.map(item => {
             return item.avg;
          })
+         
+         
+         // let signals = indicator.data.filter(item => {
+         //    return item.signal != 0;
+         // })
+         // console.log(signals);
+
+         
+         // let markPoints = signals.map(item => {
+         //    return {
+         //          coord: [ Helper.timeString(item.time), item.val],
+         //          value: item.val,
+         //          label: {
+         //             color: item.signal ? 'red' : 'green'                     
+         //          }
+         //    };
+         // })
+
          series.push({
                type: 'bar',
                name: indicator.name,
@@ -196,6 +202,7 @@ class Charts {
                itemStyle: {
                   normal: {
                      color: function(params) {
+                        console.log(params);
                         var col;
                         if (params.data >= 0) {
                            col = colorUp;
@@ -205,12 +212,25 @@ class Charts {
                         return col;
                      }
                   }
-               }
+               },
+               // markPoint: {
+               //    symbolSize: 30,
+               //    label: {
+               //       formatter: function (param) {
+               //          console.log(param);
+               //          //return '⇧' ;
+               //          return '⇩' ;
+               //       }
+                     
+               //    },
+               //    data: markPoints
+               // }
          });
 
          series.push({
             type: 'line',
             smooth: true,
+            sampling: 'average',
             name: indicator.name + '(MA6)',
             xAxisIndex: i+1,
             yAxisIndex: i+1,
@@ -230,7 +250,7 @@ class Charts {
 
    initGrids(subIndicators){
       let mainHeight = 50;
-      let sliderHeight = 12;
+      let sliderHeight = 15;
       let padding = 3;
       
       let subHeight = 100 - mainHeight - sliderHeight; 
@@ -245,7 +265,7 @@ class Charts {
       });
       
       let grids =[{
-         top: '3%',
+         top: '5%',
          left: '5%',
          right: '3%',
          height: `${mainHeight}%`
@@ -335,7 +355,7 @@ class Charts {
                }
             },
             xAxisIndex: [0, 1],
-            y: '94%',
+            y: '92%',
          }],
          animation: false,
          series: this.series,
