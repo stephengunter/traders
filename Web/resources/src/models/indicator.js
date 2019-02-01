@@ -4,30 +4,45 @@ class Indicator {
    data = [];
    param = 0;
 
-   constructor(data, param) {
-      for (let property in data) {
-         this[property] = data[property];
+   beginTimeIndex = 0;
+
+   buySignalIndexes = []
+   sellSignalIndexes = [];
+
+   constructor(model, param) {
+      for (let property in model) {
+         this[property] = model[property];
       }
       if(param)  this.param = param;
       else this.param = this.defaultParam;
+    
+
+      //this.beginTimeIndex = model.data.findIndex(item => item)
      
    }
 
    calculate(){
+
+      this.beginTimeIndex = this.data.findIndex(item => item.time == this.begin);
+
       if(this.entity === 'BlueChips'){
          let sum = 0;
          for(let i = 0; i < this.data.length; i++){
             let item = this.data[i];
             sum += Number(item.val);
-            if(this.isDataInTime(item)){
+            if(!this.isDataInTime(item)){
+               item.val = 0;
+               item.avg = 0;
+               item.signal = 0;              
+            }else if(this.canCountAvg(i)){
                item.val = sum;
                item.avg = this.countAvg(i);
                item.signal = this.createSignal(i);
-              
-            }else{
-               item.val = 0;
+            }
+            else{
+               item.val = sum;
                item.avg = 0;
-               item.signal = 0;
+               item.signal = 0;    
             }
          }
       }
@@ -35,6 +50,10 @@ class Indicator {
 
    isDataInTime(data){
       return data.time > this.begin && data.time <= this.end;
+   }
+
+   canCountAvg(index){
+      return index >= (this.beginTimeIndex + this.param);
    }
 
    countAvg(index){
@@ -51,8 +70,14 @@ class Indicator {
    createSignal(index){
       let data = this.data[index];
       if(this.entity === 'BlueChips'){
-         if(data.val > data.avg) return 1;
-         else if(data.val < data.avg) return -1;
+         if(data.val > data.avg){
+            this.buySignalIndexes.push(index);
+            return 1;
+         } 
+         else if(data.val < data.avg){
+            this.sellSignalIndexes.push(index);
+            return -1;
+         } 
          else return 0;
       }
       

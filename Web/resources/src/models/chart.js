@@ -1,13 +1,14 @@
 import Helper from '@/common/helper';
 import Indicator from './indicator';
 import Strategy from './strategy';
-import { red } from 'ansi-colors';
 
 class Charts {
    strategy = null;
    priceSeriesName = '報價';
    colorUp = '#FD1050';
-   colorDown ='#FFFFFF';
+   colorDown ='#0CF49B';
+   colorZero ='#FFFFFF';
+
    prices = [];
    times = [];
    indicators = [];
@@ -20,13 +21,30 @@ class Charts {
          return new Indicator(indicator, settings.arg);
       });
 
-      quotes.forEach(qoute => {
-         this.addQuote(qoute);
-      });
+      for (let i = 0; i < quotes.length; i++) {
+         this.addQuote(quotes[i]);
+      }
 
-      this.indicators.forEach(indicator => {
-         indicator.calculate();
-      })
+      for (let i = 0; i < this.indicators.length; i++) {
+         this.indicators[i].calculate();
+      }
+
+      for (let index = 0; index < quotes.length; index++) {
+         let dataList = [];
+         for (let j = 0; j < this.indicators.length; j++) {
+            let data = this.indicators[j].data[index];
+            dataList.push({
+               indicator: data.indicator,
+               signal : data.signal
+            });
+         }
+
+         this.strategy.calculate(index, dataList);
+      }
+
+
+      
+
 
       let mainIndicators = this.getMainIndicators();
       let subIndicators = this.getSubIndicators();
@@ -134,16 +152,45 @@ class Charts {
 
    initSeries(mainIndicators, subIndicators){
       
+      let mainSignals = this.strategy.signals;
+      console.log(mainSignals);
+
       let series = [{
          type: 'candlestick',
          name: this.priceSeriesName,
          itemStyle: {
             normal: {
-               color: this.colorUp,
-               color0: this.colorDown
+               color: '#FD1050',
+               color0: '#0CF49B',
+               borderColor: '#FD1050',
+               borderColor0: '#0CF49B'
             }
          },
-         data: this.prices
+         data: this.prices,
+         markPoint: {
+            // label: {
+            //     normal: {
+            //         formatter: function (param) {
+            //             return param != null ? Math.round(param.value) : '';
+            //         }
+            //     }
+            // },
+            data: [
+                {
+                    name: 'Damn',
+                    coord: ['10:45:00', 9900],
+                    value: 9900,
+                    itemStyle: {
+                        normal: { color: '#FD1050'}
+                    }
+                }
+            ],
+            tooltip: {
+                formatter: function (param) {
+                    return param.name + '<br>' + (param.data.coord || '');
+                }
+            }
+         },
       }];
      
       for(let i = 0; i < mainIndicators.length; i++)
@@ -161,37 +208,18 @@ class Charts {
        
       }
 
-      
-
       for(let i = 0; i < subIndicators.length; i++)
       {
          let indicator = subIndicators[i];
-
-         let colorUp = this.colorUp;
-         let colorDown = this.colorDown;
+         
          let vals = indicator.data.map(item => {
             return item.val;
          })
-         let avgs = indicator.data.map(item => {
-            return item.avg;
-         })
          
          
-         // let signals = indicator.data.filter(item => {
-         //    return item.signal != 0;
-         // })
-         // console.log(signals);
-
-         
-         // let markPoints = signals.map(item => {
-         //    return {
-         //          coord: [ Helper.timeString(item.time), item.val],
-         //          value: item.val,
-         //          label: {
-         //             color: item.signal ? 'red' : 'green'                     
-         //          }
-         //    };
-         // })
+         let colorUp = this.colorUp;
+         let colorDown = this.colorDown;
+         let colorZero = this.colorZero;
 
          series.push({
                type: 'bar',
@@ -202,46 +230,36 @@ class Charts {
                itemStyle: {
                   normal: {
                      color: function(params) {
-                        console.log(params);
-                        var col;
-                        if (params.data >= 0) {
-                           col = colorUp;
-                        } else {
-                           col = colorDown;
-                        }
-                        return col;
+                        if(indicator.buySignalIndexes.includes(params.dataIndex)){
+                           return colorUp;
+                        }else if (indicator.sellSignalIndexes.includes(params.dataIndex)){
+                           return  colorDown;
+                        }else return colorZero;
                      }
                   }
-               },
-               // markPoint: {
-               //    symbolSize: 30,
-               //    label: {
-               //       formatter: function (param) {
-               //          console.log(param);
-               //          //return '⇧' ;
-               //          return '⇩' ;
-               //       }
-                     
-               //    },
-               //    data: markPoints
-               // }
+               }
          });
 
-         series.push({
-            type: 'line',
-            smooth: true,
-            sampling: 'average',
-            name: indicator.name + '(MA6)',
-            xAxisIndex: i+1,
-            yAxisIndex: i+1,
-            data: avgs,
-            lineStyle: {
-               normal: { opacity: 0.5 , color: '#FFD700' }
-            }
+         if(indicator.withAvg){
+            let avgs = indicator.data.map(item => {
+               return item.avg;
+            })
+            let avgName =`${indicator.name}(MA${indicator.param})` ;
             
-         });
-
-          
+            series.push({
+               type: 'line',
+               smooth: true,
+               sampling: 'average',
+               name: avgName,
+               xAxisIndex: i+1,
+               yAxisIndex: i+1,
+               data: avgs,
+               lineStyle: {
+                  opacity: 0.5 , 
+                  color: '#FFD700' 
+               }
+            });
+         }
        
       }
      
