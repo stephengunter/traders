@@ -1,45 +1,57 @@
 <template>
    <div class="container">
 
-
+      <v-dialog v-model="editting" persistent max-width="500px">
+         <strategy-edit v-if="editting" :model="model" 
+         @submit="submit" @cancel="cancelEdit"
+         />
+      </v-dialog>
       
 
-      <a href="#" @click.prevent="test">Test</a>
+      <a href="#" @click.prevent="edit">Edit</a>
       
    </div>
    
 </template>
 
 <script>
-import axios from 'axios';
+import { CREATE_STRATEGY, STORE_STRATEGY,
+EDIT_STRATEGY, UPDATE_STRATEGY } from '../store/actions.type';
+
+import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
+
+import StrategyEdit from '../components/strategies/Edit';
 export default {
    name: 'TestView',
+   components: {
+		'strategy-edit' : StrategyEdit
+	},
    data () {
       return {
-        
+         editting: false,
+         model: null
       }
    },
    methods:{
-      test(){
-         this.fetch()
-         .then(data => alert('then'))
-         .catch(error => {
-            console.log('data',error.response.data);
-      console.log('status',error.response.status);
-      console.log('headers',error.response.headers);
-            
-         });
-      },
-      fetch(){
-         return new Promise((resolve, reject) => {
-			axios.get('https://localhost:44300/api/values')
-				.then(response => {
-					resolve(response.data);
+      edit(){
+         this.$store.commit(CLEAR_ERROR);
+			this.$store.dispatch(EDIT_STRATEGY, 1)
+				.then(model => {
+					this.model = model;  
+					this.editting = true;
 				})
 				.catch(error => {
-					reject(error);
+					Bus.$emit('errors');
 				})
-      })
+
+
+      },
+      submit(){
+
+      },
+      cancelEdit(){
+         this.model = null;  
+         this.editting = false;
       }
    }
 }

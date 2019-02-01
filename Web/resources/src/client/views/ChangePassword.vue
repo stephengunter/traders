@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 import { INIT_CHANGE_PASSWORD, CHANGE_PASSWORD, SET_PASSWORD } from '../store/actions.type';
 

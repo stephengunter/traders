@@ -7,6 +7,7 @@ import password from './password.module';
 import account from './account.module';
 import watch from './watch.module';
 import chart from './chart.module';
+import strategy from './strategy.module';
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
       password,
       account,
       watch,
-      chart
+      chart,
+      strategy
    }
 });

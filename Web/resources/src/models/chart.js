@@ -1,9 +1,9 @@
 import Helper from '@/common/helper';
-import Indicator from './indicator';
 import Strategy from './strategy';
 
 class Charts {
    strategy = null;
+
    priceSeriesName = '報價';
    colorUp = '#FD1050';
    colorDown ='#0CF49B';
@@ -11,43 +11,18 @@ class Charts {
 
    prices = [];
    times = [];
-   indicators = [];
-
 
    constructor(strategy, indicators, quotes) {
-      this.strategy = new Strategy(strategy);
-      this.indicators = indicators.map(indicator => {
-         let settings = this.strategy.getIndicatorSettings(indicator.id);
-         return new Indicator(indicator, settings.arg);
-      });
+      this.strategy = new Strategy(strategy, indicators);
 
       for (let i = 0; i < quotes.length; i++) {
          this.addQuote(quotes[i]);
       }
 
-      for (let i = 0; i < this.indicators.length; i++) {
-         this.indicators[i].calculate();
-      }
+      this.strategy.calculate(quotes.length);
 
-      for (let index = 0; index < quotes.length; index++) {
-         let dataList = [];
-         for (let j = 0; j < this.indicators.length; j++) {
-            let data = this.indicators[j].data[index];
-            dataList.push({
-               indicator: data.indicator,
-               signal : data.signal
-            });
-         }
-
-         this.strategy.calculate(index, dataList);
-      }
-
-
-      
-
-
-      let mainIndicators = this.getMainIndicators();
-      let subIndicators = this.getSubIndicators();
+      let mainIndicators = this.strategy.getMainIndicators();
+      let subIndicators = this.strategy.getSubIndicators();
       this.xAxis = this.initXAxis(subIndicators, this.times);
       this.yAxis = this.initYAxis(subIndicators);
       this.grids = this.initGrids(subIndicators);
@@ -56,24 +31,16 @@ class Charts {
    }
 
    addQuote(item){
+      
       this.times.push(Helper.timeString(item.time));  
       this.prices.push(this.mapQuote(item));
-      item.dataList.forEach(data => {
-         let indicator = this.indicators.find(i => i.entity == data.indicator);
-         indicator.data.push(data);
-      })
+
+      this.strategy.addDataList(item.dataList);
+      
    }
 
    mapQuote(item) {
       return [item.open, item.price, item.low, item.high];
-   }
-
-   getMainIndicators(){
-      return this.indicators.filter(item => item.main);
-   }
-
-   getSubIndicators(){
-      return this.indicators.filter(item => !item.main);
    }
    
 

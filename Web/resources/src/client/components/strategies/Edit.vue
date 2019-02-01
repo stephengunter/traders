@@ -2,13 +2,8 @@
 	<form class="cn"  @submit.prevent="onSubmit">
 		<v-card>
 			<v-card-title>
-				
-				<h3>
-					<span class="cn">{{ title }}</span>
-				</h3>
+				<h1 class="cn"> {{ title }} </h1>
 			</v-card-title>
-			
-
 			<v-card-text>
 				<v-container grid-list-md>
 					<v-layout wrap>
@@ -20,9 +15,40 @@
 								required
 							/>
 						</v-flex>
+						
+					</v-layout>
+					<v-layout>
+						<v-list>
+          				
+							<v-list-tile>
+								<v-list-tile-content>
+									<v-list-tile-title>藍籌股指標</v-list-tile-title>
+								</v-list-tile-content>
+								<v-list-tile-action>
+									 <v-text-field style="margin-left:3rem;" v-model="model.name" label="策略名稱"
+										v-validate="'required'" 
+										:error-messages="errors.collect('name')"
+										name="name"
+										required
+									/>
+								</v-list-tile-action>
+								<v-list-tile-avatar>
+									<v-tooltip top>
+										<v-btn slot="activator" small flat icon color="error">
+											<v-icon>mdi-delete-circle</v-icon>
+										</v-btn>
+										<span class="cn">捨棄這個指標</span>
+									</v-tooltip>
+           					</v-list-tile-avatar>
+							</v-list-tile>
+
+          
+						</v-list>
+					</v-layout>
+					<v-layout wrap>
 						<v-flex xs12 sm6 md4>
 							<v-text-field v-model="model.stpl" label="停損(點)"
-								v-validate="'required|decimal'" 
+								v-validate="'numeric'" 
 								:error-messages="errors.collect('stpl')"
 								name="stpl"
 								data-vv-as="停損"
@@ -31,7 +57,7 @@
 						</v-flex>
 						<v-flex xs12 sm6 md4>
 							<v-text-field v-model="model.stpw" label="停利(點)"
-								v-validate="'required|decimal'" 
+								v-validate="'numeric'" 
 								:error-messages="errors.collect('stpw')"
 								name="stpw"
 								data-vv-as="停利"
@@ -78,13 +104,13 @@ export default {
 	},
 	data () {
 		return {
-			
+			 notifications: false,
+        sound: false,
+        video: false,
+        invites: false
 		}
 	},
 	computed: {
-      ...mapState({
-         Errors: state => state.strategy.errors
-		}),
 		title(){
 			if(this.model && this.model.id) return '策略設定';
 			return '新增策略';			

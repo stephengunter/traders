@@ -85,6 +85,8 @@
 
 <script>
 import { mapState } from 'vuex';
+import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
+
 import { FETCH_STOCKS, CREATE_STOCK, STORE_STOCK,
 EDIT_STOCK, UPDATE_STOCK, DELETE_STOCK } from '../store/actions.type';
 
@@ -159,26 +161,38 @@ export default {
 	},
 	methods: {
 		fetchData(){
-			this.$store.dispatch(FETCH_STOCKS, this.params);
+			this.$store.commit(CLEAR_ERROR);
+			this.$store.dispatch(FETCH_STOCKS, this.params)
+				.catch(error => {
+					Bus.$emit('errors');
+				})
 		},
 		search(){
 			this.fetchData();
 		},
 		create(){
+			this.$store.commit(CLEAR_ERROR);
 			this.selected = [];
 			this.$store.dispatch(CREATE_STOCK)
 				.then(model => {
 					this.model = model;  
 					this.editting = true;
 				})
+				.catch(error => {
+					Bus.$emit('errors');
+				})
 			
 		},
 		edit(id){
+			this.$store.commit(CLEAR_ERROR);
 			this.selected = [];
 			this.$store.dispatch(EDIT_STOCK, id)
 				.then(model => {
 					this.model = model;  
 					this.editting = true;
+				})
+				.catch(error => {
+					Bus.$emit('errors');
 				})
 		},
       cancelEdit(){
@@ -189,6 +203,7 @@ export default {
 			this.deleting = true;
 		},
 		submitDelete(){
+			this.$store.commit(CLEAR_ERROR);
 			let ids = this.selected.map(item => item.id);
 			this.$store.dispatch(DELETE_STOCK, ids.join(','))
 				.then(() => {
@@ -196,11 +211,15 @@ export default {
 					this.model = null;  
 					this.deleting = false;
 				})
+				.catch(error => {
+					Bus.$emit('errors');
+				})
 		},
 		cancelDelete(){
 			this.deleting = false;
 		},
       submit(){
+			this.$store.commit(CLEAR_ERROR);
 			let action = this.model.id ? UPDATE_STOCK : STORE_STOCK;
          this.$store.dispatch(action, this.model)
 				.then(() => {
@@ -208,6 +227,10 @@ export default {
 					Bus.$emit('success');
 					this.model = null;  
 					this.editting = false;
+				})
+				.catch(error => {
+					if(!error)  Bus.$emit('errors');
+					else this.$store.commit(SET_ERROR, error);
 				})
       }
 	}

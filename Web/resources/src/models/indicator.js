@@ -15,9 +15,6 @@ class Indicator {
       }
       if(param)  this.param = param;
       else this.param = this.defaultParam;
-    
-
-      //this.beginTimeIndex = model.data.findIndex(item => item)
      
    }
 

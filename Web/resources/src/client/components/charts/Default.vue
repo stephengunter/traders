@@ -67,12 +67,3 @@ export default {
 }
 </script>
 
-<style scoped>
-.test{
-   background-image: url(https://upload.wikimedia.org/wikipedia/commons/c/c5/Red_Arrow_Up.png);
-}
-</style>
-
-</style>
-
-

@@ -2,13 +2,10 @@
 	<form class="cn"  @submit.prevent="onSubmit">
 		<v-card>
 			<v-card-title>
-				
 				<h3>
 					<span class="cn">{{ title }}</span>
 				</h3>
 			</v-card-title>
-			
-
 			<v-card-text>
 				<v-container grid-list-md>
 					<v-layout wrap>
@@ -90,9 +87,6 @@ export default {
 		}
 	},
 	computed: {
-      ...mapState({
-         Errors: state => state.stocks.errors
-		}),
 		title(){
 			if(this.model && this.model.id) return '編輯權值股';
 			return '新增權值股';			

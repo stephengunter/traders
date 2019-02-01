@@ -72,15 +72,17 @@ namespace Web.Areas.Api.Controllers
 		//	if (model.price <= 0) ModelState.AddModelError("price", "價格有誤");
 		//}
 
-		//[HttpGet("edit/{id}")]
-		//public async Task<ActionResult> Edit(int id)
-		//{
-		//	Stock stock = await stockService.GetByIdAsync(id);
-		//	if (stock == null) return NotFound();
+		[HttpGet("edit/{id}")]
+		public ActionResult Edit(int id)
+		{
+			var strategy = strategyService.GetById(id);
+			if (strategy == null) return NotFound();
 
-		//	var model = stock.MapViewModel();
-		//	return Ok(model);
-		//}
+			if (strategy.UserId != CurrentUserId) throw new Exception("Edit Strategy Error. UserId Not Equal");
+
+			var model = strategy.MapViewModel();
+			return Ok(model);
+		}
 
 
 		//[HttpPut("{id}")]

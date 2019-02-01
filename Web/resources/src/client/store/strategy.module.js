@@ -1,5 +1,4 @@
 import StrategyService from '../services/strategy';
-import Errors from '@/common/errors';
 import Helper from '@/common/helper';
 
 import {
@@ -11,7 +10,6 @@ import {
 } from './mutations.type';
 
 const initialState = {
-   errors: new Errors(),
    strategies: [],
 };
  
@@ -24,9 +22,8 @@ const getters = {
 
 const actions = {
    [CREATE_STRATEGY](context) {
-      
       return new Promise((resolve, reject) => {
-         QuoteService.fetch(params)
+         StrategyService.fetch(params)
          .then(model => {
             context.commit(SET_REALTIME, model.realTime);
             context.commit(SET_INDICATORS, model.indicators);
@@ -39,19 +36,23 @@ const actions = {
          })
       });  
    },
+   [EDIT_STRATEGY](context, id) {
+      return new Promise((resolve, reject) => {
+         StrategyService.edit(id)
+            .then(model => resolve(model))
+            .catch(error => {
+               reject(error);        
+            })
+            .finally(() => { 
+               context.commit(SET_LOADING, false);
+            });
+      });
+   },
 };
 
 
 const mutations = {
-   [SET_REALTIME](state, val) {
-      state.realTime = val;
-   },
-   [SET_INDICATORS](state, indicators) {
-      state.indicators = indicators;
-   },
-   [SET_CHART_QUOTES](state, quotes) {
-      state.quotes = quotes;
-   }
+   
 };
 
 export default {
