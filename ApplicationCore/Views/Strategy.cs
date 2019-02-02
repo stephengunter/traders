@@ -27,23 +27,52 @@ namespace ApplicationCore.Views
 
 
 		public bool noStop => stpl == 0 && stpw == 0;
+
+
+		public void SetValues(Strategy entity, string userId)
+		{
+			entity.Name = name;
+			entity.Description = description;
+			entity.STPW = stpw;
+			entity.STPL = stpl;
+			entity.Default = isDefault;
+			entity.UserId = userId;
+		}
 	}
 
-	public class IndicatorSettingsView : BaseRecordView
+	public class IndicatorSettingsView
 	{
+		public int id { get; set; }
+
 		public int strategyId { get; set; }
 
 		public int indicatorId { get; set; }
 
 		public int arg { get; set; }
+
+		public void SetValues(IndicatorSettings entity)
+		{
+			entity.IndicatorId = indicatorId;
+			entity.StrategyId = strategyId;
+			entity.Arg = arg;
+		}
 	}
 
 
 	public class StrategyEditForm
 	{
-		public StrategyViewModel model { get; set; }
+		public StrategyViewModel strategy { get; set; }
+
+		public ICollection<int> selectedIndicators { get; set; }
 
 		public ICollection<IndicatorViewModel> indicators { get; set; }
 	}
+
+	//public class IndicatorSettingsEditModel
+	//{
+	//	public IndicatorSettingsView model { get; set; }
+
+	//	public IndicatorViewModel indicator { get; set; }
+	//}
 
 }

@@ -30,7 +30,7 @@ namespace ApplicationCore.Models
 	}
 
 
-	public class IndicatorSettings : BaseRecord
+	public class IndicatorSettings : BaseEntity
 	{
 		public int StrategyId { get; set; }
 

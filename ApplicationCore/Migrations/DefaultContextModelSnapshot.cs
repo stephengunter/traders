@@ -118,19 +118,9 @@ namespace ApplicationCore.Migrations
 
                     b.Property<int>("Arg");
 
-                    b.Property<DateTime>("CreatedAt");
-
                     b.Property<int>("IndicatorId");
 
-                    b.Property<DateTime>("LastUpdated");
-
-                    b.Property<int>("Order");
-
-                    b.Property<bool>("Removed");
-
                     b.Property<int>("StrategyId");
-
-                    b.Property<string>("UpdatedBy");
 
                     b.HasKey("Id");
 

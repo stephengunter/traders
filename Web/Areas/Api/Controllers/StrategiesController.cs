@@ -36,7 +36,7 @@ namespace Web.Areas.Api.Controllers
 
 			var model = new StrategyEditForm
 			{
-				model = new StrategyViewModel(),
+				strategy = new StrategyViewModel(),
 				indicators = indicators.Select(i => i.MapViewModel()).ToList()
 			};
 
@@ -73,33 +73,58 @@ namespace Web.Areas.Api.Controllers
 		//}
 
 		[HttpGet("edit/{id}")]
-		public ActionResult Edit(int id)
+		public async Task<ActionResult> Edit(int id)
 		{
 			var strategy = strategyService.GetById(id);
 			if (strategy == null) return NotFound();
 
 			if (strategy.UserId != CurrentUserId) throw new Exception("Edit Strategy Error. UserId Not Equal");
 
-			var model = strategy.MapViewModel();
+			var indicators = await indicatorService.GetActiveIndicatorsAsync();
+
+			var model = new StrategyEditForm
+			{
+				strategy = strategy.MapViewModel(),
+				selectedIndicators = strategy.IndicatorSettings.Select(i => i.IndicatorId).ToList(),
+				indicators = indicators.Select(i => i.MapViewModel()).ToList()
+			};
+
 			return Ok(model);
 		}
 
 
-		//[HttpPut("{id}")]
-		//public async Task<ActionResult> Update(int id, [FromBody] StockViewModel model)
-		//{
-		//	Stock stock = await stockService.GetByIdAsync(id);
-		//	if (stock == null) return NotFound();
+		[HttpPut("{id}")]
+		public async Task<ActionResult> Update(int id, [FromBody] StrategyEditForm model)
+		{
+			var strategy = await strategyService.GetByIdAsync(id);
+			if (strategy == null) return NotFound();
 
-		//	if (!ModelState.IsValid) return BadRequest(ModelState);
-		//	ValidateRequest(model);
-		//	if (!ModelState.IsValid) return BadRequest(ModelState);
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+			ValidateRequest(model);
+			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-		//	model.SetValues(stock);
-		//	await stockService.UpdateAsync(stock);
+			var settings = model.strategy.indicatorSettings.Where(s => model.selectedIndicators.Contains(s.indicatorId));
+			if (settings.IsNullOrEmpty()) throw new Exception("Action: UpdateStrategy. Error: No IndicatorSettings");
 
-		//	return Ok();
-		//}
+			var indicatorSettingList = new List<IndicatorSettings>();
+			foreach (var item in settings)
+			{
+				var indicatorSetting = new IndicatorSettings();
+				item.SetValues(indicatorSetting);
+				indicatorSettingList.Add(indicatorSetting);
+			}
+
+			model.strategy.SetValues(strategy, CurrentUserId);
+			await strategyService.UpdateAsync(strategy, indicatorSettingList);
+
+			
+			return Ok();
+		}
+
+		void ValidateRequest(StrategyEditForm model)
+		{
+			if (model.selectedIndicators.IsNullOrEmpty()) ModelState.AddModelError("indicators", "沒有選擇任何指標");
+		}
 
 
 		//[HttpDelete("{id}")]

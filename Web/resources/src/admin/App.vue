@@ -64,8 +64,7 @@ export default {
 				show: false,
 				timeout: 1500,
 				msg: '存檔成功'
-			},
-			date:''
+			}
 		}
 	},
 	computed: {

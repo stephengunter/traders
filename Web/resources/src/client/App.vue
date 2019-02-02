@@ -7,6 +7,21 @@
 		</v-content>
 		<RwvFooter />
 		
+		<v-snackbar :timeout="success.timeout"
+			:color="success.color"
+			:top="true"
+			:right="true"
+			v-model="success.show"
+			dark
+		>
+			<v-icon color="white" class="mr-3">
+			mdi-check-circle
+			</v-icon>
+			<span class="successText cn">
+				{{ success.msg  }}
+			</span>
+	
+		</v-snackbar>
 
 		<v-dialog v-model="err.show" width="480">
          <v-card-title class="headline red lighten-1" >
@@ -40,7 +55,12 @@ export default {
 				show: false,
 				msg: '伺服器無回應. 請稍候再試'
 			},
-			date:''
+			success: {
+				color: 'success',
+				show: false,
+				timeout: 1500,
+				msg: '存檔成功'
+			}
 		}
 	},
 	computed: {

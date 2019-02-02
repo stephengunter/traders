@@ -7,47 +7,47 @@
 			<v-card-text>
 				<v-container grid-list-md>
 					<v-layout wrap>
-						<v-flex xs12 sm6 md4>
-							<v-text-field v-model="model.name" label="策略名稱"
+						<v-flex xs6>
+							<v-text-field v-model="strategy.name" label="策略名稱"
 								v-validate="'required'" 
 								:error-messages="errors.collect('name')"
 								name="name"
 								required
 							/>
 						</v-flex>
-						
+						<v-flex xs6>
+							<v-checkbox
+								label="我的首選"
+								v-model="strategy.isDefault"
+							/>
+						</v-flex>
 					</v-layout>
 					<v-layout>
 						<v-list>
-          				
-							<v-list-tile>
-								<v-list-tile-content>
-									<v-list-tile-title>藍籌股指標</v-list-tile-title>
+							<v-list-tile v-for="(item, index) in strategy.indicatorSettings" :key="index">
+								<v-list-tile-avatar>
+									<v-checkbox color="success" 
+									:value="item.indicatorId"
+									v-model="selectedIndicators"
+									/>
+								</v-list-tile-avatar>
+
+								<v-list-tile-content style="width:50%">
+									<v-list-tile-title v-text="getIndicatorName(item.indicatorId)" />
 								</v-list-tile-content>
+								
 								<v-list-tile-action>
-									 <v-text-field style="margin-left:3rem;" v-model="model.name" label="策略名稱"
-										v-validate="'required'" 
-										:error-messages="errors.collect('name')"
-										name="name"
-										required
+									<v-select style="margin-left:3rem;"
+									label="參數" :items="getArgsOptions(item.indicatorId)"
+									v-model="item.arg"
 									/>
 								</v-list-tile-action>
-								<v-list-tile-avatar>
-									<v-tooltip top>
-										<v-btn slot="activator" small flat icon color="error">
-											<v-icon>mdi-delete-circle</v-icon>
-										</v-btn>
-										<span class="cn">捨棄這個指標</span>
-									</v-tooltip>
-           					</v-list-tile-avatar>
 							</v-list-tile>
-
-          
 						</v-list>
 					</v-layout>
 					<v-layout wrap>
-						<v-flex xs12 sm6 md4>
-							<v-text-field v-model="model.stpl" label="停損(點)"
+						<v-flex xs6>
+							<v-text-field v-model="strategy.stpl" label="停損(點)"
 								v-validate="'numeric'" 
 								:error-messages="errors.collect('stpl')"
 								name="stpl"
@@ -55,8 +55,8 @@
 								required
 							/>
 						</v-flex>
-						<v-flex xs12 sm6 md4>
-							<v-text-field v-model="model.stpw" label="停利(點)"
+						<v-flex xs6>
+							<v-text-field v-model="strategy.stpw" label="停利(點)"
 								v-validate="'numeric'" 
 								:error-messages="errors.collect('stpw')"
 								name="stpw"
@@ -64,12 +64,7 @@
 								required
 							/>
 						</v-flex>
-						<v-flex xs12 sm6 md4>
-							<v-checkbox
-								label="我的首選"
-								v-model="model.isDefault"
-							/>
-						</v-flex>
+						
 					</v-layout>
 					<ErrorList />
 				</v-container>
@@ -78,8 +73,12 @@
 			<v-card-actions>
 				
 				<v-spacer></v-spacer>
-				<v-btn @click.prevent="cancel" color="blue darken-1" flat >Cancel</v-btn>
-				<v-btn type="submit" @click.prevent="onSubmit" color="primary" flat>Save</v-btn>
+				<v-btn large @click.prevent="cancel" color="blue darken-1" flat>
+					<span class="form-btn">取消</span>
+				</v-btn>
+				<v-btn large type="submit" @click.prevent="onSubmit" class="form-btn" color="success" flat>
+					<span class="form-btn">存檔</span>
+				</v-btn>
 			</v-card-actions>
 		</v-card>
 	</form>	
@@ -94,39 +93,68 @@ import ErrorList from '@/components/ErrorList';
 export default {
 	name: 'StrategyEdit',
 	components: {
-      ErrorList
+		ErrorList
    },
 	props: {
-		model: {
+		strategy: {
          type: Object,
          default: null
-      },
+		},
+		indicators: {
+			type: Array,
+         default: null
+		},
+		selected_indicators: {
+         type: Array,
+         default: null
+      }
 	},
 	data () {
 		return {
-			 notifications: false,
-        sound: false,
-        video: false,
-        invites: false
+			selectedIndicators: []
 		}
 	},
 	computed: {
 		title(){
-			if(this.model && this.model.id) return '策略設定';
+			if(this.strategy && this.strategy.id) return '策略設定';
 			return '新增策略';			
 		}
    },
 	beforeMount(){
-		if(!this.model.stpl)  this.model.stpl = '';
-		if(!this.model.stpw)  this.model.stpw = '';
+		if(!this.strategy.stpl)  this.strategy.stpl = '';
+		if(!this.strategy.stpw)  this.strategy.stpw = '';
+
+		this.selectedIndicators = this.selected_indicators.slice(0);
+
+		this.strategy.indicatorSettings.forEach(item => {
+			if(!item.id){
+				let indicator = this.getIndicator(item.indicatorId);
+				item.arg = indicator.defaultParam;
+			}
+		});
 	},
 	methods: {
 		cancel(){
 			this.$emit('cancel');
 		},
+		getIndicator(id){
+			return this.indicators.find(item => item.id == id);
+		},
+		getIndicatorName(id){
+			let indicator = this.getIndicator(id);
+			return indicator.name;
+		},
+		getArgsOptions(indicatorId){
+			let indicator = this.getIndicator(indicatorId);
+			return indicator.paramList;
+		},
 		onSubmit() {
          this.$validator.validate().then(valid => {
-            if(valid) this.$emit('submit');
+            if(valid){
+					if(!this.strategy.stpl)  this.strategy.stpl = 0;
+					if(!this.strategy.stpw)  this.strategy.stpw = 0;
+					this.$emit('submit', this.selectedIndicators);
+				} 
          });         
       }
 	}

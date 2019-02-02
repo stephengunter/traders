@@ -17,7 +17,7 @@ const StrategyService = {
 		return BaseService.fetch(url);
    },
    update(model){
-      let url = `${source}/${model.id}`;
+      let url = `${source}/${model.strategy.id}`;
       return BaseService.submit('put', url, model);
    },
    remove(ids){

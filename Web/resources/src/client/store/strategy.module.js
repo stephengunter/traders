@@ -48,6 +48,21 @@ const actions = {
             });
       });
    },
+   [UPDATE_STRATEGY](context, model) {
+      context.commit(SET_LOADING, true);
+      return new Promise((resolve, reject) => {
+         StrategyService.update(model)
+            .then(() => {
+               resolve(true);
+            })
+            .catch(error => {  
+               reject(Helper.resolveErrorData(error));
+            })
+            .finally(() => { 
+               context.commit(SET_LOADING, false);
+            });
+      });
+   },
 };
 
 

@@ -57,12 +57,11 @@ namespace ApplicationCore.Views
 		{
 			var model = new IndicatorSettingsView
 			{
+				 id = entity.Id,
 				 strategyId = entity.StrategyId,
 				 arg = entity.Arg,
 				 indicatorId = entity.IndicatorId
 			};
-
-			model.SetBaseRecordValues(entity);
 
 			return model;
 		}
