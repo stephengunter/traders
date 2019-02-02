@@ -120,6 +120,8 @@ namespace ApplicationCore.Migrations
 
                     b.Property<int>("IndicatorId");
 
+                    b.Property<int>("Order");
+
                     b.Property<int>("StrategyId");
 
                     b.HasKey("Id");

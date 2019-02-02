@@ -1,16 +1,19 @@
 <template>
    <div class="container">
 
+
+
       <v-dialog v-model="editting" persistent max-width="500px">
          <strategy-edit v-if="editting" 
-         :strategy="model.strategy" :selected_indicators="model.selectedIndicators"
+         :strategy="model.strategy"
+         :selected_indicators="model.selectedIndicators"
          :indicators="model.indicators"
          @submit="submit" @cancel="cancelEdit"
          />
       </v-dialog>
       
 
-      <a href="#" @click.prevent="edit">Edit</a>
+      <a href="#" @click.prevent="editStrategy(3)">Edit</a>
       
    </div>
    
@@ -23,10 +26,11 @@ EDIT_STRATEGY, UPDATE_STRATEGY } from '../store/actions.type';
 import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 
 import StrategyEdit from '../components/strategies/Edit';
+
 export default {
    name: 'TestView',
    components: {
-		'strategy-edit' : StrategyEdit
+      'strategy-edit' : StrategyEdit
 	},
    data () {
       return {
@@ -35,21 +39,22 @@ export default {
       }
    },
    methods:{
-      edit(){
+      createStrategy(){
          this.$store.commit(CLEAR_ERROR);
-			this.$store.dispatch(EDIT_STRATEGY, 1)
+			this.$store.dispatch(CREATE_STRATEGY)
 				.then(model => {
                this.model = model;
-               model.indicators.forEach(indicator => {
-                  let exist = model.selectedIndicators.includes(indicator.id);
-                  if(!exist){
-                     this.model.strategy.indicatorSettings.push({
-                        indicatorId: indicator.id,
-                        arg: 0,
-                        order: 0
-                     });
-                  }
-               });
+					this.editting = true;
+				})
+				.catch(error => {
+					Bus.$emit('errors');
+				})
+      },
+      editStrategy(id){
+         this.$store.commit(CLEAR_ERROR);
+			this.$store.dispatch(EDIT_STRATEGY, id)
+				.then(model => {
+               this.model = model;
 					this.editting = true;
 				})
 				.catch(error => {
@@ -64,10 +69,19 @@ export default {
             selectedIndicators: selectedIndicators
          };
 
+         model.strategy.indicatorSettings.forEach((item, index) => {
+            item.order = index;
+         });
+
+         let action = STORE_STRATEGY;
+         if(model.strategy.id){
+            action = UPDATE_STRATEGY
+         }
+
          this.$store.commit(CLEAR_ERROR);
          this.$store
-         .dispatch(UPDATE_STRATEGY, model)
-         .then(() => {
+         .dispatch(action, model)
+         .then(id => {
             this.onSuccess();              
          })
          .catch(error => {
@@ -83,7 +97,7 @@ export default {
          }
       },
       onSuccess(){
-          Bus.$emit('success');
+         Bus.$emit('success');
          this.model = null;  
          this.editting = false;
       },

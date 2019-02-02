@@ -224,7 +224,21 @@ namespace ApplicationCore.DataAccess
 					Name = "藍籌股指標" , Entity = "BlueChips", Begin = 90000, End = 132500,
 					Main = false, Type = IndicatorType.Bar, Source = SourceType.Stock,
 					Params = "1,60,5" , WithAvg = true,
-					Description ="主要權值股多空力道分析"
+					Order = 1, Description ="主要權值股多空力道分析"
+				},
+				new Indicator
+				{
+					Name = "多空力道" , Entity = "Powers", Begin = 84500, End = 134500,
+					Main = false, Type = IndicatorType.Bar, Source = SourceType.Futures,
+					Params = "1,60,5" , WithAvg = true,
+					Order = 2, Description ="期貨多空力道分析"
+				},
+				new Indicator
+				{
+					Name = "主力成本" , Entity = "Prices", Begin = 84500, End = 134500,
+					Main = false, Type = IndicatorType.Bar, Source = SourceType.Futures,
+					Params = "1,60,5" , WithAvg = true,
+					Order = 3, Description ="期貨主力成本分析"
 				}
 			};
 

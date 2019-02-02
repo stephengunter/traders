@@ -24,11 +24,35 @@
 					</v-layout>
 					<v-layout>
 						<v-list>
-							<v-list-tile v-for="(item, index) in strategy.indicatorSettings" :key="index">
+							<draggable v-model="strategy.indicatorSettings">
+								<v-list-tile style="cursor: move;" v-for="item in enableSettings" :key="item.indicatorId">
+									<v-list-tile-avatar>
+										<v-checkbox color="success" 
+										:value="item.indicatorId"
+										v-model="selectedIndicators"
+										@change="onSelectIndicatorsChanged"
+										/>
+									</v-list-tile-avatar>
+
+									<v-list-tile-content style="width:50%">
+										<v-list-tile-title v-text="getIndicatorName(item.indicatorId)" />
+									</v-list-tile-content>
+									
+									<v-list-tile-action>
+										<v-select style="margin-left:3rem;" 
+										:disabled="!hasSelected(item.indicatorId)"
+										label="參數" :items="getArgsOptions(item.indicatorId)"
+										v-model="item.arg"
+										/>
+									</v-list-tile-action>
+								</v-list-tile>
+							</draggable>
+							<v-list-tile v-for="item in disableSettings" :key="item.indicatorId">
 								<v-list-tile-avatar>
 									<v-checkbox color="success" 
 									:value="item.indicatorId"
 									v-model="selectedIndicators"
+									@change="onSelectIndicatorsChanged"
 									/>
 								</v-list-tile-avatar>
 
@@ -37,7 +61,8 @@
 								</v-list-tile-content>
 								
 								<v-list-tile-action>
-									<v-select style="margin-left:3rem;"
+									<v-select style="margin-left:3rem;" 
+									:disabled="!hasSelected(item.indicatorId)"
 									label="參數" :items="getArgsOptions(item.indicatorId)"
 									v-model="item.arg"
 									/>
@@ -86,13 +111,14 @@
 
 
 <script>
-
+import draggable from 'vuedraggable'
 import { mapState } from 'vuex';
 import ErrorList from '@/components/ErrorList';
 
 export default {
 	name: 'StrategyEdit',
 	components: {
+		draggable,
 		ErrorList
    },
 	props: {
@@ -118,6 +144,12 @@ export default {
 		title(){
 			if(this.strategy && this.strategy.id) return '策略設定';
 			return '新增策略';			
+		},
+		enableSettings(){
+			return this.strategy.indicatorSettings.filter(item => this.hasSelected(item.indicatorId));
+		},
+		disableSettings(){
+			return this.strategy.indicatorSettings.filter(item => !this.hasSelected(item.indicatorId));
 		}
    },
 	beforeMount(){
@@ -147,6 +179,22 @@ export default {
 		getArgsOptions(indicatorId){
 			let indicator = this.getIndicator(indicatorId);
 			return indicator.paramList;
+		},
+		hasSelected(indicatorId){
+			return this.selectedIndicators.includes(indicatorId);
+		},
+		onSelectIndicatorsChanged(){
+			this.strategy.indicatorSettings.sort((a, b) => {
+				let slectedA = this.hasSelected(a.indicatorId);
+				let slectedB = this.hasSelected(b.indicatorId);
+				if(slectedA && !slectedB){
+					return -1;
+				}else if(!slectedA && slectedB){
+					return 1;
+				}
+				return a.order - b.order;
+         });
+			
 		},
 		onSubmit() {
          this.$validator.validate().then(valid => {

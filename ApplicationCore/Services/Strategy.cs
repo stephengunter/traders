@@ -19,6 +19,7 @@ namespace ApplicationCore.Services
 
 		Task<Strategy> GetByIdAsync(int id);
 		Task<Strategy> CreateAsync(Strategy strategy);
+		Task<Strategy> CreateAsync(Strategy strategy, ICollection<IndicatorSettings> indicatorSettings);
 		Task UpdateAsync(Strategy strategy, ICollection<IndicatorSettings> indicatorSettings);
 
 	}
@@ -44,7 +45,14 @@ namespace ApplicationCore.Services
 		public Strategy GetById(int id)
 		{
 			var spec = new StrategyFilterSpecification(id);
-			return strategyRepository.GetSingleBySpec(spec);
+			var strategy = strategyRepository.GetSingleBySpec(spec);
+
+			if (strategy != null)
+			{
+				strategy.IndicatorSettings = strategy.IndicatorSettings.OrderBy(s => s.Order).ToList();
+			}
+
+			return strategy;
 		}
 
 		public async Task<Strategy> GetByIdAsync(int id) => await strategyRepository.GetByIdAsync(id);
@@ -53,6 +61,15 @@ namespace ApplicationCore.Services
 		{
 			await CheckNameAsync(strategy);
 			return await strategyRepository.AddAsync(strategy);
+		}
+
+		public async Task<Strategy> CreateAsync(Strategy strategy, ICollection<IndicatorSettings> indicatorSettings)
+		{
+			await CheckNameAsync(strategy);
+
+			strategy.IndicatorSettings = indicatorSettings;
+			return await strategyRepository.AddAsync(strategy);
+
 		}
 
 		public async Task UpdateAsync(Strategy strategy, ICollection<IndicatorSettings> indicatorSettings)
@@ -75,6 +92,7 @@ namespace ApplicationCore.Services
 				else
 				{
 					existSettings.Arg = newItem.Arg;
+					existSettings.Order = newItem.Order;
 					indicatorSettingsRepository.Update(existSettings);
 				}
 			}
@@ -125,15 +143,29 @@ namespace ApplicationCore.Services
 		async Task CheckNameAsync(Strategy strategy)
 		{
 			var strategies = await FetchByUserAsync(strategy.UserId);
+			strategies = strategies.Where(s => s.Id != strategy.Id);
+
 			if (strategies.IsNullOrEmpty()) return;
 
-			strategies = strategies.Where(s => s.Name == strategy.Name && s.Id!= strategy.Id);
+			if (strategy.Default) ClearDefaults(strategies);
+
+			strategies = strategies.Where(s => s.Name == strategy.Name);
 
 			if (strategies.IsNullOrEmpty()) return;
 
 			strategy.Name = $"{strategy.Name}{strategies.Count()}";
 
 		}
-		
+
+		void ClearDefaults(IEnumerable<Strategy> strategies)
+		{
+			foreach (var item in strategies)
+			{
+				item.Default = false;
+			}
+
+			strategyRepository.UpdateRange(strategies);
+		}
+
 	}
 }

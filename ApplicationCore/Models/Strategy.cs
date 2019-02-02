@@ -37,6 +37,7 @@ namespace ApplicationCore.Models
 		public int IndicatorId { get; set; }
 
 		public int Arg { get; set; }
-		
+
+		public int Order { get; set; }
 	}
 }

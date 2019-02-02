@@ -60,7 +60,8 @@ namespace ApplicationCore.Views
 				 id = entity.Id,
 				 strategyId = entity.StrategyId,
 				 arg = entity.Arg,
-				 indicatorId = entity.IndicatorId
+				 indicatorId = entity.IndicatorId,
+				 order = entity.Order
 			};
 
 			return model;

@@ -34,43 +34,54 @@ namespace Web.Areas.Api.Controllers
 		{
 			var indicators = await indicatorService.GetActiveIndicatorsAsync();
 
+			var strategyView = new StrategyViewModel();
+			foreach (var indicator in indicators)
+			{
+				var settings = new IndicatorSettingsView
+				{
+					arg = indicator.DefaultParam,
+					indicatorId = indicator.Id
+				};
+				strategyView.indicatorSettings.Add(settings);
+			}
+
 			var model = new StrategyEditForm
 			{
-				strategy = new StrategyViewModel(),
+				strategy = strategyView,
+				selectedIndicators = indicators.Select(i => i.Id).ToList(),
 				indicators = indicators.Select(i => i.MapViewModel()).ToList()
 			};
 
 			return Ok(model);
 		}
 
-		//[HttpPost("")]
-		//public async Task<ActionResult> Store([FromBody] StockViewModel model)
-		//{
-		//	if (!ModelState.IsValid) return BadRequest(ModelState);
-		//	ValidateRequest(model);
-		//	if (!ModelState.IsValid) return BadRequest(ModelState);
+		[HttpPost("")]
+		public async Task<ActionResult> Store([FromBody] StrategyEditForm model)
+		{
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+			ValidateRequest(model);
+			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-		//	Stock existStock = stockService.GetByCode(model.code);
-		//	if (existStock == null)
-		//	{
-		//		var stock = new Stock();
-		//		model.SetValues(stock);
-		//		await stockService.CreateAsync(stock);
-		//	}
-		//	else
-		//	{
-		//		model.SetValues(existStock);
-		//		await stockService.UpdateAsync(existStock);
-		//	}
+			var settings = model.strategy.indicatorSettings.Where(s => model.selectedIndicators.Contains(s.indicatorId));
+			if (settings.IsNullOrEmpty()) throw new Exception("Action: StoreStrategy. Error: No IndicatorSettings");
 
-		//	return Ok();
-		//}
+			var indicatorSettingList = new List<IndicatorSettings>();
+			foreach (var item in settings)
+			{
+				var indicatorSetting = new IndicatorSettings();
+				item.SetValues(indicatorSetting);
+				indicatorSettingList.Add(indicatorSetting);
+			}
 
-		//void ValidateRequest(StockViewModel model)
-		//{
-		//	if (model.weight < 0 || model.weight > 100) ModelState.AddModelError("weight", "權重有誤");
-		//	if (model.price <= 0) ModelState.AddModelError("price", "價格有誤");
-		//}
+			var strategy = new Strategy();
+			model.strategy.SetValues(strategy, CurrentUserId);
+
+			strategy = await strategyService.CreateAsync(strategy, indicatorSettingList);
+
+			return Ok(strategy.Id);
+		}
+
+
 
 		[HttpGet("edit/{id}")]
 		public async Task<ActionResult> Edit(int id)
@@ -82,9 +93,27 @@ namespace Web.Areas.Api.Controllers
 
 			var indicators = await indicatorService.GetActiveIndicatorsAsync();
 
+			var strategyView = strategy.MapViewModel();
+
+			foreach (var indicator in indicators)
+			{
+				var exist = strategyView.indicatorSettings.Where(s => s.indicatorId == indicator.Id).FirstOrDefault();
+				if (exist == null)
+				{
+					var settings = new IndicatorSettingsView
+					{
+						strategyId = strategy.Id,
+						arg = indicator.DefaultParam,
+						indicatorId = indicator.Id
+					};
+					strategyView.indicatorSettings.Add(settings);
+				}
+				
+			}
+
 			var model = new StrategyEditForm
 			{
-				strategy = strategy.MapViewModel(),
+				strategy = strategyView,
 				selectedIndicators = strategy.IndicatorSettings.Select(i => i.IndicatorId).ToList(),
 				indicators = indicators.Select(i => i.MapViewModel()).ToList()
 			};

@@ -50,11 +50,14 @@ namespace ApplicationCore.Views
 
 		public int arg { get; set; }
 
+		public int order { get; set; }
+
 		public void SetValues(IndicatorSettings entity)
 		{
 			entity.IndicatorId = indicatorId;
 			entity.StrategyId = strategyId;
 			entity.Arg = arg;
+			entity.Order = order;
 		}
 	}
 
@@ -67,12 +70,5 @@ namespace ApplicationCore.Views
 
 		public ICollection<IndicatorViewModel> indicators { get; set; }
 	}
-
-	//public class IndicatorSettingsEditModel
-	//{
-	//	public IndicatorSettingsView model { get; set; }
-
-	//	public IndicatorViewModel indicator { get; set; }
-	//}
 
 }

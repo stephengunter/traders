@@ -36,6 +36,33 @@ const actions = {
          })
       });  
    },
+   [CREATE_STRATEGY](context) {
+      return new Promise((resolve, reject) => {
+         StrategyService.create()
+            .then(model => resolve(model))
+            .catch(error => {
+               reject(error);        
+            })
+            .finally(() => { 
+               context.commit(SET_LOADING, false);
+            });
+      });
+   },
+   [STORE_STRATEGY](context, model) {
+      context.commit(SET_LOADING, true);
+      return new Promise((resolve, reject) => {
+         StrategyService.store(model)
+            .then((id) => {
+               resolve(id);
+            })
+            .catch(error => {  
+               reject(Helper.resolveErrorData(error));
+            })
+            .finally(() => { 
+               context.commit(SET_LOADING, false);
+            });
+      });
+   },
    [EDIT_STRATEGY](context, id) {
       return new Promise((resolve, reject) => {
          StrategyService.edit(id)
