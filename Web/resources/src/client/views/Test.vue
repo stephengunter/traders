@@ -9,6 +9,7 @@
          :selected_indicators="model.selectedIndicators"
          :indicators="model.indicators"
          @submit="submit" @cancel="cancelEdit"
+         @remove="remove"
          />
       </v-dialog>
       
@@ -21,7 +22,7 @@
 
 <script>
 import { CREATE_STRATEGY, STORE_STRATEGY,
-EDIT_STRATEGY, UPDATE_STRATEGY } from '../store/actions.type';
+EDIT_STRATEGY, UPDATE_STRATEGY, DELETE_STRATEGY } from '../store/actions.type';
 
 import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 
@@ -104,6 +105,20 @@ export default {
       cancelEdit(){
          this.model = null;  
          this.editting = false;
+      },
+      remove(){
+         let id = this.model.strategy.id;
+         this.$store.commit(CLEAR_ERROR);
+         this.$store
+         .dispatch(DELETE_STRATEGY, id)
+         .then(() => {
+            this.model = null;  
+            this.editting = false;             
+         })
+         .catch(error => {
+            if(!error)  Bus.$emit('errors');
+            else this.resolveError(error);
+         })
       }
    }
 }

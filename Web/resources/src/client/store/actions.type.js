@@ -32,4 +32,5 @@ export const CREATE_STRATEGY = 'createStrategy';
 export const STORE_STRATEGY = 'storeStrategy';
 export const EDIT_STRATEGY = 'editStrategy';
 export const UPDATE_STRATEGY = 'updateStrategy';
+export const DELETE_STRATEGY = 'deleteStrategy';
 

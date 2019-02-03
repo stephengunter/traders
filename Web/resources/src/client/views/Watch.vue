@@ -39,7 +39,7 @@
                      <span class="cn">重新整理</span>
                   </v-tooltip>
                   <v-tooltip top content-class="top">
-                     <v-btn @click.prevent="settings" class="mr-1" slot="activator"  color="success" icon>
+                     <v-btn @click.prevent="editStrategy" class="mr-1" slot="activator"  color="success" icon>
                         <v-icon>mdi-settings</v-icon>
                      </v-btn>
                      <span class="cn">策略設定</span>
@@ -66,6 +66,16 @@
                </v-flex>
                
             </v-layout>
+
+            <v-dialog v-model="editting" persistent max-width="500px">
+               <strategy-edit v-if="editting" 
+               :strategy="settings.model.strategy"
+               :selected_indicators="settings.model.selectedIndicators"
+               :indicators="settings.model.indicators"
+               @submit="submitStrategy" @cancel="cancelEditStrategy"
+               @remove="removeStrategy"
+               />
+            </v-dialog>
          </v-card-text>
       </v-card>
    </div>
@@ -75,18 +85,24 @@
 <script>
 import Helper from '@/common/helper';
 import { mapState } from 'vuex';
+import { INIT_WATCH, FETCH_QUOTES,
+   CREATE_STRATEGY, STORE_STRATEGY,
+   EDIT_STRATEGY, UPDATE_STRATEGY,
+   DELETE_STRATEGY } from '../store/actions.type';
 
-import { INIT_WATCH, FETCH_QUOTES } from '../store/actions.type';
-import { SET_DATE, SET_STRATEGY } from '../store/mutations.type';
+
+import { SET_DATE, SET_STRATEGY, CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 
 import Bread from '../components/TheBread';
 import ChartsDefault from '../components/charts/Default';
+import StrategyEdit from '../components/strategies/Edit';
 
 export default {
    name: 'WatchView',
    components: {
       Bread,
-      'charts-default' : ChartsDefault
+      'charts-default' : ChartsDefault,
+      'strategy-edit' : StrategyEdit
    },
    data () {
       return {
@@ -101,6 +117,11 @@ export default {
          chart: {
             width: 940,
             height: 600
+         },
+
+         settings:{
+            action: '',
+            model: null
          }
       }
    },
@@ -115,26 +136,33 @@ export default {
          return this.strategies.map(item => ({
                value: item.id, text: item.name 
              }))
+      },
+      editting(){
+         return this.settings.action != '';
       }
+      
    },
    beforeMount(){
 		this.init();
    },
    methods: {
 		init(){
+         this.settings.action = '';
+         this.settings.model = null;
+
          this.$store.dispatch(INIT_WATCH)
             .then(() => {
                this.result = 1;
                this.dateString = Helper.toDateString(this.date);
                this.strategyId = this.strategies[0].id;
 
-               this.fetchQuotes();       
+               //this.fetchQuotes();       
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
-               else this.resolveError(error);
+               else this.resolveWatchError(error);
             })
       },
-      resolveError(error){
+      resolveWatchError(error){
          if(error.hasOwnProperty('subscribe')){
             this.errMsg = '您還沒有完成訂閱或者不在訂閱期間內';
             this.result = -1;
@@ -144,8 +172,6 @@ export default {
          }else{
             Bus.$emit('errors');
          }
-
-         
       },
       onStrategyChanged(val){
          let strategy = this.strategies.find(item => item.id == val);
@@ -177,28 +203,88 @@ export default {
                }        
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
-               else this.resolveError(error);
+               else this.resolveWatchError(error);
             })
       },
       refresh(){
          this.fetchQuotes();
       },
-      settings(){
-         
+      cancelEditStrategy(){
+         this.settings.model = null;
+         this.settings.action = '';
+      },
+      editStrategy(){
+         this.$store.commit(CLEAR_ERROR);
+			this.$store.dispatch(EDIT_STRATEGY, this.strategyId)
+				.then(model => {
+               this.settings.model = model;
+               this.settings.action = 'edit';
+				})
+				.catch(error => {
+					Bus.$emit('errors');
+				})
       },
       createStrategy(){
-         this.$store.dispatch(FETCH_QUOTES, params)
-            .then(result => {
-               if(result){
-                  this.$refs.myChart.init();      
-               }else{
-                  //沒有資料
-                  this.noData = true;
-               }        
-            }).catch(error => {
-               console.log(error);
-               Bus.$emit('errors', error);
-            })
+         this.$store.commit(CLEAR_ERROR);
+			this.$store.dispatch(CREATE_STRATEGY)
+				.then(model => {
+               this.settings.model = model;
+               this.settings.action = 'create';
+				})
+				.catch(error => {
+					Bus.$emit('errors');
+				})
+      },
+      submitStrategy(selectedIndicators){
+         let model = {
+            strategy: this.settings.model.strategy,
+            selectedIndicators: selectedIndicators
+         };
+
+         model.strategy.indicatorSettings.forEach((item, index) => {
+            item.order = index;
+         });
+
+         let action = STORE_STRATEGY;
+         if(model.strategy.id){
+            action = UPDATE_STRATEGY
+         }
+
+         this.$store.commit(CLEAR_ERROR);
+         this.$store
+         .dispatch(action, model)
+         .then(id => {
+            this.onSettingsUpdated(true);              
+         })
+         .catch(error => {
+            if(!error)  Bus.$emit('errors');
+            else this.resolveSettingsError(error);
+         })
+      },
+      removeStrategy(){
+         let id = this.strategyId;
+         this.$store.commit(CLEAR_ERROR);
+         this.$store
+         .dispatch(DELETE_STRATEGY, id)
+         .then(() => {
+            this.onSettingsUpdated();           
+         })
+         .catch(error => {
+            if(!error)  Bus.$emit('errors');
+            else this.resolveSettingsError(error);
+         })
+      },
+      resolveSettingsError(error){       
+         if(error){
+            this.$store.commit(SET_ERROR, error);
+         }else{
+            Bus.$emit('errors');
+         }
+      },
+      onSettingsUpdated(showMsg){
+         this.init();
+
+         if(showMsg) Bus.$emit('success');
       }
    }
 }

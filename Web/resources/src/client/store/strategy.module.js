@@ -2,7 +2,9 @@ import StrategyService from '../services/strategy';
 import Helper from '@/common/helper';
 
 import {
-   CREATE_STRATEGY, STORE_STRATEGY, EDIT_STRATEGY, UPDATE_STRATEGY
+   CREATE_STRATEGY, STORE_STRATEGY, 
+   EDIT_STRATEGY, UPDATE_STRATEGY,
+   DELETE_STRATEGY
 } from './actions.type';
 
 import { 
@@ -79,6 +81,21 @@ const actions = {
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
          StrategyService.update(model)
+            .then(() => {
+               resolve(true);
+            })
+            .catch(error => {  
+               reject(Helper.resolveErrorData(error));
+            })
+            .finally(() => { 
+               context.commit(SET_LOADING, false);
+            });
+      });
+   },
+   [DELETE_STRATEGY](context, id) {
+      context.commit(SET_LOADING, true);
+      return new Promise((resolve, reject) => {
+         StrategyService.remove(id)
             .then(() => {
                resolve(true);
             })

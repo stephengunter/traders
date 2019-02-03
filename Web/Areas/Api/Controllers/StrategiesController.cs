@@ -156,13 +156,11 @@ namespace Web.Areas.Api.Controllers
 		}
 
 
-		//[HttpDelete("{id}")]
-		//public async Task<ActionResult> Delete(string id)
-		//{
-		//	var ids = id.Split(',').Select(i => i.ToInt()).ToList();
-
-		//	await stockService.DeleteAsync(ids);
-		//	return Ok();
-		//}
+		[HttpDelete("{id}")]
+		public async Task<ActionResult> Delete(int id)
+		{
+			await strategyService.DeleteAsync(id);
+			return Ok();
+		}
 	}
 }

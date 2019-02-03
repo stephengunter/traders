@@ -20,8 +20,8 @@ const StrategyService = {
       let url = `${source}/${model.strategy.id}`;
       return BaseService.submit('put', url, model);
    },
-   remove(ids){
-      let url = `${source}/${ids}`;
+   remove(id){
+      let url = `${source}/${id}`;
       return BaseService.submit('delete', url);
    }
 };

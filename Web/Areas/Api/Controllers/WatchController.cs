@@ -51,7 +51,7 @@ namespace Web.Areas.Api.Controllers
 
 			int date = GetLatestDate();
 
-			var strategies = await strategyService.FetchByUserAsync(CurrentUserId);
+			var strategies = await GetUserStrategiesAsync();
 			var model = new WatchViewModel()
 			{
 				date = date,
@@ -60,6 +60,19 @@ namespace Web.Areas.Api.Controllers
 			};
 
 			return Ok(model);
+		}
+
+		async Task<IEnumerable<Strategy>> GetUserStrategiesAsync()
+		{
+			var strategies = await strategyService.FetchByUserAsync(CurrentUserId);
+			if (strategies.IsNullOrEmpty())
+			{
+				var strategy = await strategyService.CreateDefaultStrategyAsync(CurrentUserId);
+				return new List<Strategy> { strategy };
+			}
+			
+			else return strategies.GetOrdered();
+
 		}
 
 

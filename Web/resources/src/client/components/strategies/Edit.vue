@@ -96,7 +96,9 @@
 			</v-card-text>
 
 			<v-card-actions>
-				
+				<v-btn v-if="strategy.id" large @click.prevent="remove" color="error" flat>
+					<span class="form-btn">刪除</span>
+				</v-btn>
 				<v-spacer></v-spacer>
 				<v-btn large @click.prevent="cancel" color="blue darken-1" flat>
 					<span class="form-btn">取消</span>
@@ -204,7 +206,10 @@ export default {
 					this.$emit('submit', this.selectedIndicators);
 				} 
          });         
-      }
+      },
+		remove(){
+			this.$emit('remove');
+		}
 	}
 }
 </script>
