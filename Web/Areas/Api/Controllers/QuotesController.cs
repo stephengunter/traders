@@ -45,10 +45,7 @@ namespace Web.Areas.Api.Controllers
 			if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
 
 			var selectedStrategy = strategyService.GetById(strategy);
-			if (selectedStrategy == null) throw new Exception("Action: Api/Quotes/Index , Strategy Not Found. id = " + strategy.ToString());
-			
-			var indicators = await indicatorService.FetchByIdsAsync(selectedStrategy.IndicatorSettings.Select(i => i.IndicatorId).ToList());
-			var indicatorEntities = indicators.Select(i => i.Entity).ToList();
+			if (selectedStrategy == null) throw new Exception("Action: Api/Quotes/Index , Strategy Not Found. id = " + strategy.ToString());			
 
 			bool realTime = false;
 			var quotes = await historyService.FetchAsync(date);
@@ -60,13 +57,15 @@ namespace Web.Areas.Api.Controllers
 
 			if (quotes.IsNullOrEmpty()) return Ok(new ChartsViewModel());
 
-			quotes = quotes.OrderBy(q => q.Time);
+			var hasDataIndicatorEntities = quotes.First().DataList.Select(d => d.Indicator).ToList();
+			var indicators = await indicatorService.FetchByEntitiesAsync(hasDataIndicatorEntities);
 
+			quotes = quotes.OrderBy(q => q.Time);
 			var model = new ChartsViewModel
 			{
 				realTime = realTime,
 				indicators = indicators.Select(i => i.MapViewModel()).ToList(),
-				quotes = quotes.Select(q => q.MapViewModel(q.DataList.Where(d => indicatorEntities.Contains(d.Indicator)))).ToList()
+				quotes = quotes.Select(q => q.MapViewModel(q.DataList.Where(d => hasDataIndicatorEntities.Contains(d.Indicator)))).ToList()
 			};
 
 			return Ok(model);

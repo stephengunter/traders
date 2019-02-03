@@ -40,12 +40,12 @@ class Strategy {
       return this.indicatorSettings.find(item => item.indicatorId == id);
    }
 
-   calculate(totalCount){
+   calculate(quotes){
       for (let i = 0; i < this.indicators.length; i++) {
-         this.indicators[i].calculate();
+         this.indicators[i].calculate(quotes);
       }
 
-      for (let index = 0; index < totalCount; index++) {
+      for (let index = 0; index < quotes.length; index++) {
          let dataList = [];
          for (let j = 0; j < this.indicators.length; j++) {
             let data = this.indicators[j].data[index];

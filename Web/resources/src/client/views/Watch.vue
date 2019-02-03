@@ -156,7 +156,7 @@ export default {
                this.dateString = Helper.toDateString(this.date);
                this.strategyId = this.strategies[0].id;
 
-               //this.fetchQuotes();       
+               this.fetchQuotes();       
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
                else this.resolveWatchError(error);

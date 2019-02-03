@@ -19,7 +19,7 @@ class Charts {
          this.addQuote(quotes[i]);
       }
 
-      this.strategy.calculate(quotes.length);
+      this.strategy.calculate(quotes);
 
       let mainIndicators = this.strategy.getMainIndicators();
       let subIndicators = this.strategy.getSubIndicators();

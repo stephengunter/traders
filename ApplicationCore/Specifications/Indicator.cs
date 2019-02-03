@@ -26,5 +26,11 @@ namespace ApplicationCore.Specifications
 			
 
 		}
+
+		public IndicatorFilterSpecifications(IList<string> entities) : base(s => !s.Removed && entities.Contains(s.Entity))
+		{
+
+
+		}
 	}
 }

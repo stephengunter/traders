@@ -18,29 +18,55 @@ class Indicator {
      
    }
 
-   calculate(){
+   
+
+   calculate(quotes){
 
       this.beginTimeIndex = this.data.findIndex(item => item.time == this.begin);
-
-      if(this.entity === 'BlueChips'){
-         let sum = 0;
+      
+      if(this.entity === 'BlueChips' || this.entity === 'Powers'){
+         this.calculatePowers(quotes);
+      }else if(this.entity === 'Prices'){
+         //let sum = 0;
          for(let i = 0; i < this.data.length; i++){
             let item = this.data[i];
-            sum += Number(item.val);
+            //sum += Number(item.val);
             if(!this.isDataInTime(item)){
                item.val = 0;
                item.avg = 0;
-               item.signal = 0;              
+               item.signal = 0;         
             }else if(this.canCountAvg(i)){
-               item.val = sum;
-               item.avg = this.countAvg(i);
+               item.val = quotes[i].price;
+               item.avg = item.val;
                item.signal = this.createSignal(i);
             }
             else{
-               item.val = sum;
-               item.avg = 0;
+               item.val = quotes[i].price;
+               item.avg = item.val;
                item.signal = 0;    
             }
+         }
+      }
+   }
+
+   calculatePowers(quotes){
+      let sum = 0;
+      for(let i = 0; i < this.data.length; i++){
+         let item = this.data[i];
+         sum += Number(item.val);
+         if(!this.isDataInTime(item)){
+            item.val = 0;
+            item.avg = 0;
+            item.signal = 0;              
+         }else if(this.canCountAvg(i)){
+            item.val = sum;
+            item.avg = this.countAvg(i);
+            item.signal = this.createSignal(i);
+         }
+         else{
+            item.val = sum;
+            item.avg = 0;
+            item.signal = 0;    
          }
       }
    }
@@ -66,7 +92,17 @@ class Indicator {
 
    createSignal(index){
       let data = this.data[index];
-      if(this.entity === 'BlueChips'){
+      if(this.entity === 'BlueChips' || this.entity === 'Powers'){
+         if(data.val > data.avg){
+            this.buySignalIndexes.push(index);
+            return 1;
+         } 
+         else if(data.val < data.avg){
+            this.sellSignalIndexes.push(index);
+            return -1;
+         } 
+         else return 0;
+      }else if(this.entity === 'Prices'){
          if(data.val > data.avg){
             this.buySignalIndexes.push(index);
             return 1;
