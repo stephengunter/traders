@@ -87,11 +87,7 @@ class Indicator {
       for(let i = startIndex; i <= index; i++){
          sum += this.data[i].val;
       }
-
-      // let val = 
-      // Math.round((sum / this.param) * 100) / 100;
-
-
+      
       return sum == 0 ? 0 : Math.round((sum / this.param) * 100) / 100;
    }
 

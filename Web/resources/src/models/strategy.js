@@ -1,10 +1,12 @@
 import Indicator from './indicator';
+import TradeManager from './tradeManager';
 
 class Strategy {
 
    signals = [];
 
    constructor(data, indicators) {
+
       for (let property in data) {
          this[property] = data[property];
       }
@@ -13,6 +15,8 @@ class Strategy {
          let settings = this.getIndicatorSettings(indicator.id);
          return new Indicator(indicator, settings.arg);
       });
+
+      this.tradeManager = new TradeManager();
    }
 
    addDataList(dataList){
@@ -41,47 +45,56 @@ class Strategy {
    }
 
    calculate(quotes){
-      for (let i = 0; i < this.indicators.length; i++) {
-         this.indicators[i].calculate(quotes);
-      }
-
-      for (let index = 0; index < quotes.length; index++) {
-         let dataList = [];
-         for (let j = 0; j < this.indicators.length; j++) {
-            let data = this.indicators[j].data[index];
-            dataList.push({
-               indicator: data.indicator,
-               signal : data.signal
-            });
+      return new Promise((resolve, reject) => {
+         try { 
+            for (let i = 0; i < this.indicators.length; i++) {
+               this.indicators[i].calculate(quotes);
+            }
+      
+            for (let index = 0; index < quotes.length; index++) {
+               let dataList = [];
+               for (let j = 0; j < this.indicators.length; j++) {
+                  let data = this.indicators[j].data[index];
+                  dataList.push({
+                     indicator: data.indicator,
+                     signal : data.signal
+                  });
+               }
+      
+               this.calculateItem(index, dataList);
+            }
+            resolve(true);
          }
-
-         this.calculateItem(index, dataList);
-      }
+         catch (error) {
+            reject(error); 
+         }
+         
+      });
       
    }
 
    calculateItem(index, dataList){
+      let signal = 0;
+     
       let sum = 0;
       for (let i = 0; i < dataList.length; i++) {
          sum += dataList[i].signal;
       }
 
-      if(sum == dataList.length){
-         this.signals.push({
-            index: index,
-            val: 1
-         });
-      }else if(sum == (0 - dataList.length)){
-         this.signals.push({
-            index: index,
-            val: -1
-         });
-      } 
+      if(sum == dataList.length) signal = 1;
+      else if(sum == (0 - dataList.length)) signal = -1;
+
+      this.tradeManager.onSignal(signal, index);
+      
    }
 
    getIndicatorSignal(entity, dataIndex){
       let indicator = this.getIndicator(entity);
       return indicator.data[dataIndex].signal;
+   }
+
+   getTrades(){
+      return this.tradeManager.getTrades();        
    }
 
    

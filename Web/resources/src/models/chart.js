@@ -11,22 +11,33 @@ class Charts {
 
    indicatorSeries = [];
 
-   constructor(strategy, indicators, quotes) {
-      this.strategy = new Strategy(strategy, indicators);
+   constructor(strategy, indicators) {
+      this.strategy = new Strategy(strategy, indicators);  
+   }
+
+   init(quotes){
 
       for (let i = 0; i < quotes.length; i++) {
          this.addQuote(quotes[i]);
       }
 
-      this.strategy.calculate(quotes);
+      return new Promise((resolve, reject) => {
+         this.strategy.calculate(quotes)
+         .then(() => {
+            let mainIndicators = this.strategy.getMainIndicators();
+            let subIndicators = this.strategy.getSubIndicators();
+            this.xAxis = this.initXAxis(subIndicators, this.times);
+            this.yAxis = this.initYAxis(subIndicators);
+            this.grids = this.initGrids(subIndicators);
+            this.series = this.initSeries(mainIndicators, subIndicators);
 
-      let mainIndicators = this.strategy.getMainIndicators();
-      let subIndicators = this.strategy.getSubIndicators();
-      this.xAxis = this.initXAxis(subIndicators, this.times);
-      this.yAxis = this.initYAxis(subIndicators);
-      this.grids = this.initGrids(subIndicators);
-      this.series = this.initSeries(mainIndicators, subIndicators);
-        
+            resolve(true);
+         })
+         .catch(error => { 
+            reject(error); 
+         })
+         
+      });  
    }
 
    addQuote(item){
@@ -40,6 +51,14 @@ class Charts {
 
    mapQuote(item) {
       return [item.open, item.price, item.low, item.high];
+   }
+
+   getPrice(index){
+      return this.prices[index][1];    
+   }
+
+   getTradePrice(index){
+      return this.prices[index][0];    
    }
 
    getColor(signal){
@@ -122,9 +141,68 @@ class Charts {
       return yAxis;
    }
 
+   
+
+   resolveMainSignals(){
+      let signals = [];
+      let trades = this.strategy.getTrades();
+      for(let i = 0; i < trades.length; i++){
+         let trade = trades[i];
+         let exist = signals.find(item => item.index === trade.index);
+         if(exist){
+            exist.val = trade.val
+         }else{
+            signals.push({
+               index: trade.index,
+               time: this.times[trade.index],
+               price: this.getPrice(trade.index),
+               val : trade.val
+            });
+         }
+      }
+      return signals;
+   }
+
+   resolveTrades(){
+      return new Promise((resolve) => {
+         let position = 0;
+         let trades = this.strategy.getTrades();
+         for(let i = 0; i < trades.length; i++){
+            let trade = trades[i];
+            let index = trade.index; //+ 1;
+            trade.time = this.times[index];
+            trade.price = this.getTradePrice(index);
+            if(trade.val > 0){
+               trade.text = '多單進場';
+            }else if(trade.val < 0){
+               trade.text = '空單進場';
+            }else{
+               trade.text = position ? '多單' : '空單';
+               trade.text += '出場';
+            }
+
+            position = trade.val;
+            
+         }
+         resolve(trades);
+      }); 
+      
+   }
+
+   convertToMarkPoint(signal){
+      return {
+         coord: [signal.time, signal.price],
+         value: signal.price,
+         itemStyle: {
+            color: this.getColor(signal.val)
+         }
+      }
+   }
+
    initSeries(mainIndicators, subIndicators){
       
-      let mainSignals = this.strategy.signals;
+      let mainSignals = this.resolveMainSignals();
+      let markPoints = mainSignals.map(item => this.convertToMarkPoint(item));
 
       let series = [{
          type: 'candlestick',
@@ -139,28 +217,7 @@ class Charts {
          },
          data: this.prices,
          markPoint: {
-            // label: {
-            //     normal: {
-            //         formatter: function (param) {
-            //             return param != null ? Math.round(param.value) : '';
-            //         }
-            //     }
-            // },
-            data: [
-                {
-                    name: 'Damn',
-                    coord: ['10:45:00', 9900],
-                    value: 9900,
-                    itemStyle: {
-                        normal: { color: '#FD1050'}
-                    }
-                }
-            ],
-            tooltip: {
-                formatter: function (param) {
-                    return param.name + '<br>' + (param.data.coord || '');
-                }
-            }
+            data: markPoints
          },
       }];
 
@@ -344,9 +401,8 @@ class Charts {
    }
 
    defaultOptions() {
+      this.options =  {
       
-
-      return {
          backgroundColor: '#21202D',
          tooltip: this.getTootip(),
          axisPointer: {
@@ -392,6 +448,8 @@ class Charts {
          animation: false,
          series: this.series,
       };
+
+      return this.options;
    }
 
 

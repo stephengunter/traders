@@ -110,14 +110,9 @@ export default {
          dateString: '',
          showDatePicker: false,
 
-         result:0,
+         result: 0,
          errMsg: '',
          noData: false,
-
-         chart: {
-            width: 940,
-            height: 600
-         },
 
          settings:{
             action: '',
