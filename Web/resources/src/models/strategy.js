@@ -79,6 +79,11 @@ class Strategy {
       } 
    }
 
+   getIndicatorSignal(entity, dataIndex){
+      let indicator = this.getIndicator(entity);
+      return indicator.data[dataIndex].signal;
+   }
+
    
 }
 

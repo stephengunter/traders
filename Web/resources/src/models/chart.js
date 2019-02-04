@@ -5,12 +5,11 @@ class Charts {
    strategy = null;
 
    priceSeriesName = '報價';
-   colorUp = '#FD1050';
-   colorDown ='#0CF49B';
-   colorZero ='#FFFFFF';
 
    prices = [];
    times = [];
+
+   indicatorSeries = [];
 
    constructor(strategy, indicators, quotes) {
       this.strategy = new Strategy(strategy, indicators);
@@ -41,6 +40,12 @@ class Charts {
 
    mapQuote(item) {
       return [item.open, item.price, item.low, item.high];
+   }
+
+   getColor(signal){
+      if(signal > 0) return '#FD1050';
+      else if(signal == 0) return '#FFFFFF';
+      else return '#0CF49B';
    }
    
 
@@ -120,7 +125,6 @@ class Charts {
    initSeries(mainIndicators, subIndicators){
       
       let mainSignals = this.strategy.signals;
-      console.log(mainSignals);
 
       let series = [{
          type: 'candlestick',
@@ -159,6 +163,8 @@ class Charts {
             }
          },
       }];
+
+      let seriesIndex = 1;
      
       for(let i = 0; i < mainIndicators.length; i++)
       {
@@ -170,9 +176,15 @@ class Charts {
                smooth: true,
                lineStyle: {
                   width: 3
-               }
-          });
-       
+            }
+         });
+
+         this.indicatorSeries.push({
+            index: seriesIndex,
+            entity: indicator.entity
+         });
+
+         seriesIndex++;
       }
 
       for(let i = 0; i < subIndicators.length; i++)
@@ -183,10 +195,9 @@ class Charts {
             return item.val;
          })
          
-         
-         let colorUp = this.colorUp;
-         let colorDown = this.colorDown;
-         let colorZero = this.colorZero;
+         let colorUp = this.getColor(1);
+         let colorDown = this.getColor(-1);
+         let colorZero = this.getColor(0);
 
          series.push({
                type: 'bar',
@@ -207,6 +218,13 @@ class Charts {
                }
          });
 
+         this.indicatorSeries.push({
+            index: seriesIndex,
+            entity: indicator.entity
+         });
+
+         seriesIndex++;
+
          if(indicator.withAvg){
             let avgs = indicator.data.map(item => {
                return item.avg;
@@ -226,6 +244,15 @@ class Charts {
                   color: '#FFD700' 
                }
             });
+
+            this.indicatorSeries.push({
+               index: seriesIndex,
+               entity: indicator.entity
+            });
+
+            seriesIndex++;
+
+            
          }
        
       }
@@ -272,12 +299,16 @@ class Charts {
       return grids;
    }
 
-   defaultOptions() {
-      
+   
+
+   getTootip(){
+
+      let strategy = this.strategy;
+      let indicatorSeries = this.indicatorSeries;
+      let getColor = this.getColor;
+
       return {
-         backgroundColor: '#21202D',
-         tooltip: {
-            trigger: 'axis',
+         trigger: 'axis',
             axisPointer: {            
                type: 'cross'     
             },
@@ -294,14 +325,30 @@ class Charts {
                      tip +=  `${item.marker}開${item.value[1]} 高${item.value[4]} 低${item.value[3]} 收${item.value[2]}<br/>`;
                   }
                   else{
-                     tip += `${item.marker + item.seriesName} : ${item.value}<br/>`;
+                     let indicator = indicatorSeries.find(i => i.index == item.seriesIndex);
+                     let signal = strategy.getIndicatorSignal(indicator.entity, item.dataIndex);
+                     let color = getColor(signal);
+                     let marker = item.marker;
+
+                     marker = item.marker.replace(item.color, color);
+
+                     tip += `${marker + item.seriesName} : ${item.value}<br/>`;
                   }
                   
                }
                
                return tip;         
             }
-         },
+
+      }
+   }
+
+   defaultOptions() {
+      
+
+      return {
+         backgroundColor: '#21202D',
+         tooltip: this.getTootip(),
          axisPointer: {
             link: {
                xAxisIndex: 'all'

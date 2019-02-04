@@ -27,22 +27,22 @@ class Indicator {
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
          this.calculatePowers(quotes);
       }else if(this.entity === 'Prices'){
-         //let sum = 0;
          for(let i = 0; i < this.data.length; i++){
             let item = this.data[i];
-            //sum += Number(item.val);
             if(!this.isDataInTime(item)){
                item.val = 0;
                item.avg = 0;
                item.signal = 0;         
             }else if(this.canCountAvg(i)){
-               item.val = quotes[i].price;
-               item.avg = item.val;
+               let val = quotes[i].price - item.val;
+               item.val = Math.round(val * 100) / 100; // 18.63 quotes[i].price - item.val;
+               item.avg = this.countAvg(i);
                item.signal = this.createSignal(i);
             }
             else{
-               item.val = quotes[i].price;
-               item.avg = item.val;
+               let val = quotes[i].price - item.val;
+               item.val = Math.round(val * 100) / 100; // 18.63 quotes[i].price - item.val;
+               item.avg = 0;
                item.signal = 0;    
             }
          }
@@ -87,7 +87,12 @@ class Indicator {
       for(let i = startIndex; i <= index; i++){
          sum += this.data[i].val;
       }
-      return sum == 0 ? 0 : sum / this.param;
+
+      // let val = 
+      // Math.round((sum / this.param) * 100) / 100;
+
+
+      return sum == 0 ? 0 : Math.round((sum / this.param) * 100) / 100;
    }
 
    createSignal(index){
