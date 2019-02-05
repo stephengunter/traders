@@ -3,6 +3,9 @@ class Helper {
    static getScrollBarWidth() {
       return Common.getScrollBarWidth();
    }
+   static isSmallScreen(){
+      return window.innerWidth < 991;
+   }
    static resolveErrorData(error)
    {
       console.log(error);

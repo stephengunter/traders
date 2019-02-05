@@ -10,7 +10,7 @@ import echarts from 'echarts';
 import Charts from '@/models/chart';
 
 import { mapState, mapGetters } from 'vuex';
-import { SET_LOADING } from '../../store/mutations.type';
+import { SET_LOADING, SET_TRADES, SET_REALTIME_POSITION } from '../../store/mutations.type';
 
 export default {
    name: 'ChartDefault',
@@ -36,7 +36,7 @@ export default {
       ...mapState({
          indicators: state => state.chart.indicators,
          quotes: state => state.chart.quotes,
-         realTime: state => state.chart.realTime
+         realTime: state => state.chart.realTime         
       }),
    },
    mounted(){
@@ -60,14 +60,13 @@ export default {
 
                this.loadTrades();
             }).catch(error => {
-               console.log(error);
                Bus.$emit('errors');
             })
       },
       loadTrades(){
          this.chartModel.resolveTrades()
             .then(trades => {
-               console.log(trades);
+               this.$store.commit(SET_TRADES, trades);
             }).catch(error => {
                console.log(error);
             })
@@ -75,6 +74,7 @@ export default {
       resize(){
          if(this.chart){
             this.chart.resize();
+            this.$emit('resize');
          }
       },
       refresh(){

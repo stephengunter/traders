@@ -1,6 +1,5 @@
 <template>
    <div class="container">
-      
       <Bread />
       <v-layout v-if="result < 0" row wrap>
          <v-flex xs12>
@@ -14,8 +13,8 @@
       <v-card v-if="result > 0">
          <v-card-text>
             <v-layout row wrap>
-               <v-flex xs12 sm10 md10 class="d-inline-flex">
-                  <v-select 
+               <v-flex xs10 class="d-inline-flex">
+                  <v-select style="width:180px"
                   :items="strategyOptions"  label="策略"
                   v-model="strategyId" @change="onStrategyChanged"
                   />
@@ -31,7 +30,44 @@
                      <v-date-picker v-model="dateString" locale="zh-cn" @input="onDateChanged" />
                   </v-menu>
                </v-flex>
-               <v-flex xs12 sm2 md2 class="text-sm-right">
+               <v-flex v-if="responsive" xs2 class="text-sm-right">
+                  <v-menu offset-y class="hidden-md-and-up">
+                     <v-toolbar-side-icon  slot="activator" />
+                     <v-list>
+                        <v-list-tile @click.prevent="refresh" >
+                           <v-list-tile-action>
+                               <v-btn class="mr-1" slot="activator"  color="info" icon>
+                                 <v-icon>mdi-refresh</v-icon>
+                              </v-btn>
+                           </v-list-tile-action>
+                           <v-list-tile-content>
+                              <v-list-tile-title class="cn">重新整理</v-list-tile-title>
+                           </v-list-tile-content>
+                        </v-list-tile>
+                        <v-list-tile @click.prevent="editStrategy" >
+                           <v-list-tile-action>
+                              <v-btn class="mr-1" slot="activator"  color="success" icon>
+                                 <v-icon>mdi-settings</v-icon>
+                              </v-btn>
+                           </v-list-tile-action>
+                           <v-list-tile-content>
+                              <v-list-tile-title class="cn">策略設定</v-list-tile-title>
+                           </v-list-tile-content>
+                        </v-list-tile>
+                        <v-list-tile @click.prevent="createStrategy" >
+                           <v-list-tile-action>
+                              <v-btn slot="activator" color="primary" icon>
+                                 <v-icon>mdi-plus</v-icon>
+                              </v-btn>
+                           </v-list-tile-action>
+                           <v-list-tile-content>
+                              <v-list-tile-title class="cn">新增策略</v-list-tile-title>
+                           </v-list-tile-content>
+                        </v-list-tile>
+                     </v-list>
+                  </v-menu>
+               </v-flex>
+               <v-flex v-else xs2 class="text-sm-right">
                   <v-tooltip top content-class="top">
                      <v-btn @click.prevent="refresh" class="mr-1" slot="activator"  color="info" icon>
                         <v-icon>mdi-refresh</v-icon>
@@ -50,28 +86,64 @@
                      </v-btn>
                      <span class="cn">新增策略</span>
                   </v-tooltip>
-                  
                </v-flex>
             </v-layout>
             <v-layout row>
-               <v-flex xs12>
-                  <v-alert v-if="noData" :value="true"  color="warning"  icon="mdi-alert" outline  class="title">
+               <v-flex xs12 >
+                  <v-alert :value="noData"  color="warning"  icon="mdi-alert" outline  class="title">
                      <span class="cn" >
                         沒有這一天的資料
                      </span>  
                   </v-alert>
+                  <v-alert v-if="position" :value="realTime"  :color="position.color" class="title">
+                     <span class="cn" >
+                        即時部位：{{ position.text }}
+                     </span>  
+                  </v-alert>
                   <charts-default v-show="!noData" ref="myChart" 
-                  :strategy="strategy" 
+                  :strategy="strategy"
+                  @resize="onResize"
                   />
                </v-flex>
                
+            </v-layout>
+            <v-layout row>
+               <v-flex xs12 >
+                  <v-list two-line>
+                     <template v-for="(trade, index) in tradeViewList">
+                        <v-list-tile :key="index">
+
+                           <v-list-tile-content style="width:30px">
+                              #{{ index + 1 }}
+                           </v-list-tile-content>
+                           <v-list-tile-content style="width:50px">
+                              <v-icon v-if="trade.val > 0" color="red">mdi-alpha-b-circle</v-icon>
+                              <v-icon v-if="trade.val < 0" color="green">mdi-alpha-s-circle</v-icon>
+                           </v-list-tile-content>
+
+                           <v-list-tile-content>
+                              <v-list-tile-title class="cn">{{ trade.items[0].text }} {{ trade.items[0].price  }}</v-list-tile-title>
+                              <v-list-tile-sub-title>{{ trade.items[0].time }}</v-list-tile-sub-title>
+
+                              <v-list-tile-title v-if="trade.items.length > 1" class="cn">{{ trade.items[1].text  }} {{ trade.items[1].price  }}</v-list-tile-title>
+                              <v-list-tile-sub-title v-if="trade.items.length > 1" >{{ trade.items[1].time }}</v-list-tile-sub-title>
+                           </v-list-tile-content>
+                           <v-list-tile-content :style="{ width: '75px' ,color: trade.result > 0 ? 'red' : 'green' }">
+                           <span class="ml-3" style="text-align: right;">{{ trade.result }}</span>
+                           <!-- {{ trade.result }} -->
+                           </v-list-tile-content>
+                        </v-list-tile>
+                        <v-divider v-if="index + 1 < tradeViewList.length" :key="-1 - index"/>
+                     </template>
+                  </v-list>
+               </v-flex>
             </v-layout>
 
             <v-dialog v-model="editting" persistent max-width="500px">
                <strategy-edit v-if="editting" 
                :strategy="settings.model.strategy"
                :selected_indicators="settings.model.selectedIndicators"
-               :indicators="settings.model.indicators"
+               :indicators="settings.model.indicators"               
                @submit="submitStrategy" @cancel="cancelEditStrategy"
                @remove="removeStrategy"
                />
@@ -91,7 +163,7 @@ import { INIT_WATCH, FETCH_QUOTES,
    DELETE_STRATEGY } from '../store/actions.type';
 
 
-import { SET_DATE, SET_STRATEGY, CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
+import { SET_RESPONSIVE, SET_DATE, SET_STRATEGY, CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 
 import Bread from '../components/TheBread';
 import ChartsDefault from '../components/charts/Default';
@@ -122,10 +194,14 @@ export default {
    },
    computed: {
       ...mapState({
+         responsive: state => state.app.responsive,
          key: state => state.watch.key,
          date: state => state.watch.date,
          strategy: state => state.watch.strategy,
          strategies: state => state.watch.strategies,
+         realTime: state => state.chart.realTime,
+         trades: state => state.chart.trades,
+         position: state => state.chart.position
       }),
       strategyOptions(){
          return this.strategies.map(item => ({
@@ -134,11 +210,41 @@ export default {
       },
       editting(){
          return this.settings.action != '';
+      },
+      tradeViewList(){
+         if(!this.trades.length) return [];
+         let views = [];
+         for (let i = 0; i < this.trades.length; i++) {
+            if(i % 2 === 0){
+               let inTrade = this.trades[i];
+               let outTrade = (i === this.trades.length - 1) ? null : this.trades[i + 1];
+               let items = [inTrade];
+               if(outTrade) items.push(outTrade);
+
+               let item = {
+                  val: inTrade.val,
+                  items: items
+               };
+
+               if(outTrade){
+                  if(inTrade.val > 0 ){
+                     item.result = outTrade.price - inTrade.price;
+                  }else{
+                     item.result = inTrade.price - outTrade.price;
+                  }
+               }else  item.result = '';
+
+               
+               
+               views.push(item);
+            }
+         }
+         return views;
       }
       
    },
    beforeMount(){
-		this.init();
+      this.init();
    },
    methods: {
 		init(){
@@ -174,12 +280,14 @@ export default {
             this.$store.commit(SET_STRATEGY, strategy);
             this.fetchQuotes();
          }
-        
       },
       onDateChanged(){
          this.showDatePicker = false;
          this.$store.commit(SET_DATE, Helper.dateNumber(this.dateString));
          this.fetchQuotes();
+      },
+      onResize(){
+         this.$store.commit(SET_RESPONSIVE, Helper.isSmallScreen());
       },
       fetchQuotes(){
          let params = {

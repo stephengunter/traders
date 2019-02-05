@@ -13,6 +13,7 @@ export const SET_STRATEGIES = 'setStrategies';
 export const SET_REALTIME = 'setRealTime';
 export const SET_INDICATORS = 'setIndicators';
 export const SET_CHART_QUOTES = 'setChartQuotes';
+export const SET_TRADES = 'setTrades';
 
 export const SET_ERROR = 'setError';
 export const CLEAR_ERROR = 'clearError';

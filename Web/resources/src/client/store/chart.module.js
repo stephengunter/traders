@@ -8,13 +8,15 @@ import {
 
 import { 
    SET_LOADING, SET_REALTIME, SET_INDICATORS,
-   SET_CHART_QUOTES
+   SET_CHART_QUOTES, SET_TRADES
 } from './mutations.type';
 
 const initialState = {
    indicators: [],
    quotes: [],
-   realTime: false
+   realTime: false,
+   trades: [],
+   position: null
 };
  
 export const state = { ...initialState };
@@ -63,6 +65,35 @@ const mutations = {
    },
    [SET_CHART_QUOTES](state, quotes) {
       state.quotes = quotes;
+   },
+   [SET_TRADES](state, trades) {
+     
+      state.trades = trades;
+
+      if(trades.length){
+         let lastTrade = trades[trades.length - 1];
+         if(lastTrade.val === 0){
+            state.position = {
+               val : 0,
+               color: 'black',
+               text: '中立'
+            }    
+         }else if(lastTrade.val > 0){
+            state.position = {
+               val : 1,
+               color: 'red',
+               text: '多'
+            }  
+         }else{
+            state.position = {
+               val : -1,
+               color: 'green',
+               text: '空'
+            } 
+         }
+      }else{
+         state.position = null;
+      }
    }
 };
 

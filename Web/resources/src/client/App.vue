@@ -39,6 +39,7 @@
 
 import { mapState } from 'vuex';
 import { SET_RESPONSIVE } from './store/mutations.type';
+import Helper from '@/common/helper';
 
 import RwvHeader from './components/TheHeader';
 import RwvFooter from './components/TheFooter';
@@ -102,11 +103,7 @@ export default {
 			this.success.msg = msg ? msg : '存檔成功';
 		},
 		onResponsiveInverted () {
-         if (window.innerWidth < 991) {
-            this.$store.commit(SET_RESPONSIVE, true);
-         } else {
-            this.$store.commit(SET_RESPONSIVE, false);
-         }
+			this.$store.commit(SET_RESPONSIVE, Helper.isSmallScreen());         
       },
 	}
 }
