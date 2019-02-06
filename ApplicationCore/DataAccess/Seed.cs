@@ -237,7 +237,7 @@ namespace ApplicationCore.DataAccess
 				{
 					Name = "主力成本" , Entity = "Prices", Begin = 84500, End = 134500,
 					Main = false, Type = IndicatorType.Bar, Source = SourceType.Futures,
-					Params = "1,60,5" , WithAvg = true,
+					Params = "1,60,5" , WithAvg = false,
 					Order = 3, Description ="期貨主力成本分析"
 				}
 			};

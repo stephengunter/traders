@@ -60,8 +60,13 @@ export default {
 
                this.loadTrades();
             }).catch(error => {
+                 console.log(error);
                Bus.$emit('errors');
             })
+
+         if(this.realTime){
+            this.watchQuote();
+         }   
       },
       loadTrades(){
          this.chartModel.resolveTrades()
@@ -77,10 +82,15 @@ export default {
             this.$emit('resize');
          }
       },
+      watchQuote(){
+         let time = 132100;
+         window.setInterval(function (){
+    console.log('test');
+}, 1000);
+      },
       refresh(){
          
-         let series = [{ 
-            //data: this.prices, 
+         let series = [{
             markPoint: {
                data: this.markPointData
             } 

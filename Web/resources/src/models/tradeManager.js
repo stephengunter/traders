@@ -1,8 +1,27 @@
 class TradeManager {
+   
+   times = [];
 
    constructor() {
       this.trades = [];
       this.position = 0;
+
+      let time = 84600;
+      while (time <= 134500) {
+         if(time === 86000) time = 90000;
+         else if(time === 96000) time = 100000;
+         else if(time === 106000) time = 110000;
+         else if(time === 116000) time = 120000;
+         else if(time === 126000) time = 130000;
+
+         this.times.push(time);
+         time += 100;
+      }
+
+   }
+
+   getTimeIndex(time){
+    return this.times.indexOf(time);
    }
 
    getTrades(){

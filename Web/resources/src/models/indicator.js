@@ -9,20 +9,20 @@ class Indicator {
    buySignalIndexes = []
    sellSignalIndexes = [];
 
-   constructor(model, param) {
+   constructor(model, param, beginIndex) {
       for (let property in model) {
          this[property] = model[property];
       }
       if(param)  this.param = param;
       else this.param = this.defaultParam;
+
+      this.beginTimeIndex = beginIndex;
      
    }
-
+   
    
 
    calculate(quotes){
-
-      this.beginTimeIndex = this.data.findIndex(item => item.time == this.begin);
       
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
          this.calculatePowers(quotes);
@@ -30,20 +30,20 @@ class Indicator {
          for(let i = 0; i < this.data.length; i++){
             let item = this.data[i];
             if(!this.isDataInTime(item)){
-               item.val = 0;
-               item.avg = 0;
+               item.result = 0;
                item.signal = 0;         
             }else if(this.canCountAvg(i)){
-               let val = quotes[i].price - item.val;
-               item.val = Math.round(val * 100) / 100; // 18.63 quotes[i].price - item.val;
-               item.avg = this.countAvg(i);
+               
+               item.val = Number(item.val);
+               let avg = this.countAvg(i);
+
+               let val = quotes[i].price - avg;
+               item.result = Math.round(val * 100) / 100;
                item.signal = this.createSignal(i);
             }
             else{
-               let val = quotes[i].price - item.val;
-               item.val = Math.round(val * 100) / 100; // 18.63 quotes[i].price - item.val;
-               item.avg = 0;
-               item.signal = 0;    
+               item.result = 0;
+               item.signal = 0;      
             }
          }
       }
@@ -81,6 +81,7 @@ class Indicator {
 
    countAvg(index){
       let startIndex = index - this.param + 1;
+      
       if(startIndex < 0) return 0;
 
       let sum = 0;
@@ -97,21 +98,19 @@ class Indicator {
          if(data.val > data.avg){
             this.buySignalIndexes.push(index);
             return 1;
-         } 
-         else if(data.val < data.avg){
+         }else if(data.val < data.avg){
             this.sellSignalIndexes.push(index);
             return -1;
          } 
          else return 0;
       }else if(this.entity === 'Prices'){
-         if(data.val > data.avg){
+         if(data.result > 0){
             this.buySignalIndexes.push(index);
             return 1;
-         } 
-         else if(data.val < data.avg){
+         }else if(data.result < 0){
             this.sellSignalIndexes.push(index);
             return -1;
-         } 
+         }
          else return 0;
       }
       

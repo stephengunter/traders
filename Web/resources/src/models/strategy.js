@@ -5,7 +5,10 @@ class Strategy {
 
    signals = [];
 
+   
+
    constructor(data, indicators) {
+      this.tradeManager = new TradeManager();
 
       for (let property in data) {
          this[property] = data[property];
@@ -13,10 +16,11 @@ class Strategy {
 
       this.indicators = indicators.map(indicator => {
          let settings = this.getIndicatorSettings(indicator.id);
-         return new Indicator(indicator, settings.arg);
+         let beginTimeIndex = this.tradeManager.getTimeIndex(indicator.begin);
+         return new Indicator(indicator, settings.arg, beginTimeIndex);
       });
 
-      this.tradeManager = new TradeManager();
+      this.endSignalTime = this.tradeManager.getTimeIndex(133000);
    }
 
    addDataList(dataList){
@@ -75,14 +79,15 @@ class Strategy {
 
    calculateItem(index, dataList){
       let signal = 0;
-     
-      let sum = 0;
-      for (let i = 0; i < dataList.length; i++) {
-         sum += dataList[i].signal;
-      }
+      if(index < this.endSignalTime){
+         let sum = 0;
+         for (let i = 0; i < dataList.length; i++) {
+            sum += dataList[i].signal;
+         }
 
-      if(sum == dataList.length) signal = 1;
-      else if(sum == (0 - dataList.length)) signal = -1;
+         if(sum == dataList.length) signal = 1;
+         else if(sum == (0 - dataList.length)) signal = -1;
+      }
 
       this.tradeManager.onSignal(signal, index);
       

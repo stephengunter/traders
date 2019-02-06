@@ -58,7 +58,8 @@ class Charts {
    }
 
    getTradePrice(index){
-      return this.prices[index][0];    
+      return this.getPrice(index);
+      //return this.prices[index + 1][0];    
    }
 
    getColor(signal){
@@ -165,11 +166,10 @@ class Charts {
 
    resolveTrades(){
       return new Promise((resolve) => {
-         let position = 0;
          let trades = this.strategy.getTrades();
          for(let i = 0; i < trades.length; i++){
             let trade = trades[i];
-            let index = trade.index; //+ 1;
+            let index = trade.index;
             trade.time = this.times[index];
             trade.price = this.getTradePrice(index);
             if(trade.val > 0){
@@ -177,11 +177,9 @@ class Charts {
             }else if(trade.val < 0){
                trade.text = '空單進場';
             }else{
-               trade.text = position ? '多單' : '空單';
-               trade.text += '出場';
+               //trade.text = position ? '多單' : '空單';
+               trade.text = '平倉出場';
             }
-
-            position = trade.val;
             
          }
          resolve(trades);
@@ -249,7 +247,8 @@ class Charts {
          let indicator = subIndicators[i];
          
          let vals = indicator.data.map(item => {
-            return item.val;
+            if(item.hasOwnProperty('result')) return item.result;
+            else return item.val;
          })
          
          let colorUp = this.getColor(1);

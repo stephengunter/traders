@@ -109,33 +109,7 @@
             </v-layout>
             <v-layout row>
                <v-flex xs12 >
-                  <v-list two-line>
-                     <template v-for="(trade, index) in tradeViewList">
-                        <v-list-tile :key="index">
-
-                           <v-list-tile-content style="width:30px">
-                              #{{ index + 1 }}
-                           </v-list-tile-content>
-                           <v-list-tile-content style="width:50px">
-                              <v-icon v-if="trade.val > 0" color="red">mdi-alpha-b-circle</v-icon>
-                              <v-icon v-if="trade.val < 0" color="green">mdi-alpha-s-circle</v-icon>
-                           </v-list-tile-content>
-
-                           <v-list-tile-content>
-                              <v-list-tile-title class="cn">{{ trade.items[0].text }} {{ trade.items[0].price  }}</v-list-tile-title>
-                              <v-list-tile-sub-title>{{ trade.items[0].time }}</v-list-tile-sub-title>
-
-                              <v-list-tile-title v-if="trade.items.length > 1" class="cn">{{ trade.items[1].text  }} {{ trade.items[1].price  }}</v-list-tile-title>
-                              <v-list-tile-sub-title v-if="trade.items.length > 1" >{{ trade.items[1].time }}</v-list-tile-sub-title>
-                           </v-list-tile-content>
-                           <v-list-tile-content :style="{ width: '75px' ,color: trade.result > 0 ? 'red' : 'green' }">
-                           <span class="ml-3" style="text-align: right;">{{ trade.result }}</span>
-                           <!-- {{ trade.result }} -->
-                           </v-list-tile-content>
-                        </v-list-tile>
-                        <v-divider v-if="index + 1 < tradeViewList.length" :key="-1 - index"/>
-                     </template>
-                  </v-list>
+                  <trade-list />
                </v-flex>
             </v-layout>
 
@@ -168,13 +142,15 @@ import { SET_RESPONSIVE, SET_DATE, SET_STRATEGY, CLEAR_ERROR, SET_ERROR } from '
 import Bread from '../components/TheBread';
 import ChartsDefault from '../components/charts/Default';
 import StrategyEdit from '../components/strategies/Edit';
+import TradeList from '../components/trades/List';
 
 export default {
    name: 'WatchView',
    components: {
       Bread,
       'charts-default' : ChartsDefault,
-      'strategy-edit' : StrategyEdit
+      'strategy-edit' : StrategyEdit,
+      'trade-list' : TradeList
    },
    data () {
       return {
@@ -200,7 +176,6 @@ export default {
          strategy: state => state.watch.strategy,
          strategies: state => state.watch.strategies,
          realTime: state => state.chart.realTime,
-         trades: state => state.chart.trades,
          position: state => state.chart.position
       }),
       strategyOptions(){
@@ -210,36 +185,6 @@ export default {
       },
       editting(){
          return this.settings.action != '';
-      },
-      tradeViewList(){
-         if(!this.trades.length) return [];
-         let views = [];
-         for (let i = 0; i < this.trades.length; i++) {
-            if(i % 2 === 0){
-               let inTrade = this.trades[i];
-               let outTrade = (i === this.trades.length - 1) ? null : this.trades[i + 1];
-               let items = [inTrade];
-               if(outTrade) items.push(outTrade);
-
-               let item = {
-                  val: inTrade.val,
-                  items: items
-               };
-
-               if(outTrade){
-                  if(inTrade.val > 0 ){
-                     item.result = outTrade.price - inTrade.price;
-                  }else{
-                     item.result = inTrade.price - outTrade.price;
-                  }
-               }else  item.result = '';
-
-               
-               
-               views.push(item);
-            }
-         }
-         return views;
       }
       
    },
