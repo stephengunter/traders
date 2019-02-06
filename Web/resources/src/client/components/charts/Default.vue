@@ -7,7 +7,10 @@
 
 <script>
 import echarts from 'echarts';
+import * as signalR from '@aspnet/signalr';
 import Charts from '@/models/chart';
+
+import { WATCH_URL } from '@/common/config';
 
 import { mapState, mapGetters } from 'vuex';
 import { SET_LOADING, SET_TRADES, SET_REALTIME_POSITION } from '../../store/mutations.type';
@@ -24,7 +27,9 @@ export default {
 		return {
          chart: null,
          height: 500,
-         chartModel: null
+         chartModel: null,
+
+         connection: null,
 		}
    },
    watch: {
@@ -53,19 +58,22 @@ export default {
          this.chartModel = new Charts(this.strategy, this.indicators);
          this.chartModel.init(this.quotes)
             .then(() => {
-               this.chart = echarts.init(document.getElementById('chart-watch'));
+               this.chart = echarts.init(document.getElementById('chart-watch'));               
                this.chart.setOption(this.chartModel.defaultOptions());
+
                this.resize();
                this.$store.commit(SET_LOADING, false);
 
                this.loadTrades();
             }).catch(error => {
-                 console.log(error);
                Bus.$emit('errors');
             })
 
          if(this.realTime){
-            this.watchQuote();
+            window.setInterval(this.getQuote, 2100);
+            //this.connectHub();
+         }else{
+            //this.disconnectHub();
          }   
       },
       loadTrades(){
@@ -82,11 +90,37 @@ export default {
             this.$emit('resize');
          }
       },
-      watchQuote(){
-         let time = 132100;
-         window.setInterval(function (){
-    console.log('test');
-}, 1000);
+      registerHub(){         
+         console.log('registerHub');
+         
+
+
+         // this.connection = new signalR.HubConnectionBuilder().withUrl(WATCH_URL).build(); 
+
+         // this.connection.start().catch((error) => {
+         //    console.log(error);
+         // });
+
+         // this.connection.on('receive', () => {
+         //    this.getQuote();
+         // });
+      },
+      connectHub(){
+         if(this.connection == null) this.registerHub();
+         else this.connection.start(); 
+      },
+      disconnectHub(){
+         if(this.connection != null) this.connection.stop(); 
+      },
+      getQuote(){
+         console.log('getQuotes');
+         // let getData = Quote.get(this.params);
+         // getData.then(quote => {
+         //    this.onNewQuote(quote);
+         // })
+         // .catch(error => {
+         //    this.$emit('fetch-error', error);            
+         // });
       },
       refresh(){
          

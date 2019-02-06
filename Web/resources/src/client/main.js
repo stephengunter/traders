@@ -1,3 +1,4 @@
+window.$ = window.jQuery = require('jquery');
 import './css/app.css';
 
 import Vue from 'vue';

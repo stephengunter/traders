@@ -5,8 +5,10 @@ export const LOGIN_URL = `${SITE_URL}/#/login`;
 export const API_URL = `${SITE_URL}/api`;
 export const ADMIN_URL = `${SITE_URL}/admin`;
 
+export const WATCH_URL = `${SITE_URL}/watchHub`;
+
 export const GOOGLE_API = {
    client_id: '753186496069-c7arjrt9ji0cd3rcbple37m1au2n1csh'
 }
 
-export default { SITE_URL, LOGIN_URL, API_URL, ADMIN_URL, GOOGLE_API };
+export default { SITE_URL, LOGIN_URL, API_URL, ADMIN_URL, WATCH_URL, GOOGLE_API };

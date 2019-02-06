@@ -18,6 +18,8 @@ namespace ApplicationCore.Services
 		Quote GetQuote(int date, int time);
 		Task<IEnumerable<Quote>> FetchAsync();
 
+		Task<IEnumerable<Quote>> GetLatestAsync(int time);
+
 		int LatestDate();
 	}
 
@@ -45,6 +47,12 @@ namespace ApplicationCore.Services
 		public async Task<IEnumerable<Quote>> FetchAsync()
 		{
 			var spec = new QuoteFilterSpecification();
+			return await quoteRepository.ListAsync(spec);
+		}
+
+		public async Task<IEnumerable<Quote>> GetLatestAsync(int time)
+		{
+			var spec = new QuoteLatestFilterSpecification(time);
 			return await quoteRepository.ListAsync(spec);
 		}
 

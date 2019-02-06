@@ -38,14 +38,14 @@ namespace Web.Areas.Api.Controllers
 			this.historyService = historyService;
 		}
 
-		[HttpGet]
+		[HttpGet("")]
 		public async Task<IActionResult> Index(string user, int date, int strategy)
 		{
 			string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
 			if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
 
 			var selectedStrategy = strategyService.GetById(strategy);
-			if (selectedStrategy == null) throw new Exception("Action: Api/Quotes/Index , Strategy Not Found. id = " + strategy.ToString());			
+			if (selectedStrategy == null) throw new Exception("Action: Api/Quotes/Index , Strategy Not Found. id = " + strategy.ToString());
 
 			bool realTime = false;
 			var quotes = await historyService.FetchAsync(date);
@@ -60,15 +60,52 @@ namespace Web.Areas.Api.Controllers
 			var hasDataIndicatorEntities = quotes.First().DataList.Select(d => d.Indicator).ToList();
 			var indicators = await indicatorService.FetchByEntitiesAsync(hasDataIndicatorEntities);
 
+			var inidatorEntities = GetInidatorEntities(selectedStrategy, indicators);
+
 			quotes = quotes.OrderBy(q => q.Time);
 			var model = new ChartsViewModel
 			{
 				realTime = realTime,
 				indicators = indicators.Select(i => i.MapViewModel()).ToList(),
-				quotes = quotes.Select(q => q.MapViewModel(q.DataList.Where(d => hasDataIndicatorEntities.Contains(d.Indicator)))).ToList()
+				quotes = quotes.Select(q => q.MapViewModel(q.DataList.Where(d => inidatorEntities.Contains(d.Indicator)))).ToList()
 			};
 
 			return Ok(model);
+
+		}
+
+		[HttpGet("get")]
+		public async Task<IActionResult> Get(string user, int time, IList<string> indicators)
+		{
+			string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
+			if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
+			
+			var quotes = await realTimeService.GetLatestAsync(120000);
+			
+			if (quotes.IsNullOrEmpty()) return Ok(new List<QuoteViewModel>());
+			
+
+			quotes = quotes.OrderBy(q => Guid.NewGuid()).ToList().Take(3);
+
+			foreach (var item in quotes)
+			{
+				item.Time = time;
+				time += 100;
+			}
+
+			//quotes = quotes.OrderBy(q => q.Time);
+
+
+			return Ok(quotes.Select(q => q.MapViewModel(q.DataList)).ToList());
+
+		}
+
+
+		IList<string> GetInidatorEntities(Strategy strategy, IEnumerable<Indicator> indicators)
+		{
+			var ids = strategy.IndicatorSettings.Select(s => s.IndicatorId);
+
+			return indicators.Where(i => ids.Contains(i.Id)).Select(i => i.Entity).ToList();
 
 		}
 

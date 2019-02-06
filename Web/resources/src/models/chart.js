@@ -400,6 +400,7 @@ class Charts {
    }
 
    defaultOptions() {
+      
       this.options =  {
       
          backgroundColor: '#21202D',

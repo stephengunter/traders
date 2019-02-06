@@ -32,6 +32,7 @@ using NLog;
 using Web.Middlewares;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using ApplicationCore.Authorization;
+using Web.Areas.Api.Hubs;
 
 namespace Web
 {
@@ -201,7 +202,7 @@ namespace Web
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-			
+			services.AddSignalR();
 
 
 			// Now register our services with Autofac container.
@@ -245,7 +246,12 @@ namespace Web
 			app.UseSwagger();
 
 			app.UseAuthentication();
-			
+
+			app.UseSignalR(route =>
+			{
+				route.MapHub<WatchHub>("/watchHub");
+			});
+
 
 			app.UseMvc(routes =>
 			{

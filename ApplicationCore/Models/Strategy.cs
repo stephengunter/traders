@@ -27,6 +27,7 @@ namespace ApplicationCore.Models
 
 		public bool NoStop => STPL == 0 && STPW == 0;
 
+
 	}
 
 

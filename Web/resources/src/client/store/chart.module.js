@@ -3,7 +3,7 @@ import QuoteService from '../services/quote';
 
 
 import {
-   FETCH_QUOTES
+   FETCH_QUOTES, GET_QUOTES
 } from './actions.type';
 
 import { 
@@ -51,6 +51,17 @@ const actions = {
          .finally(() => { 
             context.commit(SET_LOADING, false);
          });
+      });  
+   },
+   [GET_QUOTES](context, params) {
+      return new Promise((resolve, reject) => {
+         QuoteService.fetch(params)
+         .then(quotes => {
+            resolve(quotes);
+         })
+         .catch(error => { 
+            reject(Helper.resolveErrorData(error)); 
+         })
       });  
    },
 };

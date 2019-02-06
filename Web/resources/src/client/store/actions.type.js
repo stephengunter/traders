@@ -25,6 +25,7 @@ export const RESET_PASSWORD = 'resetPassword';
 //Watch
 export const INIT_WATCH = 'initWatch';
 export const FETCH_QUOTES = 'fetchQuotes';
+export const GET_QUOTES = 'getQuotes';
 
 
 //Strategy
