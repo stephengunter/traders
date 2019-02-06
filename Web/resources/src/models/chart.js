@@ -49,6 +49,34 @@ class Charts {
       
    }
 
+   addRealTimeQuotes(quotes, newQuotes){
+      let startIndex = quotes.length - newQuotes.length - 1;
+      for (let i = 0; i < newQuotes.length; i++) {
+         this.addQuote(newQuotes[i]);
+      }
+
+      return new Promise((resolve, reject) => {
+         this.strategy.calculate(quotes, startIndex)
+         .then(() => {
+            for (let i = 0; i < this.options.xAxis; i++) {
+               this.options.xAxis[i].data = this.times;
+            }
+            console.log('xAxis',this.options.xAxis);
+            // this.xAxis = this.initXAxis(subIndicators, this.times);
+            // this.yAxis = this.initYAxis(subIndicators);
+            // this.grids = this.initGrids(subIndicators);
+            // this.series = this.initSeries(mainIndicators, subIndicators);
+
+            resolve(true);
+         })
+         .catch(error => { 
+            reject(error); 
+         })
+         
+      });
+
+   }
+
    mapQuote(item) {
       return [item.open, item.price, item.low, item.high];
    }
@@ -246,10 +274,11 @@ class Charts {
       {
          let indicator = subIndicators[i];
          
-         let vals = indicator.data.map(item => {
-            if(item.hasOwnProperty('result')) return item.result;
-            else return item.val;
-         })
+         let vals = indicator.mapChartResult();
+         // data.map(item => {
+         //    if(item.hasOwnProperty('result')) return item.result;
+         //    else return item.val;
+         // })
          
          let colorUp = this.getColor(1);
          let colorDown = this.getColor(-1);

@@ -7,6 +7,10 @@ const QuoteService = {
    fetch(params) {
       let url = source;
       return BaseService.fetch(url, params);
+   },
+   get(params) {
+      let url = `${source}/get`;
+      return BaseService.fetch(url, params);
    }
 };
 

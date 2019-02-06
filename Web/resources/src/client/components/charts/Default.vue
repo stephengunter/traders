@@ -13,7 +13,9 @@ import Charts from '@/models/chart';
 import { WATCH_URL } from '@/common/config';
 
 import { mapState, mapGetters } from 'vuex';
-import { SET_LOADING, SET_TRADES, SET_REALTIME_POSITION } from '../../store/mutations.type';
+import { GET_QUOTES } from '../../store/actions.type';
+import { SET_LOADING, SET_TRADES,
+SET_REALTIME_POSITION, ADD_CHART_QUOTES } from '../../store/mutations.type';
 
 export default {
    name: 'ChartDefault',
@@ -39,10 +41,16 @@ export default {
    },
 	computed: {
       ...mapState({
+         key: state => state.watch.key,
          indicators: state => state.chart.indicators,
          quotes: state => state.chart.quotes,
          realTime: state => state.chart.realTime         
       }),
+      latestTime(){
+         if(this.quotes.length){
+            return this.quotes[this.quotes.length - 1].time;
+         }else return 0;
+      }
    },
    mounted(){
       window.addEventListener('resize', this.resize)
@@ -70,7 +78,7 @@ export default {
             })
 
          if(this.realTime){
-            window.setInterval(this.getQuote, 2100);
+            window.setInterval(this.getQuote, 5000);
             //this.connectHub();
          }else{
             //this.disconnectHub();
@@ -112,15 +120,34 @@ export default {
       disconnectHub(){
          if(this.connection != null) this.connection.stop(); 
       },
+      addChartQuotes(quotes){
+         let newQuotes = [];
+         for (let i = 0; i < quotes.length; i++) {
+            let exist = this.quotes.find(q => q.time == quotes[i].time);
+            if(!exist){
+               newQuotes.push(quotes[i]);
+            }
+         }
+         if(newQuotes.length){
+            this.$store.commit(ADD_CHART_QUOTES, newQuotes);
+            this.chartModel.addRealTimeQuotes(this.quotes, newQuotes);
+         }
+         
+        
+         
+      },
       getQuote(){
-         console.log('getQuotes');
-         // let getData = Quote.get(this.params);
-         // getData.then(quote => {
-         //    this.onNewQuote(quote);
-         // })
-         // .catch(error => {
-         //    this.$emit('fetch-error', error);            
-         // });
+         let params = {
+            user: this.key,
+            time: this.latestTime  
+         };
+        
+         this.$store.dispatch(GET_QUOTES, params)
+            .then(quotes => {
+               this.addChartQuotes(quotes);
+            }).catch(error => {
+               console.log(error); 
+            })
       },
       refresh(){
          

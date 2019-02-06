@@ -8,7 +8,7 @@ import {
 
 import { 
    SET_LOADING, SET_REALTIME, SET_INDICATORS,
-   SET_CHART_QUOTES, SET_TRADES
+   SET_CHART_QUOTES, ADD_CHART_QUOTES, SET_TRADES
 } from './mutations.type';
 
 const initialState = {
@@ -55,7 +55,7 @@ const actions = {
    },
    [GET_QUOTES](context, params) {
       return new Promise((resolve, reject) => {
-         QuoteService.fetch(params)
+         QuoteService.get(params)
          .then(quotes => {
             resolve(quotes);
          })
@@ -63,7 +63,7 @@ const actions = {
             reject(Helper.resolveErrorData(error)); 
          })
       });  
-   },
+   }
 };
 
 
@@ -76,6 +76,12 @@ const mutations = {
    },
    [SET_CHART_QUOTES](state, quotes) {
       state.quotes = quotes;
+   },
+   [ADD_CHART_QUOTES](state, quotes) {
+      for (let i = 0; i < quotes.length; i++) {
+         state.quotes.push(quotes[i]);
+      }
+     
    },
    [SET_TRADES](state, trades) {
      

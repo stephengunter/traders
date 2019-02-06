@@ -48,14 +48,14 @@ class Strategy {
       return this.indicatorSettings.find(item => item.indicatorId == id);
    }
 
-   calculate(quotes){
+   calculate(quotes, startIndex = 0){
       return new Promise((resolve, reject) => {
          try { 
             for (let i = 0; i < this.indicators.length; i++) {
-               this.indicators[i].calculate(quotes);
+               this.indicators[i].calculate(quotes, startIndex);
             }
       
-            for (let index = 0; index < quotes.length; index++) {
+            for (let index = startIndex; index < quotes.length; index++) {
                let dataList = [];
                for (let j = 0; j < this.indicators.length; j++) {
                   let data = this.indicators[j].data[index];

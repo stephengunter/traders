@@ -22,12 +22,12 @@ class Indicator {
    
    
 
-   calculate(quotes){
+   calculate(quotes, startIndex = 0){
       
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
          this.calculatePowers(quotes);
       }else if(this.entity === 'Prices'){
-         for(let i = 0; i < this.data.length; i++){
+         for(let i = startIndex; i < this.data.length; i++){
             let item = this.data[i];
             if(!this.isDataInTime(item)){
                item.result = 0;
@@ -49,9 +49,9 @@ class Indicator {
       }
    }
 
-   calculatePowers(quotes){
+   calculatePowers(quotes, startIndex = 0){
       let sum = 0;
-      for(let i = 0; i < this.data.length; i++){
+      for(let i = startIndex; i < this.data.length; i++){
          let item = this.data[i];
          sum += Number(item.val);
          if(!this.isDataInTime(item)){
@@ -115,6 +115,14 @@ class Indicator {
       }
       
 
+   }
+
+   mapChartResult(){
+      
+      return this.data.map(item => {
+         if(item.hasOwnProperty('result')) return item.result;
+         else return item.val;
+      });
    }
 
    

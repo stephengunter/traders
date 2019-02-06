@@ -75,10 +75,12 @@ namespace Web.Areas.Api.Controllers
 		}
 
 		[HttpGet("get")]
-		public async Task<IActionResult> Get(string user, int time, IList<string> indicators)
+		public async Task<IActionResult> Get(string user, int time)
 		{
 			string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
 			if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
+
+			if (time == 0) time = 84500;
 			
 			var quotes = await realTimeService.GetLatestAsync(120000);
 			
