@@ -5,10 +5,8 @@ class Strategy {
 
    signals = [];
 
-   
-
    constructor(data, indicators) {
-      this.tradeManager = new TradeManager();
+      this.tradeManager = new TradeManager(this.stpw, this.stpl);
 
       for (let property in data) {
          this[property] = data[property];
@@ -65,7 +63,7 @@ class Strategy {
                   });
                }
       
-               this.calculateItem(index, dataList);
+               this.calculateItem(index, dataList, quotes[index]);
             }
             resolve(true);
          }
@@ -77,7 +75,7 @@ class Strategy {
       
    }
 
-   calculateItem(index, dataList){
+   calculateItem(index, dataList, quote){
       let signal = 0;
       if(index < this.endSignalTime){
          let sum = 0;
@@ -89,7 +87,19 @@ class Strategy {
          else if(sum == (0 - dataList.length)) signal = -1;
       }
 
-      this.tradeManager.onSignal(signal, index);
+      let profit = 0;
+      let currentPosition = this.getPosition(index);
+      if(currentPosition){
+         let price = quote.price;
+        
+         if(currentPosition.val > 0){
+            profit = price - currentPosition.price;
+         }else if(currentPosition.val < 0){
+            profit = currentPosition.price - price;
+         }
+      }
+
+      this.tradeManager.onSignal(signal, index, profit);
       
    }
 
@@ -100,6 +110,10 @@ class Strategy {
 
    getTrades(){
       return this.tradeManager.getTrades();        
+   }
+
+   getPosition(index){
+      return this.tradeManager.getPosition(index);
    }
 
    

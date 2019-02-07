@@ -55,6 +55,8 @@ namespace Web.Areas.Api.Controllers
 				quotes = await realTimeService.FetchAsync();
 			}
 
+			quotes = quotes.Where(q => q.Time <= 90500);
+
 			if (quotes.IsNullOrEmpty()) return Ok(new ChartsViewModel());
 
 			var hasDataIndicatorEntities = quotes.First().DataList.Select(d => d.Indicator).ToList();
@@ -82,20 +84,11 @@ namespace Web.Areas.Api.Controllers
 
 			if (time == 0) time = 84500;
 			
-			var quotes = await realTimeService.GetLatestAsync(120000);
+			var quotes = await realTimeService.GetLatestAsync(time);
 			
 			if (quotes.IsNullOrEmpty()) return Ok(new List<QuoteViewModel>());
-			
 
-			quotes = quotes.OrderBy(q => Guid.NewGuid()).ToList().Take(3);
-
-			foreach (var item in quotes)
-			{
-				item.Time = time;
-				time += 100;
-			}
-
-			//quotes = quotes.OrderBy(q => q.Time);
+			quotes = quotes.OrderBy(q => q.Time).Take(1);
 
 
 			return Ok(quotes.Select(q => q.MapViewModel(q.DataList)).ToList());

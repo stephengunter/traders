@@ -4,19 +4,19 @@
          #{{ index + 1 }}
       </v-list-tile-content>
       <v-list-tile-content style="width:50px">
-         <v-icon v-if="trade.val > 0" color="red">mdi-alpha-b-circle</v-icon>
-         <v-icon v-if="trade.val < 0" color="green">mdi-alpha-s-circle</v-icon>
+         <v-icon v-if="model.val > 0" color="red">mdi-alpha-b-circle</v-icon>
+         <v-icon v-else color="green">mdi-alpha-s-circle</v-icon>
       </v-list-tile-content>
 
-      <v-list-tile-content>
-         <v-list-tile-title class="cn">{{ trade.items[0].text }} {{ trade.items[0].price  }}</v-list-tile-title>
-         <v-list-tile-sub-title>{{ trade.items[0].time }}</v-list-tile-sub-title>
+      <v-list-tile-content >
+         <v-list-tile-title class="cn">{{ model.inTrade.text }} {{ model.inTrade.price  }}</v-list-tile-title>
+         <v-list-tile-sub-title>{{ model.inTrade.time }}</v-list-tile-sub-title>
 
-         <v-list-tile-title v-if="trade.items.length > 1" class="cn">{{ trade.items[1].text  }} {{ trade.items[1].price  }}</v-list-tile-title>
-         <v-list-tile-sub-title v-if="trade.items.length > 1" >{{ trade.items[1].time }}</v-list-tile-sub-title>
+         <v-list-tile-title v-if="model.outTrade" class="cn">{{ model.outTrade.text  }} {{ model.outTrade.price  }}</v-list-tile-title>
+         <v-list-tile-sub-title v-if="model.outTrade" >{{ model.outTrade.time }}</v-list-tile-sub-title>
       </v-list-tile-content>
-      <v-list-tile-content :style="{ width: '75px' ,color: trade.result > 0 ? 'red' : 'green' }">
-         <span class="ml-3" style="text-align: right;">{{ trade.result }}</span>
+      <v-list-tile-content :style="{ width: '75px' ,color: model.result > 0 ? 'red' : 'green' }">
+         <span v-if="model.outTrade"  class="ml-3" style="text-align: right;">{{ model.result }}</span>
       </v-list-tile-content>
    </v-list-tile>
 </template>
@@ -31,22 +31,15 @@ export default {
          type: Number,
          default: 0
       },
-      trade: {
+      model: {
          type: Object,
          default: null
       }
    },
-   data () {
-      return {
-        
-      }
-   },
-   beforeMount(){
+   computed: {
+      
       
    },
-   methods: {
-      
-   }
 }
 </script>
 

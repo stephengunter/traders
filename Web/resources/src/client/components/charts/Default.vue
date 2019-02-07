@@ -79,7 +79,7 @@ export default {
             })
 
          if(this.realTime){
-            window.setInterval(this.getQuote, 5000);
+            window.setInterval(this.getQuote, 2500);
             //this.connectHub();
          }else{
             //this.disconnectHub();
@@ -134,6 +134,7 @@ export default {
             this.chartModel.addRealTimeQuotes(this.quotes, newQuotes)
                .then(options => {
                   this.chart.setOption(options);
+                  this.loadTrades();
                }).catch(error => {
                   console.log(error); 
                })
@@ -154,62 +155,6 @@ export default {
             }).catch(error => {
                console.log(error); 
             })
-      },
-      refresh(){
-         
-         let series = [{
-            markPoint: {
-               data: this.markPointData
-            } 
-         }];
-
-         axisData = (new Date()).toLocaleTimeString().replace(/^\D*/,'');
-
-    var data0 = option.series[0].data;
-    var data1 = option.series[1].data;
-    data0.shift();
-    data0.push(Math.round(Math.random() * 1000));
-    data1.shift();
-    data1.push((Math.random() * 10 + 5).toFixed(1) - 0);
-
-    option.xAxis[0].data.shift();
-    option.xAxis[0].data.push(axisData);
-    option.xAxis[1].data.shift();
-    option.xAxis[1].data.push(app.count++);
-
-    myChart.setOption(option);
-
-         // let mainIndicators = this.indicators.filter(item => item.main);
-         // for(let i = 0; i < mainIndicators.length; i++)
-         // {
-         //    let indicator = mainIndicators[i];
-         //    let data = this.indicators.find(item => item.id == indicator.id).data;
-         
-         //    series.push({
-         //       data: data
-         //    });
-         
-         // }
-
-         // for(let i = 0; i < this.subIndicators.length; i++)
-         // {
-         //    xAxis.push({
-         //       data: this.times,
-         //    });
-
-         //    let indicators = this.subIndicators[i];
-         //    let data = this.indicators.find(item => item.id == indicators.id).data;
-
-         //    series.push({
-         //       data: data
-         //    });
-         
-         // }
-
-         this.chart.setOption({
-               series: series
-            });
-
       }
    }
 }

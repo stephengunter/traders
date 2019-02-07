@@ -2,9 +2,10 @@ class TradeManager {
    
    times = [];
 
-   constructor() {
+   constructor(stpw, stpl) {
       this.trades = [];
-      this.position = 0;
+      this.stpw = stpw;
+      this.stpl = 0 - stpl;
 
       let time = 84600;
       while (time <= 134500) {
@@ -21,25 +22,79 @@ class TradeManager {
    }
 
    getTimeIndex(time){
-    return this.times.indexOf(time);
+      return this.times.indexOf(time);
    }
 
    getTrades(){
       return this.trades;
    }
 
-   onSignal(signal, dataIndex){
-      if(signal > 0){
-         this.onBuy(dataIndex);
-      }else if(signal < 0){
-         this.onSell(dataIndex);
+   getPosition(index){
+      let trades = this.trades.filter(item => item.index <= index);
+      if(trades){
+         return trades[trades.length - 1];
+      }else{
+         return null;
       }
+      
+   }
+
+   getPositionVal(index){
+      let currentPosition = this.getPosition(index);
+      if(!currentPosition) return 0;
+      return currentPosition.val;
+   }
+
+   checkSTP(profit){
+      if(this.stpw !== 0 && profit >= this.stpw) return 1;
+      else if(this.stpl !== 0 && profit <= this.stpl) return -1;
+      return 0;
+   }
+
+   onSignal(signal, dataIndex, profit){
+      let currentPositionVal = this.getPositionVal(dataIndex);
+      if(currentPositionVal > 0){
+         //現有多單
+         if(signal < 0){
+            //信號空 
+            this.onSell(dataIndex);
+         }else {
+             //信號多 或 沒信號 
+            let stp = this.checkSTP(profit);
+            if(stp !== 0){
+               this.out(dataIndex, stp);
+            }
+         }   
+      }else if(currentPositionVal < 0){
+         //現有空單
+         if(signal > 0){
+             //信號多 
+            this.onBuy(dataIndex);
+         }else {
+             //信號空 或 沒信號 
+            let stp = this.checkSTP(profit);
+            if(stp !== 0){
+               this.out(dataIndex, stp);
+            }
+         } 
+      }else{
+          //現沒部位
+         if(signal > 0){
+            //信號多 
+            this.onBuy(dataIndex);
+         }else if(signal < 0){
+            //信號空 或 沒信號 
+            this.onSell(dataIndex);
+         } 
+      }
+      
    }
 
    onBuy(dataIndex){
-      if(this.position > 0) return;
+      let currentPositionVal = this.getPositionVal(dataIndex);
+      if(currentPositionVal > 0) return;
 
-      if(this.position < 0){
+      if(currentPositionVal < 0){
          this.out(dataIndex);
       }
 
@@ -48,9 +103,10 @@ class TradeManager {
    }
 
    onSell(dataIndex){
-      if(this.position < 0) return;
+      let currentPositionVal = this.getPositionVal(dataIndex);
+      if(currentPositionVal < 0) return;
 
-      if(this.position > 0){
+      if(currentPositionVal > 0){
          this.out(dataIndex);
       }
 
@@ -58,21 +114,32 @@ class TradeManager {
    }
 
    //平倉出場
-   out(dataIndex){
+   out(dataIndex, stp){
+      let text = '平倉出場';
+      if(stp > 0) text = '停利出場';
+      else if(stp < 0) text = '停損出場';
       this.addTrade({
          index: dataIndex,
-         val: 0
-      });  
-      this.position = 0;    
+         time: this.times[dataIndex],
+         val: 0,
+         price: 0,
+         text: text,
+         result: 0,
+         stp: stp
+      });     
    }
 
    //進場
    in(dataIndex, val){
       this.addTrade({
          index: dataIndex,
-         val: val
+         time: this.times[dataIndex],
+         val: val,
+         price: 0,
+         text: val > 0 ? '多單進場' : '空單進場',
+         result: 0,
+         stp: 0
       });
-      this.position = val;    
    }
 
    addTrade(trade){

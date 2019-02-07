@@ -66,6 +66,10 @@ class Charts {
             }
             this.series[0].data = this.prices;
 
+            let mainSignals = this.resolveMainSignals();
+            let markPoints = mainSignals.map(item => this.convertToMarkPoint(item));
+            this.series[0].markPoint.data = markPoints;
+
             let seriesIndex = 1;
             for(let i = 0; i < mainIndicators.length; i++)
             {
@@ -92,7 +96,7 @@ class Charts {
                }
 
             }
-
+            
             resolve(this.defaultOptions());
          })
          .catch(error => { 
@@ -226,14 +230,20 @@ class Charts {
             let index = trade.index;
             trade.time = this.times[index];
             trade.price = this.getTradePrice(index);
-            if(trade.val > 0){
-               trade.text = '多單進場';
-            }else if(trade.val < 0){
-               trade.text = '空單進場';
-            }else{
-               //trade.text = position ? '多單' : '空單';
-               trade.text = '平倉出場';
+            try {
+               if(trade.val === 0){
+                  let inTrade = trades[i - 1];
+                  if(inTrade.val > 0 ){
+                     trade.result = trade.price - inTrade.price;
+                  }else{
+                     trade.result = inTrade.price - trade.price;
+                  }
+                  
+               }
+            } catch (error) {
+               console.log(error);
             }
+            
             
          }
          resolve(trades);
@@ -340,9 +350,6 @@ class Charts {
 
          if(indicator.withAvg){
             let avgs = indicator.mapChartAvg();
-            // let avgs = indicator.data.map(item => {
-            //    return item.avg;
-            // })
             let avgName =`${indicator.name}(MA${indicator.param})` ;
             
             series.push({

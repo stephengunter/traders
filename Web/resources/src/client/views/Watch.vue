@@ -165,7 +165,9 @@ export default {
          settings:{
             action: '',
             model: null
-         }
+         },
+
+         trades:[],
       }
    },
    computed: {
@@ -256,6 +258,9 @@ export default {
       },
       refresh(){
          this.fetchQuotes();
+      },
+      onTrades(trades){
+         this.trades = trades;
       },
       cancelEditStrategy(){
          this.settings.model = null;
