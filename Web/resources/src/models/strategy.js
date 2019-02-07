@@ -6,7 +6,7 @@ class Strategy {
    signals = [];
 
    constructor(data, indicators) {
-      this.tradeManager = new TradeManager(this.stpw, this.stpl);
+      this.tradeManager = new TradeManager(data.stpw, data.stpl);
 
       for (let property in data) {
          this[property] = data[property];
