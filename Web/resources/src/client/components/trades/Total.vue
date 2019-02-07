@@ -11,7 +11,7 @@
          
       </v-list-tile-content>
       <v-list-tile-content :style="{ width: '75px' ,color: total > 0 ? 'red' : 'green' }">
-         <span class="ml-3" style="text-align: right;">小計：{{ total }}</span>
+         <span class="ml-3" style="text-align: right;">TOTAL &nbsp;&nbsp; {{ total }}</span>
       </v-list-tile-content>
    </v-list-tile>
 </template>

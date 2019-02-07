@@ -25,7 +25,7 @@ class Indicator {
    calculate(quotes, startIndex = 0){
       
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
-         this.calculatePowers(quotes);
+         this.calculatePowers(quotes, startIndex);
       }else if(this.entity === 'Prices'){
          for(let i = startIndex; i < this.data.length; i++){
             let item = this.data[i];
@@ -117,12 +117,21 @@ class Indicator {
 
    }
 
-   mapChartResult(){
+   mapChartResult(startIndex = 0){
+      let dataList = startIndex ? this.data.slice(startIndex) : this.data;
       
-      return this.data.map(item => {
+      return dataList.map(item => {
          if(item.hasOwnProperty('result')) return item.result;
          else return item.val;
       });
+      
+   }
+
+   mapChartAvg(startIndex = 0){
+      let dataList = startIndex ? this.data.slice(startIndex) : this.data;
+      
+      return dataList.map(item => item.avg);
+      
    }
 
    

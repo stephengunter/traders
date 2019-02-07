@@ -50,7 +50,7 @@ class Charts {
    }
 
    addRealTimeQuotes(quotes, newQuotes){
-      let startIndex = quotes.length - newQuotes.length - 1;
+      let startIndex = quotes.length - newQuotes.length ;
       for (let i = 0; i < newQuotes.length; i++) {
          this.addQuote(newQuotes[i]);
       }
@@ -58,16 +58,42 @@ class Charts {
       return new Promise((resolve, reject) => {
          this.strategy.calculate(quotes, startIndex)
          .then(() => {
-            for (let i = 0; i < this.options.xAxis; i++) {
-               this.options.xAxis[i].data = this.times;
-            }
-            console.log('xAxis',this.options.xAxis);
-            // this.xAxis = this.initXAxis(subIndicators, this.times);
-            // this.yAxis = this.initYAxis(subIndicators);
-            // this.grids = this.initGrids(subIndicators);
-            // this.series = this.initSeries(mainIndicators, subIndicators);
+            let mainIndicators = this.strategy.getMainIndicators();
+            let subIndicators = this.strategy.getSubIndicators();
 
-            resolve(true);
+            for (let i = 0; i < this.xAxis; i++) {
+               this.xAxis[i].data = this.times;
+            }
+            this.series[0].data = this.prices;
+
+            let seriesIndex = 1;
+            for(let i = 0; i < mainIndicators.length; i++)
+            {
+               let indicator = mainIndicators[i];
+               let vals = indicator.mapChartResult(startIndex);
+               vals.forEach(item => this.series[seriesIndex].data.push(item));
+              
+               seriesIndex++;
+            }
+
+            for(let i = 0; i < subIndicators.length; i++)
+            {
+               let indicator = subIndicators[i];
+               let vals = indicator.mapChartResult(startIndex);
+               vals.forEach(item => this.series[seriesIndex].data.push(item));
+
+               seriesIndex++;
+
+               if(indicator.withAvg){
+                  let avgs = indicator.mapChartAvg(startIndex);
+                  avgs.forEach(item => this.series[seriesIndex].data.push(item));
+                  
+                  seriesIndex++;
+               }
+
+            }
+
+            resolve(this.defaultOptions());
          })
          .catch(error => { 
             reject(error); 
@@ -252,10 +278,12 @@ class Charts {
       for(let i = 0; i < mainIndicators.length; i++)
       {
          let indicator = mainIndicators[i];
+         let vals = indicator.mapChartResult();
+
          series.push({
                type: 'line',
                name: indicator.name,
-               data: indicator.data,
+               data: vals,
                smooth: true,
                lineStyle: {
                   width: 3
@@ -264,7 +292,9 @@ class Charts {
 
          this.indicatorSeries.push({
             index: seriesIndex,
-            entity: indicator.entity
+            entity: indicator.entity,
+            grid: 'main',
+            data: 'val'
          });
 
          seriesIndex++;
@@ -275,10 +305,6 @@ class Charts {
          let indicator = subIndicators[i];
          
          let vals = indicator.mapChartResult();
-         // data.map(item => {
-         //    if(item.hasOwnProperty('result')) return item.result;
-         //    else return item.val;
-         // })
          
          let colorUp = this.getColor(1);
          let colorDown = this.getColor(-1);
@@ -305,15 +331,18 @@ class Charts {
 
          this.indicatorSeries.push({
             index: seriesIndex,
-            entity: indicator.entity
+            entity: indicator.entity,
+            grid: 'sub',
+            data: 'val'
          });
 
          seriesIndex++;
 
          if(indicator.withAvg){
-            let avgs = indicator.data.map(item => {
-               return item.avg;
-            })
+            let avgs = indicator.mapChartAvg();
+            // let avgs = indicator.data.map(item => {
+            //    return item.avg;
+            // })
             let avgName =`${indicator.name}(MA${indicator.param})` ;
             
             series.push({
@@ -332,7 +361,9 @@ class Charts {
 
             this.indicatorSeries.push({
                index: seriesIndex,
-               entity: indicator.entity
+               entity: indicator.entity,
+               grid: 'sub',
+               data: 'avg'
             });
 
             seriesIndex++;
@@ -430,7 +461,7 @@ class Charts {
 
    defaultOptions() {
       
-      this.options =  {
+     return  {
       
          backgroundColor: '#21202D',
          tooltip: this.getTootip(),
@@ -478,7 +509,7 @@ class Charts {
          series: this.series,
       };
 
-      return this.options;
+     
    }
 
 

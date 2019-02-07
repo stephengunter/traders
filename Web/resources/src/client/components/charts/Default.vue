@@ -66,8 +66,9 @@ export default {
          this.chartModel = new Charts(this.strategy, this.indicators);
          this.chartModel.init(this.quotes)
             .then(() => {
-               this.chart = echarts.init(document.getElementById('chart-watch'));               
-               this.chart.setOption(this.chartModel.defaultOptions());
+               this.chart = echarts.init(document.getElementById('chart-watch'));
+               let options = this.chartModel.defaultOptions();         
+               this.chart.setOption(options);
 
                this.resize();
                this.$store.commit(SET_LOADING, false);
@@ -130,7 +131,12 @@ export default {
          }
          if(newQuotes.length){
             this.$store.commit(ADD_CHART_QUOTES, newQuotes);
-            this.chartModel.addRealTimeQuotes(this.quotes, newQuotes);
+            this.chartModel.addRealTimeQuotes(this.quotes, newQuotes)
+               .then(options => {
+                  this.chart.setOption(options);
+               }).catch(error => {
+                  console.log(error); 
+               })
          }
          
         
