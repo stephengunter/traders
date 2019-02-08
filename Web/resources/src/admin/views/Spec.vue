@@ -14,7 +14,7 @@
 							<v-tab-item>
 								<v-card flat>
 									<v-card-text>
-										<qoute-spec />
+										<quote-spec />
 									</v-card-text>
 								</v-card>
 							</v-tab-item>
@@ -45,7 +45,7 @@ export default {
 	name: 'SpecView',
 	components: {
 		'material-card' : MaterialCard,
-		'qoute-spec' : QuoteSpec,
+		'quote-spec' : QuoteSpec,
 		'blue-chips' : BlueChips
 	},
 	data () {

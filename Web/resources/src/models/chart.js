@@ -3,7 +3,7 @@ import Strategy from './strategy';
 
 class Charts {
    strategy = null;
-
+   quotes = [];
    priceSeriesName = '報價';
 
    prices = [];
@@ -11,18 +11,18 @@ class Charts {
 
    indicatorSeries = [];
 
-   constructor(strategy, indicators) {
-      this.strategy = new Strategy(strategy, indicators);  
+   constructor(strategy, indicators, quotes) {
+      this.quotes = quotes;
+      this.strategy = new Strategy(strategy, indicators, quotes); 
    }
 
-   init(quotes){
-
-      for (let i = 0; i < quotes.length; i++) {
-         this.addQuote(quotes[i]);
+   init(){
+      for (let i = 0; i < this.quotes.length; i++) {
+         this.addQuote(this.quotes[i]);
       }
 
       return new Promise((resolve, reject) => {
-         this.strategy.calculate(quotes)
+         this.strategy.calculate()
          .then(() => {
             let mainIndicators = this.strategy.getMainIndicators();
             let subIndicators = this.strategy.getSubIndicators();
@@ -33,7 +33,8 @@ class Charts {
 
             resolve(true);
          })
-         .catch(error => { 
+         .catch(error => {
+            console.log(error);
             reject(error); 
          })
          
@@ -49,14 +50,14 @@ class Charts {
       
    }
 
-   addRealTimeQuotes(quotes, newQuotes){
-      let startIndex = quotes.length - newQuotes.length ;
+   addRealTimeQuotes(newQuotes){
+      let startIndex = this.quotes.length - newQuotes.length ;
       for (let i = 0; i < newQuotes.length; i++) {
          this.addQuote(newQuotes[i]);
       }
 
       return new Promise((resolve, reject) => {
-         this.strategy.calculate(quotes, startIndex)
+         this.strategy.calculate(startIndex)
          .then(() => {
             let mainIndicators = this.strategy.getMainIndicators();
             let subIndicators = this.strategy.getSubIndicators();
@@ -117,7 +118,6 @@ class Charts {
 
    getTradePrice(index){
       return this.getPrice(index);
-      //return this.prices[index + 1][0];    
    }
 
    getColor(signal){
@@ -223,31 +223,13 @@ class Charts {
    }
 
    resolveTrades(){
-      return new Promise((resolve) => {
-         let trades = this.strategy.getTrades();
-         for(let i = 0; i < trades.length; i++){
-            let trade = trades[i];
-            let index = trade.index;
-            trade.time = this.times[index];
-            trade.price = this.getTradePrice(index);
-            try {
-               if(trade.val === 0){
-                  let inTrade = trades[i - 1];
-                  if(inTrade.val > 0 ){
-                     trade.result = trade.price - inTrade.price;
-                  }else{
-                     trade.result = inTrade.price - trade.price;
-                  }
-                  
-               }
-            } catch (error) {
-               console.log(error);
-            }
-            
-            
+      let trades = this.strategy.getTrades();
+      return trades.map(item => {
+         return {
+            ...item , time: this.times[item.index]
          }
-         resolve(trades);
-      }); 
+      });
+      
       
    }
 

@@ -4,9 +4,12 @@ import TradeManager from './tradeManager';
 class Strategy {
 
    signals = [];
+   quotes = [];
 
-   constructor(data, indicators) {
-      this.tradeManager = new TradeManager(data.stpw, data.stpl);
+   constructor(data, indicators, quotes) {
+      this.tradeManager = new TradeManager(quotes, data.stpw, data.stpl);
+
+      this.quotes = quotes;
 
       for (let property in data) {
          this[property] = data[property];
@@ -15,7 +18,7 @@ class Strategy {
       this.indicators = indicators.map(indicator => {
          let settings = this.getIndicatorSettings(indicator.id);
          let beginTimeIndex = this.tradeManager.getTimeIndex(indicator.begin);
-         return new Indicator(indicator, settings.arg, beginTimeIndex);
+         return new Indicator(indicator, settings.arg, beginTimeIndex, quotes);
       });
 
       this.endSignalTime = this.tradeManager.getTimeIndex(133000);
@@ -46,14 +49,14 @@ class Strategy {
       return this.indicatorSettings.find(item => item.indicatorId == id);
    }
 
-   calculate(quotes, startIndex = 0){
+   calculate(startIndex = 0){
       return new Promise((resolve, reject) => {
          try { 
             for (let i = 0; i < this.indicators.length; i++) {
-               this.indicators[i].calculate(quotes, startIndex);
+               this.indicators[i].calculate(startIndex);
             }
       
-            for (let index = startIndex; index < quotes.length; index++) {
+            for (let index = startIndex; index < this.quotes.length; index++) {
                let dataList = [];
                for (let j = 0; j < this.indicators.length; j++) {
                   let data = this.indicators[j].data[index];
@@ -63,7 +66,7 @@ class Strategy {
                   });
                }
       
-               this.calculateItem(index, dataList, quotes[index]);
+               this.calculateItem(index, dataList);
             }
             resolve(true);
          }
@@ -75,7 +78,7 @@ class Strategy {
       
    }
 
-   calculateItem(index, dataList, quote){
+   calculateItem(index, dataList){
       let signal = 0;
       if(index < this.endSignalTime){
          let sum = 0;
@@ -87,19 +90,7 @@ class Strategy {
          else if(sum == (0 - dataList.length)) signal = -1;
       }
 
-      let profit = 0;
-      let currentPosition = this.getPosition(index);
-      if(currentPosition){
-         let price = quote.price;
-        
-         if(currentPosition.val > 0){
-            profit = price - currentPosition.price;
-         }else if(currentPosition.val < 0){
-            profit = currentPosition.price - price;
-         }
-      }
-
-      this.tradeManager.onSignal(signal, index, profit);
+      this.tradeManager.onSignal(signal, index);
       
    }
 

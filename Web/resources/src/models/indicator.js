@@ -1,6 +1,7 @@
 
 class Indicator {
-   
+
+   quotes = [];
    data = [];
    param = 0;
 
@@ -9,7 +10,9 @@ class Indicator {
    buySignalIndexes = []
    sellSignalIndexes = [];
 
-   constructor(model, param, beginIndex) {
+   constructor(model, param, beginIndex, quotes) {
+      this.quotes = quotes;
+
       for (let property in model) {
          this[property] = model[property];
       }
@@ -19,25 +22,22 @@ class Indicator {
       this.beginTimeIndex = beginIndex;
      
    }
-   
-   
 
-   calculate(quotes, startIndex = 0){
+   calculate(startIndex = 0){
       
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
-         this.calculatePowers(quotes, startIndex);
+         this.calculatePowers(startIndex);
       }else if(this.entity === 'Prices'){
+         
          for(let i = startIndex; i < this.data.length; i++){
             let item = this.data[i];
             if(!this.isDataInTime(item)){
                item.result = 0;
                item.signal = 0;         
             }else if(this.canCountAvg(i)){
-               
                item.val = Number(item.val);
                let avg = this.countAvg(i);
-
-               let val = quotes[i].price - avg;
+               let val = this.quotes[i].price - avg;
                item.result = Math.round(val * 100) / 100;
                item.signal = this.createSignal(i);
             }
@@ -49,7 +49,7 @@ class Indicator {
       }
    }
 
-   calculatePowers(quotes, startIndex = 0){
+   calculatePowers(startIndex = 0){
       let sum = 0;
       for(let i = startIndex; i < this.data.length; i++){
          let item = this.data[i];

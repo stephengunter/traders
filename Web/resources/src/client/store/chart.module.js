@@ -57,7 +57,15 @@ const actions = {
       return new Promise((resolve, reject) => {
          QuoteService.get(params)
          .then(quotes => {
-            resolve(quotes);
+            let newQuotes = [];
+            for (let i = 0; i < quotes.length; i++) {
+               let exist = state.quotes.find(q => q.time == quotes[i].time);
+               if(!exist){
+                  newQuotes.push(quotes[i]);
+               }
+            }
+            context.commit(ADD_CHART_QUOTES, newQuotes);
+            resolve(newQuotes);
          })
          .catch(error => { 
             reject(Helper.resolveErrorData(error)); 
@@ -81,7 +89,6 @@ const mutations = {
       for (let i = 0; i < quotes.length; i++) {
          state.quotes.push(quotes[i]);
       }
-     
    },
    [SET_TRADES](state, trades) {
      

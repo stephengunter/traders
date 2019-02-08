@@ -63,8 +63,9 @@ export default {
          this.$store.commit(SET_LOADING, true);
 
          this.height = 400 + (this.indicators.length * 100);
-         this.chartModel = new Charts(this.strategy, this.indicators);
-         this.chartModel.init(this.quotes)
+         this.chartModel = new Charts(this.strategy, this.indicators, this.quotes);
+       
+         this.chartModel.init()
             .then(() => {
                this.chart = echarts.init(document.getElementById('chart-watch'));
                let options = this.chartModel.defaultOptions();         
@@ -75,7 +76,7 @@ export default {
 
                this.loadTrades();
             }).catch(error => {
-               Bus.$emit('errors');
+               this.resolveError(error);
             })
 
          if(this.realTime){
@@ -86,12 +87,7 @@ export default {
          }   
       },
       loadTrades(){
-         this.chartModel.resolveTrades()
-            .then(trades => {
-               this.$store.commit(SET_TRADES, trades);
-            }).catch(error => {
-               console.log(error);
-            })
+         this.$store.commit(SET_TRADES, this.chartModel.resolveTrades());
       },
       resize(){
          if(this.chart){
@@ -121,28 +117,28 @@ export default {
       disconnectHub(){
          if(this.connection != null) this.connection.stop(); 
       },
-      addChartQuotes(quotes){
-         let newQuotes = [];
-         for (let i = 0; i < quotes.length; i++) {
-            let exist = this.quotes.find(q => q.time == quotes[i].time);
-            if(!exist){
-               newQuotes.push(quotes[i]);
-            }
-         }
-         if(newQuotes.length){
-            this.$store.commit(ADD_CHART_QUOTES, newQuotes);
-            this.chartModel.addRealTimeQuotes(this.quotes, newQuotes)
-               .then(options => {
-                  this.chart.setOption(options);
-                  this.loadTrades();
-               }).catch(error => {
-                  console.log(error); 
-               })
-         }
+      // addChartQuotes(quotes){
+      //    let newQuotes = [];
+      //    for (let i = 0; i < quotes.length; i++) {
+      //       let exist = this.quotes.find(q => q.time == quotes[i].time);
+      //       if(!exist){
+      //          newQuotes.push(quotes[i]);
+      //       }
+      //    }
+      //    if(newQuotes.length){
+      //       this.$store.commit(ADD_CHART_QUOTES, newQuotes);
+      //       this.chartModel.addRealTimeQuotes(this.quotes, newQuotes)
+      //          .then(options => {
+      //             this.chart.setOption(options);
+      //             this.loadTrades();
+      //          }).catch(error => {
+      //             console.log(error); 
+      //          })
+      //    }
          
         
          
-      },
+      // },
       getQuote(){
          let params = {
             user: this.key,
@@ -151,10 +147,20 @@ export default {
         
          this.$store.dispatch(GET_QUOTES, params)
             .then(quotes => {
-               this.addChartQuotes(quotes);
+               this.chartModel.addRealTimeQuotes(quotes)
+               .then(options => {
+                  this.chart.setOption(options);
+                  this.loadTrades();
+               }).catch(error => {
+                  this.resolveError(error);
+               })
             }).catch(error => {
-               console.log(error); 
+               this.resolveError(error);
             })
+      },
+      resolveError(error){       
+         if(!error)  Bus.$emit('errors');
+         else console.log(error);
       }
    }
 }
