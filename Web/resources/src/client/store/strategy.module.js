@@ -8,11 +8,13 @@ import {
 } from './actions.type';
 
 import { 
-   SET_LOADING, SET_STRATEGIES, SET_STRATEGY
+   SET_LOADING, SET_TRADES, SET_POSITION, SET_SIGNAL_POSITION
 } from './mutations.type';
 
 const initialState = {
-   strategies: [],
+   trades: [],
+   position: null,
+   signalPosition: null
 };
  
 export const state = { ...initialState };
@@ -111,7 +113,15 @@ const actions = {
 
 
 const mutations = {
-   
+   [SET_POSITION](state, item) {
+      state.position = item;
+   },
+   [SET_SIGNAL_POSITION](state, item) {
+      state.signalPosition = item;
+   },
+   [SET_TRADES](state, trades) {
+      state.trades = trades;
+   }
 };
 
 export default {

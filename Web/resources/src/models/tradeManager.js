@@ -44,7 +44,9 @@ class TradeManager {
    }
 
    getPosition(index){
-      let trades = this.trades.filter(item => item.index <= index);
+      let trades = this.trades;
+      if(index > 0) trades = this.trades.filter(item => item.index <= index);
+
       if(trades){
          return trades[trades.length - 1];
       }else{
@@ -57,36 +59,23 @@ class TradeManager {
       return currentPosition.val;
    }
 
-   getPositionProfit(index){
-      let currentPosition = this.getPosition(index);
-      if(!currentPosition) return 0;
-      
-      if(currentPosition.val > 0){
-         return currentPosition.price - this.getPrice(index);
-      }else if(currentPosition.val < 0){
-         return this.getPrice(index) - currentPosition.price;
-      }else return 0;
-
-   }
-
    getSignalPosition(index){
-      let trades = this.trades.filter(item => item.index <= index);
-      try{
-         if(trades){
-            let signalPosition = null;
-            for (let i = trades.length - 1; i >=0; i--) {
-               if(!isStopTrade(trades[i])){
-                  signalPosition = trades[i];
-                  break;
-               }
+      let trades = this.trades;
+      if(index > 0) trades = this.trades.filter(item => item.index <= index);
+
+      if(trades){
+         let signalPosition = null;
+         for (let i = trades.length - 1; i >=0; i--) {
+            
+            if(trades[i].val !== 0 ){
+               signalPosition = trades[i];
+               break;
             }
-            console.log('signalPosition', signalPosition);
-            return signalPosition;
-         }else{
-            return null;
          }
-      }catch(e){
-         console.log(e);
+         
+         return signalPosition;
+      }else{
+         return null;
       }
       
    }
@@ -154,10 +143,9 @@ class TradeManager {
             }
          } 
       }else{
-         console.log('現沒部位. signal = ', signal);
          //現沒部位
          //查看信號部位
-         let signalPositionVal = this.getSignalPositionVal;
+         let signalPositionVal = this.getSignalPositionVal(dataIndex);
          if(signal > 0){
             if(signalPositionVal > 0){
 
@@ -216,7 +204,7 @@ class TradeManager {
    out(dataIndex){
       let text = '平倉出場';
       let tradePrice = this.getTradePrice(dataIndex);
-      let profit = this.getPositionProfit(dataIndex, tradePrice);
+      let profit = this.getProfit(dataIndex, tradePrice);
       
       this.addTrade({
          index: dataIndex,

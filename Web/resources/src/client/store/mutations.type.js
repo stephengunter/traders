@@ -15,6 +15,8 @@ export const SET_INDICATORS = 'setIndicators';
 export const SET_CHART_QUOTES = 'setChartQuotes';
 export const ADD_CHART_QUOTES = 'addChartQuotes';
 export const SET_TRADES = 'setTrades';
+export const SET_POSITION = 'setPosition';
+export const SET_SIGNAL_POSITION = 'setSignalPosition';
 
 export const SET_ERROR = 'setError';
 export const CLEAR_ERROR = 'clearError';

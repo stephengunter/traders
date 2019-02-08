@@ -22,7 +22,7 @@ export default {
    },
    computed: {
       ...mapState({
-         trades: state => state.chart.trades
+         trades: state => state.strategy.trades
       }),
       results(){
          if(!this.trades){

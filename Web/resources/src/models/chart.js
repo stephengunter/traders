@@ -1,5 +1,4 @@
 import Helper from '@/common/helper';
-import Strategy from './strategy';
 
 class Charts {
    strategy = null;
@@ -11,9 +10,9 @@ class Charts {
 
    indicatorSeries = [];
 
-   constructor(strategy, indicators, quotes) {
+   constructor(strategy, quotes) {
       this.quotes = quotes;
-      this.strategy = new Strategy(strategy, indicators, quotes); 
+      this.strategy = strategy;
    }
 
    init(){
@@ -204,19 +203,14 @@ class Charts {
 
    resolveMainSignals(){
       let signals = [];
-      let trades = this.strategy.getTrades();
+      let trades = this.resolveTrades();
       for(let i = 0; i < trades.length; i++){
          let trade = trades[i];
          let exist = signals.find(item => item.index === trade.index);
          if(exist){
-            exist.val = trade.val
+            exist = Object.assign(exist, trade);
          }else{
-            signals.push({
-               index: trade.index,
-               time: this.times[trade.index],
-               price: this.getPrice(trade.index),
-               val : trade.val
-            });
+            signals.push(trade);
          }
       }
       return signals;
@@ -234,11 +228,24 @@ class Charts {
    }
 
    convertToMarkPoint(signal){
+      let labelColor = '#fff';
+      let text = signal.price;
+      if(signal.stp > 0 ){
+         text = '停利';
+         labelColor = this.getColor(1);
+      }else if(signal.stp < 0 ){
+         text = '停損';
+         labelColor = this.getColor(-1);
+      } 
       return {
          coord: [signal.time, signal.price],
-         value: signal.price,
+         value: text,
+         label: {
+            color: labelColor,
+         },
          itemStyle: {
             color: this.getColor(signal.val)
+            
          }
       }
    }

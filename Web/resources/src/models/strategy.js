@@ -107,6 +107,14 @@ class Strategy {
       return this.tradeManager.getPosition(index);
    }
 
+   getLatestSignalPosition(){
+      return this.tradeManager.getSignalPosition(0);
+   }
+
+   getLatestTradePosition(){
+      return this.tradeManager.getPosition(0);
+   }
+
    
 }
 

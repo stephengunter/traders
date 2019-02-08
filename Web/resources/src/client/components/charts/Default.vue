@@ -8,13 +8,15 @@
 <script>
 import echarts from 'echarts';
 import * as signalR from '@aspnet/signalr';
+
+import Strategy from '@/models/strategy';
 import Charts from '@/models/chart';
 
 import { WATCH_URL } from '@/common/config';
 
 import { mapState, mapGetters } from 'vuex';
 import { GET_QUOTES } from '../../store/actions.type';
-import { SET_LOADING, SET_TRADES,
+import { SET_LOADING, SET_TRADES, SET_POSITION, SET_SIGNAL_POSITION,
 SET_REALTIME_POSITION, ADD_CHART_QUOTES } from '../../store/mutations.type';
 
 export default {
@@ -29,6 +31,8 @@ export default {
 		return {
          chart: null,
          height: 500,
+
+         strategyModel: null,
          chartModel: null,
 
          connection: null,
@@ -63,7 +67,9 @@ export default {
          this.$store.commit(SET_LOADING, true);
 
          this.height = 400 + (this.indicators.length * 100);
-         this.chartModel = new Charts(this.strategy, this.indicators, this.quotes);
+
+         this.strategyModel = new Strategy(this.strategy, this.indicators, this.quotes); 
+         this.chartModel = new Charts(this.strategyModel, this.quotes);
        
          this.chartModel.init()
             .then(() => {
@@ -88,6 +94,8 @@ export default {
       },
       loadTrades(){
          this.$store.commit(SET_TRADES, this.chartModel.resolveTrades());
+         this.$store.commit(SET_POSITION, this.strategyModel.getLatestTradePosition());
+         this.$store.commit(SET_SIGNAL_POSITION, this.strategyModel.getLatestSignalPosition());
       },
       resize(){
          if(this.chart){

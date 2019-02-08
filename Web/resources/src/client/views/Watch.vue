@@ -95,10 +95,13 @@
                         沒有這一天的資料
                      </span>  
                   </v-alert>
-                  <v-alert v-if="position" :value="realTime"  :color="position.color" class="title">
+                  <v-alert v-if="realtimeView" :value="realTime"  :color="realtimeView.color" class="title">
                      <span class="cn" >
-                        即時部位：{{ position.text }}
-                     </span>  
+                        策略信號：{{ realtimeView.signalText }}
+                     </span>
+                     <span class="cn ml-3" >
+                        即時部位：{{ realtimeView.position }}
+                     </span>
                   </v-alert>
                   <charts-default v-show="!noData" ref="myChart" 
                   :strategy="strategy"
@@ -165,9 +168,8 @@ export default {
          settings:{
             action: '',
             model: null
-         },
-
-         trades:[],
+         }
+         
       }
    },
    computed: {
@@ -178,7 +180,8 @@ export default {
          strategy: state => state.watch.strategy,
          strategies: state => state.watch.strategies,
          realTime: state => state.chart.realTime,
-         position: state => state.chart.position
+         position: state => state.strategy.position,
+         signalPosition: state => state.strategy.signalPosition
       }),
       strategyOptions(){
          return this.strategies.map(item => ({
@@ -187,6 +190,27 @@ export default {
       },
       editting(){
          return this.settings.action != '';
+      },
+      realtimeView(){
+         if(this.position && this.signalPosition){
+            let signalText = '中立';
+            let color = 'blue lighten-3';
+
+            if(this.signalPosition.val > 0 ){
+               signalText = '多';
+               color = 'red';
+            }else if(this.signalPosition.val < 0 ){
+               signalText = '空';
+               color = 'green';
+            }
+
+            return {
+               signalText: signalText,
+               position: this.position.val,
+               color: color
+            }
+         }else return null;
+         
       }
       
    },
@@ -258,9 +282,6 @@ export default {
       },
       refresh(){
          this.fetchQuotes();
-      },
-      onTrades(trades){
-         this.trades = trades;
       },
       cancelEditStrategy(){
          this.settings.model = null;
