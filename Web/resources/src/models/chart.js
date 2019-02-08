@@ -11,15 +11,16 @@ class Charts {
    indicatorSeries = [];
 
    constructor(strategy, quotes) {
+
+      this.prices = quotes.map(item => this.mapQuote(item));
+      this.times = quotes.map(item => Helper.timeString(item.time));
+
       this.quotes = quotes;
       this.strategy = strategy;
    }
 
    init(){
-      for (let i = 0; i < this.quotes.length; i++) {
-         this.addQuote(this.quotes[i]);
-      }
-
+      
       return new Promise((resolve, reject) => {
          this.strategy.calculate()
          .then(() => {
@@ -30,10 +31,9 @@ class Charts {
             this.grids = this.initGrids(subIndicators);
             this.series = this.initSeries(mainIndicators, subIndicators);
 
-            resolve(true);
+            resolve(this.defaultOptions());
          })
          .catch(error => {
-            console.log(error);
             reject(error); 
          })
          
@@ -44,7 +44,6 @@ class Charts {
       
       this.times.push(Helper.timeString(item.time));  
       this.prices.push(this.mapQuote(item));
-
       this.strategy.addDataList(item.dataList);
       
    }

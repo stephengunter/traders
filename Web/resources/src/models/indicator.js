@@ -11,11 +11,14 @@ class Indicator {
    sellSignalIndexes = [];
 
    constructor(model, param, beginIndex, quotes) {
-      this.quotes = quotes;
-
       for (let property in model) {
          this[property] = model[property];
       }
+
+      this.quotes = quotes;
+      this.data = quotes.map(q => q.dataList.find(data => data.indicator == this.entity));
+
+      
       if(param)  this.param = param;
       else this.param = this.defaultParam;
 
@@ -23,50 +26,58 @@ class Indicator {
      
    }
 
+   getQuotePrice(index){
+      return this.quotes[index].price;
+   }
+
    calculate(startIndex = 0){
-      
+
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
          this.calculatePowers(startIndex);
       }else if(this.entity === 'Prices'){
-         
          for(let i = startIndex; i < this.data.length; i++){
-            let item = this.data[i];
-            if(!this.isDataInTime(item)){
+            let item = this.data[i];   
+            if(this.isDataInTime(item)){
+               if(this.canCountAvg(i)){
+                  let avg = this.countAvg(i);
+                  let val = this.getQuotePrice(i) - avg;
+                  item.result = Math.round(val * 100) / 100;
+                  item.signal = this.createSignal(i);
+               }else{
+                  item.result = 0;
+                  item.signal = 0;  
+               }
+               
+            }else{
                item.result = 0;
-               item.signal = 0;         
-            }else if(this.canCountAvg(i)){
-               item.val = Number(item.val);
-               let avg = this.countAvg(i);
-               let val = this.quotes[i].price - avg;
-               item.result = Math.round(val * 100) / 100;
-               item.signal = this.createSignal(i);
-            }
-            else{
-               item.result = 0;
-               item.signal = 0;      
+               item.signal = 0;   
             }
          }
       }
    }
 
-   calculatePowers(startIndex = 0){
+   getSumVal(index){
+      
       let sum = 0;
+      for(let i = 0; i <= index; i++){
+         sum += Number(this.data[i].val);
+      }
+      return sum;
+   }
+
+
+   calculatePowers(startIndex = 0){
       for(let i = startIndex; i < this.data.length; i++){
-         let item = this.data[i];
-         sum += Number(item.val);
-         if(!this.isDataInTime(item)){
-            item.val = 0;
-            item.avg = 0;
-            item.signal = 0;              
-         }else if(this.canCountAvg(i)){
-            item.val = sum;
+         let item = this.data[i];   
+         if(this.isDataInTime(item)){
+            let sum = this.getSumVal(i);
+            item.result = sum;
             item.avg = this.countAvg(i);
             item.signal = this.createSignal(i);
-         }
-         else{
-            item.val = sum;
+         }else{
+            item.result = 0;
             item.avg = 0;
-            item.signal = 0;    
+            item.signal = 0;   
          }
       }
    }
@@ -81,33 +92,44 @@ class Indicator {
 
    countAvg(index){
       let startIndex = index - this.param + 1;
-      
       if(startIndex < 0) return 0;
-
       let sum = 0;
-      for(let i = startIndex; i <= index; i++){
-         sum += this.data[i].val;
+
+      if(this.entity === 'BlueChips' || this.entity === 'Powers'){
+        
+         for(let i = startIndex; i <= index; i++){
+            sum += this.data[i].result;
+         }
+       
+      }else if(this.entity === 'Prices'){
+         
+         for(let i = startIndex; i <= index; i++){
+            sum += Number(this.data[i].val);
+         }
+         
       }
-      
+
       return sum == 0 ? 0 : Math.round((sum / this.param) * 100) / 100;
+
+      
    }
 
    createSignal(index){
       let data = this.data[index];
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
-         if(data.val > data.avg){
+         if(data.result > data.avg){
             this.buySignalIndexes.push(index);
             return 1;
-         }else if(data.val < data.avg){
+         }else if(data.result < data.avg){
             this.sellSignalIndexes.push(index);
             return -1;
          } 
          else return 0;
       }else if(this.entity === 'Prices'){
-         if(data.result > 0){
+         if(data.result > 1){
             this.buySignalIndexes.push(index);
             return 1;
-         }else if(data.result < 0){
+         }else if(data.result < -1){
             this.sellSignalIndexes.push(index);
             return -1;
          }

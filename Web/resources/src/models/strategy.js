@@ -50,29 +50,25 @@ class Strategy {
    }
 
    calculate(startIndex = 0){
+      
       return new Promise((resolve, reject) => {
-         try { 
-            for (let i = 0; i < this.indicators.length; i++) {
-               this.indicators[i].calculate(startIndex);
-            }
-      
-            for (let index = startIndex; index < this.quotes.length; index++) {
-               let dataList = [];
-               for (let j = 0; j < this.indicators.length; j++) {
-                  let data = this.indicators[j].data[index];
-                  dataList.push({
-                     indicator: data.indicator,
-                     signal : data.signal
-                  });
-               }
-      
-               this.calculateItem(index, dataList);
-            }
-            resolve(true);
+         for (let i = 0; i < this.indicators.length; i++) {
+            this.indicators[i].calculate(startIndex);
          }
-         catch (error) {
-            reject(error); 
+         
+         for (let index = startIndex; index < this.quotes.length; index++) {
+            let dataList = [];
+            for (let j = 0; j < this.indicators.length; j++) {
+               let data = this.indicators[j].data[index];
+               dataList.push({
+                  indicator: data.indicator,
+                  signal : data.signal
+               });
+            }
+   
+            this.calculateItem(index, dataList);
          }
+         resolve(true);
          
       });
       

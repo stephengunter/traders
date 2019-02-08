@@ -64,17 +64,17 @@ export default {
    },
    methods: {
       init(){
+         this.disconnectHub();
          this.$store.commit(SET_LOADING, true);
 
          this.height = 400 + (this.indicators.length * 100);
 
          this.strategyModel = new Strategy(this.strategy, this.indicators, this.quotes); 
          this.chartModel = new Charts(this.strategyModel, this.quotes);
-       
+         
          this.chartModel.init()
-            .then(() => {
-               this.chart = echarts.init(document.getElementById('chart-watch'));
-               let options = this.chartModel.defaultOptions();         
+            .then(options => {
+               this.chart = echarts.init(document.getElementById('chart-watch'));                     
                this.chart.setOption(options);
 
                this.resize();
