@@ -1,7 +1,7 @@
 <template>
    <v-layout row wrap>
       <v-flex sm12>
-         <v-data-table :headers="headers" :items="symbols" hide-actions>
+         <v-data-table :headers="headers" :items="ticks" hide-actions>
             <template slot="headerCell" slot-scope="{ header }">
                <span class="subheading font-weight-light text-success text--darken-3 cn">
                   {{ header.text }}
@@ -9,32 +9,31 @@
             </template>
             <template slot="items" slot-scope="props">
                <td class="cn">{{ props.item.symbol }}</td>
-               <td>{{ props.item.weight }}</td>
+               <td>{{ props.item.time }}</td>
                <td>{{ props.item.price }}</td>
-               <td v-text="getRatio(props.item)"></td>
+               <td :style="getStyle(props.item)">{{ props.item.qty }}</td>
+               <td>{{ props.item.bid }}</td>
+               <td>{{ props.item.offer }}</td>
             </template>
          </v-data-table>
       </v-flex>
       <v-flex sm12 class="cn">
-         <h2 class="font-weight-light mb-4"> <span class="cn">藍籌股指標</span></h2>
+         <h2 class="font-weight-light mb-4"> <span class="cn">多空力道</span></h2>
          <h5 class="cn">
             <span class="cn">定義與說明</span> 
          </h5>
          <ul>
             <li>
-               以台積電為基準,另選49檔權值股,其相對於台積電的比例為 (股價/台積電股價) x (權值/台積電權值) 
+               計算台指期 『多方能量』與『空方能量』
             </li>
             <li>
-               以上表鴻海為例,計算比例得到 0.0632 可解釋為『以權值角度，一張鴻海相當於0.0632張台積電』
-            </li>
-            <li>
-               記錄權值股的每筆報價(Tick),可得其『多方量』(參照第一頁報價資料說明)
+               記錄台指期的每筆報價(Tick),可得其『多方量』(參照第一頁報價資料說明)
             </li>
             <li>
                最後計算方式，給定一個時間範圍例如 10:30:00 ~ 10:31:00，預計回傳兩個數字『多方能量』與『空方能量』
             </li>
             <li>
-               『多方能量』 = 多方量張數. 『空方能量』 = 空方量張數. 
+               『多方能量』 = 多方量口數. 『空方能量』 = 空方量口數. 
             </li>
          </ul>
          <h5>
@@ -90,11 +89,11 @@ export default {
 					sortable: false,
 					text: '商品',
 					value: 'symbol'
-            },
-            {
+				},
+				{
 					sortable: false,
-					text: '權重 (%)',
-					value: 'weight'
+					text: '時間',
+					value: 'time'
 				},
 				{
 					sortable: false,
@@ -103,37 +102,51 @@ export default {
             },
             {
 					sortable: false,
-					text: '比例',
-					value: 'ratio'
-            }
+					text: '單量',
+					value: 'qty'
+				},
+				{
+					sortable: false,
+					text: 'Bid',
+					value: 'bid'
+				},
+				{
+					sortable: false,
+					text: 'Offer',
+					value: 'offer'
+				}
          ],
-         symbols: [{
-            symbol: '台積電',
-            weight: '21.1929',
-            price: 221,
-            ratio: 1
+         ticks: [{
+            symbol: '台指期',
+            time: '10:21:11',
+            price: 9767,
+            qty: 3,
+            bid: 9766,
+            offer: 9768
          },{
-            symbol: '鴻海',
-            weight: '4.2131',
-            price: 70.3,
-            ratio: 0
+            symbol: '台指期',
+            time: '10:21:11',
+            price: 9766,
+            qty: 4,
+            bid: 9765,
+            offer: 9766
          },{
-            symbol: '台塑化',
-            weight: '3.7738',
-            price: 111,
-            ratio: 0
+            symbol: '台指期',
+            time: '10:21:12',
+            price: 9765,
+            qty: 9,
+            bid: 9765,
+            offer: 9766
          }]
 			
 		}
    },
    methods: {
-		getRatio(item){
-         if(item.ratio) return item.ratio;
-         let baseStock = this.symbols[0];
-         
-         let ratio = (item.price / baseStock.price) * (item.weight / baseStock.weight);
-         return Math.round(ratio * 10000)/ 10000;
-      }
+		getStyle(item){
+         if(item.price <= item.bid) return 'color:green';
+         else if(item.price >= item.offer) return 'color:red';
+         else return '';
+		}
 	}
 }
 </script>

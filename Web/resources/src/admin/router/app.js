@@ -45,6 +45,17 @@ const appRoutes = [
       }        
    },
    {
+      name: 'indicators',
+      path: '/indicators',
+      component: () => import('../views/Indicators'), 
+      meta: { 
+         order: 0,
+         icon: 'mdi-chart-areaspline',
+         title: '指標管理',
+         menu: true
+      }        
+   },
+   {
       name: 'stocks',
       path: '/stocks',
       component: () => import('../views/Stocks'), 

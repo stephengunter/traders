@@ -6,10 +6,19 @@
 					<v-card-text>
 						<v-tabs v-model="active" color="cyan" dark slider-color="yellow">
 							<v-tab ripple>
-							<span class="cn">報價資料</span>
+								<span class="cn">報價資料</span>
 							</v-tab>
 							<v-tab ripple>
 								<span class="cn">藍籌股指標</span>
+							</v-tab>
+							<v-tab ripple>
+								<span class="cn">多空力道指標</span>
+							</v-tab>
+							<v-tab ripple>
+								<span class="cn">主力成本指標</span>
+							</v-tab>
+							<v-tab ripple>
+								<span class="cn">策略</span>
 							</v-tab>
 							<v-tab-item>
 								<v-card flat>
@@ -22,6 +31,27 @@
 								<v-card flat>
 									<v-card-text>
 										<blue-chips />
+									</v-card-text>
+								</v-card>
+							</v-tab-item>
+							<v-tab-item>
+								<v-card flat>
+									<v-card-text>
+										<powers-spec />
+									</v-card-text>
+								</v-card>
+							</v-tab-item>
+							<v-tab-item>
+								<v-card flat>
+									<v-card-text>
+										<prices-spec />
+									</v-card-text>
+								</v-card>
+							</v-tab-item>
+							<v-tab-item>
+								<v-card flat>
+									<v-card-text>
+										<strategy-spec />
 									</v-card-text>
 								</v-card>
 							</v-tab-item>
@@ -40,20 +70,24 @@
 import MaterialCard from '../components/material/Card';
 import QuoteSpec from '../components/spec/Quote';
 import BlueChips from '../components/spec/BlueChips';
+import Powers from '../components/spec/Powers';
+import Prices from '../components/spec/Prices';
+import Strategy from '../components/spec/Strategy';
 
 export default {
 	name: 'SpecView',
 	components: {
 		'material-card' : MaterialCard,
 		'quote-spec' : QuoteSpec,
-		'blue-chips' : BlueChips
+		'blue-chips' : BlueChips,
+		'powers-spec' : Powers,
+		'prices-spec' : Prices,
+		'strategy-spec' : Strategy
 	},
 	data () {
 		return {
 			active: 0,
-			items: [
-				'報價資料'
-			],
+			
 			
 		}
 	},

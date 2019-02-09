@@ -8,7 +8,6 @@
                   <indicator-box :model="item">
                   </indicator-box>
                </v-flex>
-
             </v-layout>
          </v-container>
       </v-card>
