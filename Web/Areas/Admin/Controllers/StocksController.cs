@@ -91,7 +91,22 @@ namespace Web.Areas.Admin.Controllers
 			return Ok();
 		}
 
-		
+		[HttpPost("update")]
+		public async Task<ActionResult> UpdatePrices([FromBody] IEnumerable<StockViewModel> models)
+		{
+			var stocks = await stockService.FetchByIdsAsync(models.Select(m => m.id).ToList());
+			foreach (var model in models)
+			{
+				var stock = stocks.Where(s => s.Id == model.id).FirstOrDefault();
+				stock.Price = model.price;
+			}
+			
+			stockService.UpdateRange(stocks);
+
+			return Ok();
+		}
+
+
 		[HttpDelete("{id}")]
 		public async Task<ActionResult> Delete(string id)
 		{

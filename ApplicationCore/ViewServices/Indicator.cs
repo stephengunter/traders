@@ -22,6 +22,7 @@ namespace ApplicationCore.Views
 				id = indicator.Id,
 				name = indicator.Name,
 				entity = indicator.Entity,
+				description = indicator.Description,
 				end = indicator.End,
 				begin = indicator.Begin,
 				main = indicator.Main,
@@ -43,6 +44,38 @@ namespace ApplicationCore.Views
 		{
 			return indicators.OrderBy(i => i.Order);
 		}
+
+		public static PagedList<Indicator, IndicatorViewModel> GetPagedList(this IEnumerable<Indicator> indicators, int page = 1, int pageSize = 999)
+		{
+			var pageList = new PagedList<Indicator, IndicatorViewModel>(indicators, page, pageSize);
+
+			pageList.ViewList = indicators.Select(i => MapViewModel(i)).ToList();
+
+			pageList.List = null;
+
+			return pageList;
+		}
+
+		public static void LoadOptions(this IndicatorEditForm form)
+		{
+			form.sourceOptions = new List<BaseOption>()
+			{
+				new BaseOption( SourceType.Futures.ToString() ,"期貨" ),
+				new BaseOption( SourceType.Stock.ToString() ,"股票" ),
+				new BaseOption( SourceType.Complex.ToString() ,"複合" ),
+				new BaseOption( SourceType.Market.ToString() ,"市場" )
+			};
+
+			form.typeOptions = new List<BaseOption>()
+			{
+				new BaseOption( SourceType.Stock.ToString() ,"折線圖" ),
+				new BaseOption( SourceType.Complex.ToString() ,"柱狀圖" ),
+				new BaseOption( IndicatorType.None.ToString() ,"無" )
+			};
+
+		}
+
+
 
 	}
 }

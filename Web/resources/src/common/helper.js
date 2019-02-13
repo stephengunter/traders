@@ -72,6 +72,17 @@ class Helper {
           text: '女'
        }];
    }
+
+   static activeOptions(){
+      return [{
+          value: 1,
+          text: '上架中'
+       },{
+          value: 0,
+          text: '已下架'
+       }];
+   }
+
    static toDateString(val){ 
       val = String(val);
       if(val.length != 8) return '';

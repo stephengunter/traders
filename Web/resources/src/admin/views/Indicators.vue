@@ -5,20 +5,15 @@
 				<material-card>
 					<v-card-text >
 						<v-layout row>
-							<v-flex xs12 sm6 md6>
-								<form @submit.prevent="search">
-									<v-text-field
-										v-model="params.keyword"
-										append-icon="mdi-magnify"
-										label="Search"
-										single-line
-										hide-details
-									/>
-								</form>
+							<v-flex xs6 sm6 md6>
+								<v-select
+									:items="activeOptions"  label="狀態"
+									v-model="params.active" @change="fetchData"
+								/>
 							</v-flex>
-							<v-flex xs12 sm6 md6 class="text-lg-right">
+							<v-flex xs6 sm6 md6 class="text-lg-right">
 								<v-tooltip top content-class="top">
-									<v-btn :disabled="!canCreate" @click.prevent="create" class="mr-2" slot="activator"  color="info" icon>
+									<v-btn @click.prevent="create" class="mr-2" slot="activator"  color="info" icon>
 										<v-icon>mdi-plus-circle</v-icon>
 									</v-btn>
 									<span class="cn">新增</span>
@@ -27,9 +22,9 @@
 						</v-layout>
 						
 						<v-layout row wrap>
-							<v-flex sm12>
-								
-								
+							<v-flex xs12 v-for="(item,index) in indicators" :key="index">
+								<indicator-box :model="item">
+								</indicator-box>
 							</v-flex>
 						</v-layout>
 						<table-pager :model="pageList" :canPage="false"/>
@@ -52,96 +47,49 @@ EDIT_INDICATOR, UPDATE_INDICATOR, DELETE_INDICATOR } from '../store/actions.type
 
 import MaterialCard from '../components/material/Card';
 import TablePager from '../components/TablePager';
-import StockEdit from '../components/stock/Edit';
+import IndicatorBox from '../components/indicator/Box';
 import Confirm from '@/components/Confirm';
+import Helper from '@/common/helper';
 
 export default {
 	name: 'IndicatorsView',
 	components: {
 		'material-card' : MaterialCard,
-		'stock-edit' : StockEdit,
+		'indicator-box' : IndicatorBox,
 		'table-pager' : TablePager,
 		Confirm
 	},
 	data () {
 		return {
 			params: {
-				keyword: '',
-				page: 1,
-				pageSize: 10
+				active: 1
 			},
-			headers: [
-				{
-					sortable: false,
-					text: '名稱',
-					value: 'name'
-				},
-				{
-					sortable: false,
-					text: '代碼',
-					value: 'code'
-				},
-				{
-					sortable: false,
-					text: '權重 (%)',
-					value: 'weight'
-				},
-				{
-					sortable: false,
-					text: '',
-					value: '',
-					width: '50px'
-				}
-			],
 
-			selected: [],
-			editting: false,
-			deleting: false,
-			model: null,
-			
+			activeOptions: Helper.activeOptions()
 		}
 	},
 	computed: {
       ...mapState({
-			pageList: state => state.stocks.pageList,
+			pageList: state => state.indicators.pageList,
 		}),
-		stocks(){
+		indicators(){
 			return this.pageList ? this.pageList.viewList : [];
-		},
-		canRemove(){
-			if(this.editting) return false; 
-			return this.selected.length > 0;
-		},
-		canCreate(){
-			return !this.editting && !this.deleting;
 		}
 	},
 	beforeMount(){
-		//this.fetchData();
+		this.fetchData();
 	},
 	methods: {
 		fetchData(){
+			console.log(FETCH_INDICATORS);
 			this.$store.commit(CLEAR_ERROR);
-			this.$store.dispatch(FETCH_STOCKS, this.params)
+			this.$store.dispatch(FETCH_INDICATORS, this.params.active)
 				.catch(error => {
 					Bus.$emit('errors');
 				})
-		},
-		search(){
-			this.fetchData();
 		},
 		create(){
-			this.$store.commit(CLEAR_ERROR);
-			this.selected = [];
-			this.$store.dispatch(CREATE_STOCK)
-				.then(model => {
-					this.model = model;  
-					this.editting = true;
-				})
-				.catch(error => {
-					Bus.$emit('errors');
-				})
-			
+			this.$router.push({ path: '/indicators/create' });
 		},
 		edit(id){
 			this.$store.commit(CLEAR_ERROR);

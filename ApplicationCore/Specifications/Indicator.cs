@@ -11,13 +11,14 @@ namespace ApplicationCore.Specifications
 {
 	public class IndicatorFilterSpecifications : BaseSpecification<Indicator>
 	{
-		public IndicatorFilterSpecifications(bool active) : base(s => !s.Removed && s.Active)
+		public IndicatorFilterSpecifications(bool active) : base(s => !s.Removed && s.Active == active)
 		{
 			
 		}
-		public IndicatorFilterSpecifications(string keyword) : base(s => !s.Removed && s.Name.CaseInsensitiveContains(keyword))
+
+		public IndicatorFilterSpecifications(string entitiy) : base(s => !s.Removed && s.Entity == entitiy)
 		{
-		
+
 
 		}
 
@@ -32,5 +33,7 @@ namespace ApplicationCore.Specifications
 
 
 		}
+
+		
 	}
 }

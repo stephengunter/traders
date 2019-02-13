@@ -14,6 +14,8 @@ export const SET_USERS = 'setUsers';
 
 export const SET_STOCKS = 'setStocks';
 
+export const SET_INDICATORS = 'setIndicators';
+
 
 export const SET_ERROR = 'setError';
 export const CLEAR_ERROR = 'clearError';

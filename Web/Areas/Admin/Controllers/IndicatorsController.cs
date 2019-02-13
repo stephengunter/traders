@@ -20,15 +20,49 @@ namespace Web.Areas.Admin.Controllers
 		}
 
 		[HttpGet("")]
-		public async Task<ActionResult> Index(string keyword = "", bool active = true)
+		public async Task<ActionResult> Index(bool active = true)
 		{
-			var indicators = await indicatorService.FetchAsync(keyword);
+			var indicators = await indicatorService.FetchAsync(active);
 
-			indicators = indicators.Where(i=>i.Active == active).GetOrdered();
+			indicators = indicators.GetOrdered();
 
-			return Ok(indicators.Select(s => s.MapViewModel()));
+			var pageList = indicators.GetPagedList();
+
+			return Ok(pageList);
 		}
 
-		
+		[HttpGet("create")]
+		public ActionResult Create()
+		{
+			var form = new IndicatorEditForm() { indicator = new IndicatorViewModel() };
+			form.LoadOptions();
+
+			return Ok(form);
+		}
+
+		//[HttpPost("")]
+		//public async Task<ActionResult> Store([FromBody] StockViewModel model)
+		//{
+		//	if (!ModelState.IsValid) return BadRequest(ModelState);
+		//	ValidateRequest(model);
+		//	if (!ModelState.IsValid) return BadRequest(ModelState);
+
+		//	Stock existStock = stockService.GetByCode(model.code);
+		//	if (existStock == null)
+		//	{
+		//		var stock = new Stock();
+		//		model.SetValues(stock);
+		//		await stockService.CreateAsync(stock);
+		//	}
+		//	else
+		//	{
+		//		model.SetValues(existStock);
+		//		await stockService.UpdateAsync(existStock);
+		//	}
+
+		//	return Ok();
+		//}
+
+
 	}
 }

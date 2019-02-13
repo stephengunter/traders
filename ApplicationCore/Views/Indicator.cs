@@ -15,6 +15,8 @@ namespace ApplicationCore.Views
 
 		public string entity { get; set; }
 
+		public string description { get; set; }
+
 		public int begin { get; set; } //盤中產生信號開始時間  例如 90000
 
 		public int end { get; set; } //盤中產生信號結束時間  例如 133000
@@ -34,6 +36,27 @@ namespace ApplicationCore.Views
 		public string type { get; set; }
 
 		public bool withAvg { get; set; }
+
+
+		public void SetValues(Indicator entity)
+		{
+			entity.Name = name;
+			entity.Entity = this.entity;
+			entity.Begin = begin;
+			entity.End = end;
+			entity.Main = main;
+			entity.WithAvg = withAvg;
+		}
+	}
+
+
+	public class IndicatorEditForm
+	{
+		public IndicatorViewModel indicator { get; set; }
+
+		public ICollection<BaseOption> typeOptions { get; set; }
+
+		public ICollection<BaseOption> sourceOptions { get; set; }
 	}
 
 }

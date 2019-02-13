@@ -20,11 +20,11 @@ namespace Web.Areas.Api.Controllers
 
 
 		[HttpGet]
-		public async Task<ActionResult> Index(string keyword = "", bool active = true)
+		public async Task<ActionResult> Index()
 		{
-			var indicators = await indicatorService.FetchAsync(keyword);
+			var indicators = await indicatorService.GetActiveIndicatorsAsync();
 
-			indicators = indicators.Where(i => i.Active == active).GetOrdered();
+			indicators = indicators.GetOrdered();
 
 			return Ok(indicators.Select(s => s.MapViewModel()));
 		}

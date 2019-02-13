@@ -75,11 +75,13 @@ export default {
    },
    computed:{
 		first(){
-			if(!this.model) return 0;
+         if(!this.model) return 0;
+         if(!this.model.totalItems) return 0;
 			return this.model.pageSize * (this.model.pageNumber-1) + 1;			
 		},
 		last(){
-			if(!this.model) return 0;
+         if(!this.model) return 0;
+         if(!this.model.totalItems) return 0;
 			return this.first + this.model.viewList.length - 1;
 		}
 	},   

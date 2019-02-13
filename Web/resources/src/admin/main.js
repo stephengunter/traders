@@ -8,9 +8,11 @@ Vue.component('loading', Loading);
 import '@/plugins/vuetifyDashboard';
 import '@/plugins/validate';
 
-
+import { sync } from 'vuex-router-sync';
 import router from './router';
 import store from './store';
+
+const unsync = sync(store, router);
 
 import { CHECK_AUTH } from './store/actions.type';
 import JwtService from '@/common/jwt';

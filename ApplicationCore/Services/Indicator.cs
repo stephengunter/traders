@@ -14,13 +14,15 @@ namespace ApplicationCore.Services
 {
 	public interface IIndicatorService
 	{
-		Task<IEnumerable<Indicator>> FetchAsync(string keyword = "");
+		Task<IEnumerable<Indicator>> FetchAsync(bool active);
 
 		Task<IEnumerable<Indicator>> FetchByIdsAsync(IList<int> ids);
 
 		Task<IEnumerable<Indicator>> FetchByEntitiesAsync(IList<string> entities);
 
 		Task<IEnumerable<Indicator>> GetActiveIndicatorsAsync();
+
+		Indicator GetByEntity(string entity);
 	}
 	public class IndicatorService : IIndicatorService
 	{
@@ -31,21 +33,10 @@ namespace ApplicationCore.Services
 			this.indicatorRepository = indicatorRepository;
 		}
 
-		public async Task<IEnumerable<Indicator>> FetchAsync(string keyword = "")
+		public async Task<IEnumerable<Indicator>> FetchAsync(bool active)
 		{
-			Task<IEnumerable<Indicator>> getIndicatorsTask;
-			if (String.IsNullOrEmpty(keyword))
-			{
-				getIndicatorsTask = GetAllAsync();
-			}
-			else
-			{
-				getIndicatorsTask = GetByKeywordAsync(keyword);
-			}
-
-			var indicators = await getIndicatorsTask;
-
-			return indicators;
+			var spec = new IndicatorFilterSpecifications(active);
+			return await indicatorRepository.ListAsync(spec);
 		}
 
 		public async Task<IEnumerable<Indicator>> FetchByIdsAsync(IList<int> ids)
@@ -69,13 +60,13 @@ namespace ApplicationCore.Services
 			return await indicatorRepository.ListAsync(spec);
 		}
 
-		async Task<IEnumerable<Indicator>> GetAllAsync() => await indicatorRepository.ListAllAsync();
+		
 
-		async Task<IEnumerable<Indicator>> GetByKeywordAsync(string keyword)
+		public Indicator GetByEntity(string entity)
 		{
-			var filter = new IndicatorFilterSpecifications(keyword);
+			var filter = new IndicatorFilterSpecifications(entity);
 
-			return await indicatorRepository.ListAsync(filter);
+			return  indicatorRepository.GetSingleBySpec(filter);
 		}
 	}
 }

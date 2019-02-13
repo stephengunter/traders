@@ -56,6 +56,28 @@ const appRoutes = [
       }        
    },
    {
+      name: 'indicators-create',
+      path: '/indicators/create',
+      component: () => import('../views/IndicatorEdit'), 
+      meta: { 
+         order: 0,
+         icon: 'mdi-chart-areaspline',
+         title: '新增指標',
+         menu: false
+      }        
+   },
+   {
+      name: 'indicators-edit',
+      path: '/indicators/:id',
+      component: () => import('../views/IndicatorEdit'), 
+      meta: { 
+         order: 0,
+         icon: 'mdi-chart-areaspline',
+         title: '編輯指標',
+         menu: false
+      }        
+   },
+   {
       name: 'stocks',
       path: '/stocks',
       component: () => import('../views/Stocks'), 
