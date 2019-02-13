@@ -2,7 +2,7 @@
 	<v-container fluid grid-list-xl fill-height>
      <v-layout justify-center  align-center>
 			<v-flex xs12>
-				<form v-if="model" class="cn"  @submit.prevent="onSubmit">
+				<form v-if="model" class="cn" @submit.prevent="onSubmit">
 					<v-card>
 						<v-card-title>
 							<h3>
@@ -38,30 +38,87 @@
 
 										 
 									</v-flex>
-									<!-- <v-flex xs12 sm6 md4>
-										<v-text-field v-model="model.weight" label="權重(%)"
-											v-validate="'required|decimal'" 
-											:error-messages="errors.collect('weight')"
-											name="weight"
-											data-vv-as="權重"
+									<v-flex xs6>
+										<v-menu ref="menuTimeBegin" v-model="timeBegin.selecting"
+										:close-on-content-click="false" :nudge-right="40"
+										:return-value.sync="timeBegin.val"
+										lazy transition="scale-transition"
+										offset-y full-width max-width="290px" min-width="290px"
+										>
+											<v-text-field
+												slot="activator"
+												v-model="timeBegin.val"
+												label="信號開始時間"
+												prepend-icon="mdi-clock-outline"
+												v-validate="'required'" 
+												:error-messages="errors.collect('indicator_begin')"
+												name="indicator_begin"
+												readonly
+											/>
+											<v-time-picker full-width
+												v-if="timeBegin.selecting"
+												v-model="timeBegin.val"
+												@change="onBeginTimeChanged"
+											/>
+										</v-menu>
+									</v-flex>
+									<v-flex xs6>
+										<v-menu ref="menuTimeEnd" v-model="timeEnd.selecting"
+										:close-on-content-click="false" :nudge-right="40"
+										:return-value.sync="timeEnd.val"
+										lazy transition="scale-transition"
+										offset-y full-width max-width="290px" min-width="290px"
+										>
+											<v-text-field
+												slot="activator"
+												v-model="timeEnd.val"
+												label="信號結束時間"
+												prepend-icon="mdi-clock-outline"
+												v-validate="'required'" 
+												:error-messages="errors.collect('indicator_end')"
+												name="indicator_end"
+												readonly
+											/>
+											<v-time-picker full-width
+												v-if="timeEnd.selecting"
+												v-model="timeEnd.val"
+												@change="onEndTimeChanged"
+											/>
+										</v-menu>
+									</v-flex>
+									
+									<v-flex xs6>
+										<v-text-field v-model="model.minParam" label="最小參數"
+											v-validate="{ required: true, numeric: true, min_value: minParam, max_value: maxParam }"
+											:error-messages="errors.collect('minParam')"
+											name="minParam"
 											required
 										/>
 									</v-flex>
-									<v-flex xs12 sm6 md4>
-										<v-text-field v-model="model.price" label="價格"
-											v-validate="'required|decimal'" 
-											:error-messages="errors.collect('price')"
-											name="price"
-											data-vv-as="價格"
+									<v-flex xs6>
+										<v-text-field v-model="model.maxParam" label="最大參數"
+											v-validate="{ required: true, numeric: true, min_value: model.minParam, max_value: maxParam }"
+											:error-messages="errors.collect('maxParam')"
+											name="maxParam"
 											required
 										/>
 									</v-flex>
-									<v-flex xs12 sm6 md4>
-										<v-checkbox
-											label="電信股"
-											v-model="model.ignore"
+
+									<v-flex xs6>
+										<v-select
+											:items="activeOptions"  label="狀態"
+											v-model="params.active" @change="fetchData"
 										/>
-									</v-flex> -->
+										
+									</v-flex>
+									<v-flex xs6>
+										<v-text-field v-model="model.maxParam" label="最大參數"
+											v-validate="{ required: true, numeric: true, min_value: model.minParam, max_value: maxParam }"
+											:error-messages="errors.collect('maxParam')"
+											name="maxParam"
+											required
+										/>
+									</v-flex>
 								</v-layout>
 								<ErrorList  />
 							</v-container>
@@ -105,8 +162,24 @@ export default {
 			editting: false,
 			deleting: false,
 
+			minParam: 1,
+			maxParam: 90,
+
 
 			model: null,
+
+			timeBegin:{
+				selecting: false,
+				val: null
+			},
+			timeEnd:{
+				selecting: false,
+				val: null
+			},
+
+			validate:{
+				minParam: ''
+			}
 			
 		}
 	},
@@ -115,9 +188,18 @@ export default {
 			params: state => state.route.params,
 		}),
 		id(){
+			
 			if(!this.params) return 0;
 			if(!this.params.id) return 0;
 			return parseInt(this.params.id);
+		},
+		validateMinParam(){
+			let basic = 'required|numeric';
+			return `'${basic}|min_value:${this.minParam}'`;
+		},
+		validateMaxParam(){
+			let basic = 'required|numeric';
+			return 'required|numeric'; 
 		},
 		canRemove(){
 			if(this.editting) return false; 
@@ -135,15 +217,11 @@ export default {
 			if(this.id) this.edit();
 			else this.create();
 		},
-		fetchData(){
-			this.$store.commit(CLEAR_ERROR);
-			this.$store.dispatch(FETCH_INDICATORS, this.params)
-				.catch(error => {
-					Bus.$emit('errors');
-				})
+		onBeginTimeChanged(val){
+			this.$refs.menuTimeBegin.save(val);			
 		},
-		search(){
-			this.fetchData();
+		onEndTimeChanged(val){
+			this.$refs.menuTimeEnd.save(val);			
 		},
 		create(){
 			this.title = '新增指標';
@@ -151,6 +229,8 @@ export default {
 			this.$store.dispatch(CREATE_INDICATOR)
 				.then(model => {
 					this.model = model.indicator;
+					this.minParam = model.minParam;
+					this.minParam = model.minParam;
 				})
 				.catch(error => {
 					Bus.$emit('errors');
@@ -191,6 +271,11 @@ export default {
 		cancelDelete(){
 			this.deleting = false;
 		},
+		onSubmit() {
+         this.$validator.validate().then(valid => {
+            if(valid) this.submit();
+         });         
+      },
       submit(){
 			this.$store.commit(CLEAR_ERROR);
 			let action = this.id ? UPDATE_INDICATOR : STORE_INDICATOR;

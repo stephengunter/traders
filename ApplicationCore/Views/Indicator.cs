@@ -54,6 +54,10 @@ namespace ApplicationCore.Views
 	{
 		public IndicatorViewModel indicator { get; set; }
 
+		public int minParam { get; set; }
+
+		public int maxParam { get; set; }
+
 		public ICollection<BaseOption> typeOptions { get; set; }
 
 		public ICollection<BaseOption> sourceOptions { get; set; }

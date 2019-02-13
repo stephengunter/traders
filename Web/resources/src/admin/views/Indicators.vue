@@ -81,7 +81,6 @@ export default {
 	},
 	methods: {
 		fetchData(){
-			console.log(FETCH_INDICATORS);
 			this.$store.commit(CLEAR_ERROR);
 			this.$store.dispatch(FETCH_INDICATORS, this.params.active)
 				.catch(error => {

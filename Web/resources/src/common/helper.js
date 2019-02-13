@@ -83,6 +83,20 @@ class Helper {
        }];
    }
 
+   static numberOptions(min, max, desc) {
+      let options = [];
+      if(desc){
+         for (var i = max; i >= min; i--) {
+            options.push({text: i, value: i });
+         }
+      }else{
+         for (var i = min; i <= max; i++) {
+            options.push({text: i, value: i });
+         }
+      }
+      return options;
+   }
+
    static toDateString(val){ 
       val = String(val);
       if(val.length != 8) return '';

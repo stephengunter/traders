@@ -20,7 +20,13 @@ const dictionary = {
          confirmPassword:'確認密碼',
          fullname:'姓名',
          phone: '手機',
-         code: '代碼'
+         code: '代碼',
+         entity: '代碼',
+         description: '說明',
+         indicator_begin: '信號開始時間',
+         indicator_end: '信號結束時間',
+         minParam: '最小參數',
+         maxParam: '最大參數'
       }
    }
 };

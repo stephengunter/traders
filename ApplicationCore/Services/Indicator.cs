@@ -23,6 +23,8 @@ namespace ApplicationCore.Services
 		Task<IEnumerable<Indicator>> GetActiveIndicatorsAsync();
 
 		Indicator GetByEntity(string entity);
+
+		Task<Indicator> CreateAsync(Indicator indicator);
 	}
 	public class IndicatorService : IIndicatorService
 	{
@@ -32,6 +34,8 @@ namespace ApplicationCore.Services
 		{
 			this.indicatorRepository = indicatorRepository;
 		}
+
+		public async Task<Indicator> CreateAsync(Indicator indicator) => await indicatorRepository.AddAsync(indicator);
 
 		public async Task<IEnumerable<Indicator>> FetchAsync(bool active)
 		{

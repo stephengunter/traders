@@ -35,7 +35,6 @@ const actions = {
                resolve(model);
             })
             .catch(error => {
-               console.log(error);
                reject(error);
             })
             .finally(() => { 
