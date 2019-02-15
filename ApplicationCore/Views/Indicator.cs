@@ -38,14 +38,26 @@ namespace ApplicationCore.Views
 		public bool withAvg { get; set; }
 
 
-		public void SetValues(Indicator entity)
+		public void SetValues(Indicator entity, string updatedBy)
 		{
 			entity.Name = name;
 			entity.Entity = this.entity;
+			entity.Description = description;
+
 			entity.Begin = begin;
 			entity.End = end;
+
+			entity.Params = String.Join(",", new string[] { minParam.ToString(), maxParam.ToString(), defaultParam.ToString() });
+
 			entity.Main = main;
 			entity.WithAvg = withAvg;
+
+			entity.Type = (IndicatorType)Enum.Parse(typeof(IndicatorType), type);
+			entity.Source = (SourceType)Enum.Parse(typeof(SourceType), source);
+
+			entity.SetUpdated(updatedBy);
+
+
 		}
 	}
 

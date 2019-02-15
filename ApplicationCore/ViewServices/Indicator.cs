@@ -68,8 +68,8 @@ namespace ApplicationCore.Views
 
 			form.typeOptions = new List<BaseOption>()
 			{
-				new BaseOption( SourceType.Stock.ToString() ,"折線圖" ),
-				new BaseOption( SourceType.Complex.ToString() ,"柱狀圖" ),
+				new BaseOption( IndicatorType.Bar.ToString() ,"柱狀圖" ),
+				new BaseOption( IndicatorType.Curve.ToString() ,"折線圖" ),
 				new BaseOption( IndicatorType.None.ToString() ,"無" )
 			};
 

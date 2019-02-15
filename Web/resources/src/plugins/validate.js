@@ -26,7 +26,8 @@ const dictionary = {
          indicator_begin: '信號開始時間',
          indicator_end: '信號結束時間',
          minParam: '最小參數',
-         maxParam: '最大參數'
+         maxParam: '最大參數',
+         defaultParam: '預設參數'
       }
    }
 };

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using ApplicationCore.Services;
+using ApplicationCore.Models;
 
 namespace Web.Areas.Api.Controllers
 {
@@ -12,25 +13,20 @@ namespace Web.Areas.Api.Controllers
 	{
 		private readonly IHostingEnvironment hostingEnv;
 
-		private readonly IRealTimeService realTimeService;
-
-		public ValuesController(IHostingEnvironment hostingEnv, IRealTimeService realTimeService)
+		public ValuesController(IHostingEnvironment hostingEnv)
 		{
 			this.hostingEnv = hostingEnv;
-			this.realTimeService = realTimeService;
 		}
 
 		[HttpGet("")]
-		public IActionResult Index(int time)
+		public IActionResult Index()			 
 		{
-			int date = 20190114;
-			var quote = realTimeService.GetQuote(date, time);
-
-			var data = quote.DataList.Where(d => d.Indicator == "Prices").FirstOrDefault();
-
-			var val = quote.Price - Convert.ToDouble(data.Val);
-
-			return Ok(val);
+			int min = 1;
+			int max = 90;
+			int d = 5;
+			var arr = new string[] { min.ToString(), max.ToString(), d.ToString() };
+			return Ok(String.Join(",", arr));
+			//return list
 		}
 
 

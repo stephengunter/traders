@@ -28,6 +28,8 @@
 											required
 										/>
 									</v-flex>
+
+									<!-- row -->
 									<v-flex xs12>
 										<v-textarea v-model="model.description" label="說明"
 											v-validate="'required'" 
@@ -38,6 +40,8 @@
 
 										 
 									</v-flex>
+
+									<!-- row -->
 									<v-flex xs6>
 										<v-menu ref="menuTimeBegin" v-model="timeBegin.selecting"
 										:close-on-content-click="false" :nudge-right="40"
@@ -86,7 +90,7 @@
 											/>
 										</v-menu>
 									</v-flex>
-									
+									<!-- row -->
 									<v-flex xs6>
 										<v-text-field v-model="model.minParam" label="最小參數"
 											v-validate="{ required: true, numeric: true, min_value: minParam, max_value: maxParam }"
@@ -103,20 +107,48 @@
 											required
 										/>
 									</v-flex>
-
+									<!-- row -->
 									<v-flex xs6>
-										<v-select
-											:items="activeOptions"  label="狀態"
-											v-model="params.active" @change="fetchData"
+										<v-text-field v-model="model.defaultParam" label="預設參數"
+											v-validate="{ required: true, numeric: true, min_value: model.minParam, max_value: maxParam }"
+											:error-messages="errors.collect('defaultParam')"
+											name="defaultParam"
+											required
 										/>
 										
 									</v-flex>
 									<v-flex xs6>
-										<v-text-field v-model="model.maxParam" label="最大參數"
-											v-validate="{ required: true, numeric: true, min_value: model.minParam, max_value: maxParam }"
-											:error-messages="errors.collect('maxParam')"
-											name="maxParam"
-											required
+										<v-select
+											:items="activeOptions"  label="狀態"
+											v-model="model.active"
+										/>
+									</v-flex>
+									<!-- row -->
+									<v-flex xs6>
+										<v-select
+											:items="sourceOptions"  label="資料來源"
+											v-model="model.source"
+										/>
+										
+									</v-flex>
+									<v-flex xs6>
+										<v-select
+											:items="mainOptions"  label="主圖/副圖"
+											v-model="model.main"
+										/>
+									</v-flex>
+									<!-- row -->
+									<v-flex xs6>
+										<v-select
+											:items="typeOptions"  label="圖表類型"
+											v-model="model.type"
+										/>
+										
+									</v-flex>
+									<v-flex xs6>
+										<v-select
+											:items="withAvgOptions"  label="附均線"
+											v-model="model.withAvg"
 										/>
 									</v-flex>
 								</v-layout>
@@ -146,6 +178,7 @@ import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 import { CREATE_INDICATOR, STORE_INDICATOR,
 EDIT_INDICATOR, UPDATE_INDICATOR, DELETE_INDICATOR } from '../store/actions.type';
 
+import Helper from '@/common/helper';
 import ErrorList from '@/components/ErrorList';
 import Confirm from '@/components/Confirm';
 
@@ -165,6 +198,21 @@ export default {
 			minParam: 1,
 			maxParam: 90,
 
+			activeOptions: Helper.activeOptions(),
+			active: 0,
+
+			mainOptions:[{
+				value: true,
+				text: '主圖'
+			},{
+				value: false,
+				text: '副圖'
+			}],
+
+			withAvgOptions: Helper.yesNoOptions(),
+
+			typeOptions:[],
+			sourceOptions: [],
 
 			model: null,
 
@@ -231,6 +279,9 @@ export default {
 					this.model = model.indicator;
 					this.minParam = model.minParam;
 					this.minParam = model.minParam;
+
+					this.typeOptions = model.typeOptions
+					this.sourceOptions = model.sourceOptions
 				})
 				.catch(error => {
 					Bus.$emit('errors');

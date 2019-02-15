@@ -62,7 +62,7 @@ export default {
 	data () {
 		return {
 			params: {
-				active: 1
+				active: true
 			},
 
 			activeOptions: Helper.activeOptions()

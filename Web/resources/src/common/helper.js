@@ -75,11 +75,21 @@ class Helper {
 
    static activeOptions(){
       return [{
-          value: 1,
+          value: true,
           text: '上架中'
        },{
-          value: 0,
+          value: false,
           text: '已下架'
+       }];
+   }
+
+   static yesNoOptions(){
+      return [{
+          value: true,
+          text: '是'
+       },{
+          value: false,
+          text: '否'
        }];
    }
 

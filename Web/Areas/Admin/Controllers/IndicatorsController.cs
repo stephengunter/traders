@@ -16,6 +16,7 @@ namespace Web.Areas.Admin.Controllers
 
 		private readonly int minParam = 1;
 		private readonly int maxParam = 90;
+		private readonly int defaultParam = 15;
 
 		public IndicatorsController(IIndicatorService indicatorService)
 		{
@@ -43,7 +44,11 @@ namespace Web.Areas.Admin.Controllers
 
 			form.indicator.minParam = this.minParam;
 			form.indicator.maxParam = this.maxParam;
+			form.indicator.defaultParam = this.defaultParam;
 			form.LoadOptions();
+
+			form.indicator.source = form.sourceOptions.FirstOrDefault().value;
+			form.indicator.type = form.typeOptions.FirstOrDefault().value;
 
 			return Ok(form);
 		}
@@ -56,7 +61,7 @@ namespace Web.Areas.Admin.Controllers
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
 			var indicator = new Indicator();
-			model.SetValues(indicator);
+			model.SetValues(indicator, CurrentUserId);
 			indicator = await indicatorService.CreateAsync(indicator);
 
 			return Ok(indicator.Id);
@@ -66,7 +71,10 @@ namespace Web.Areas.Admin.Controllers
 		{
 			var exist = indicatorService.GetByEntity(model.entity);
 			if (exist != null) ModelState.AddModelError("entity", "代碼重複");
-			//if (model.price <= 0) ModelState.AddModelError("price", "價格有誤");
+
+			if (model.minParam < this.minParam) ModelState.AddModelError("minParam", "參數範圍錯誤");
+			if (model.maxParam > this.maxParam) ModelState.AddModelError("maxParam", "參數範圍錯誤");
+			if (model.maxParam <= model.minParam) ModelState.AddModelError("maxParam", "參數範圍錯誤");
 		}
 
 
