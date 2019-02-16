@@ -6,8 +6,12 @@
          />
       </v-flex>
          <v-flex xs12 >
-         <MediaList :medias="medias" @drag-end="onDragEnd" />
+         <MediaList :medias="medias" @drag-end="onDragEnd"
+         @delete="onRemoveMedia" />
       </v-flex>
+      <v-dialog v-model="deleting" width="480px">
+         <Confirm @ok="submitDelete" @cancel="cancelDelete" />
+      </v-dialog>
    </v-layout>
 </template>
 
@@ -16,6 +20,7 @@
 
 import FileUpload from '../FileUpload';
 import MediaList from './List';
+import Confirm from '@/components/Confirm';
 
 export default {
    name:'MediaEdit',
@@ -27,12 +32,15 @@ export default {
    },
    components: {
 		FileUpload,
-		MediaList
+      MediaList,
+      Confirm
 	},
    data(){
       return {
          title:'新增圖片',
          medias: [],
+
+         deleting: false,
 
          deleteConfirm:{
             id:0,
@@ -106,6 +114,20 @@ export default {
             return {...media , thumb:''};
          });
          return copyMedias;
+      },
+      onRemoveMedia(media, index){
+         if(media.id){
+            
+         }else{
+            this.medias.splice(index, 1);
+            this.$refs.fileUpload.removeFile(media.name);
+         }
+      },
+      cancelDelete(){
+         this.deleting = false;
+      },
+      submitDelete(){
+
       },
       submit(){
          return new Promise((resolve, reject) => {

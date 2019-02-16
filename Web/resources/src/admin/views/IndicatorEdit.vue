@@ -184,14 +184,12 @@ EDIT_INDICATOR, UPDATE_INDICATOR, DELETE_INDICATOR } from '../store/actions.type
 
 import Helper from '@/common/helper';
 import ErrorList from '@/components/ErrorList';
-import Confirm from '@/components/Confirm';
 import MediaEdit from '../components/media/Edit';
 
 export default {
 	name: 'IndicatorsEditView',
 	components: {
 		ErrorList,
-		Confirm,
 		MediaEdit
 	},
 	data () {
@@ -200,6 +198,7 @@ export default {
 			selected: [],
 			editting: false,
 			deleting: false,
+			submitting: false,
 
 			minParam: 1,
 			maxParam: 90,
@@ -324,13 +323,22 @@ export default {
 			this.deleting = false;
 		},
 		onSubmit() {
-			console.log('onSubmit');
          this.$validator.validate().then(valid => {
-            if(valid) this.submit();
+            if(valid){
+					this.model.begin = Helper.resolveTimeNumber(this.timeBegin.val);
+					this.model.end = Helper.resolveTimeNumber(this.timeEnd.val);
+					this.submit();
+				}
          });         
       },
       submit(){
 			console.log('submit');
+			this.submitting = true;
+
+			let medias = this.$refs.mediasEdit.getMedias();
+			this.model.medias = medias;
+
+			
 			this.$store.commit(CLEAR_ERROR);
 			let action = this.id ? UPDATE_INDICATOR : STORE_INDICATOR;
          this.$store.dispatch(action, this.model)

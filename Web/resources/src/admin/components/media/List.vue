@@ -31,7 +31,7 @@
 
 				<td>{{ props.item.type }}</td>
 				<td v-if="edittingIndex == props.index" class="px-1 text-md-center">
-					<a href="#" @click.prevent="save(props.item,props.index)" icon>
+					<a href="#" @click.prevent="save(props.item, props.index)" icon>
 						<v-icon small color="success">mdi-content-save</v-icon>
 					</a>
 					<a href="#" class="ml-3" @click.prevent="cancelEditMedia" icon>
@@ -40,14 +40,14 @@
 				</td>
 				<td v-else class="px-1 text-md-center">
 					<v-tooltip top  content-class="top">
-						<a href="#" @click.prevent="editMedia(props.item,props.index)"  slot="activator" icon>
+						<a href="#" @click.prevent="editMedia(props.item, props.index)"  slot="activator" icon>
 							<v-icon small color="success">mdi-pencil</v-icon>
 						</a>
 						<span class="cn">編輯</span>
 					</v-tooltip>
 
 					<v-tooltip top class="ml-3" content-class="top">
-						<a href="#" @click.prevent="deleteMedia(props.item,props.index)"  slot="activator" icon>
+						<a href="#" @click.prevent="onRemoveMedia(props.item, props.index)"  slot="activator" icon>
 							<v-icon small color="error">mdi-delete</v-icon>
 						</a>
 						<span class="cn">刪除</span>
@@ -145,44 +145,28 @@ export default {
 			onDragEnd ({ oldIndex, newIndex }) {
 				this.$emit('drag-end', { oldIndex, newIndex });
 			},
-			setMedias(attachments){
-				return new Promise((resolve, reject) => {
-					attachments.forEach((attachment) => {
-						let media=this.medias.find(item=>{
-							return item.name==attachment.name;
-						});
-						if(media){
-							media.path=attachment.path;
-						}else{
-							reject();
-						}
-					});
-					resolve(true);
+			// setMedias(attachments){
+			// 	return new Promise((resolve, reject) => {
+			// 		attachments.forEach((attachment) => {
+			// 			let media=this.medias.find(item=>{
+			// 				return item.name==attachment.name;
+			// 			});
+			// 			if(media){
+			// 				media.path=attachment.path;
+			// 			}else{
+			// 				reject();
+			// 			}
+			// 		});
+			// 		resolve(true);
 
-				})
+			// 	})
 				
+			// },
+			onRemoveMedia(media, index){
+				this.$emit('delete', media, index);
 			},
-			onRemoveMedia(media){
-				
-				if(media.id){
-				
-					this.deleteConfirm.id=media.id;
-					this.deleteConfirm.message=`確定要刪除圖片 ${media.title} 嗎?`;
-					this.deleteConfirm.showing=true;
-				}else{
-				
-					this.removeMedia(media);
-					this.$refs.fileUpload.removeFile(media.name);
-				}
-			},
-			removeMedia(media){
-				
-				let index=this.findFileIndex(media.name);
-				
-				if(index< 0) return;
-
+			removeMedia(index){
 				this.medias.splice(index, 1);
-				
 			},
 			deleteMedia(item, index){
 				let deleteMedia=Attachment.remove(this.deleteConfirm.id);
@@ -199,12 +183,10 @@ export default {
 				
 			},
 			editMedia(media, index){
-				
 				this.edittingIndex = index;
 				this.edittingMedia = {
 					title: media.title
 				};
-				console.log(this.edittingIndex);
 			},
 			cancelEditMedia(){
 				this.edittingIndex = -1;

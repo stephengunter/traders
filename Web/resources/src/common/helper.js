@@ -138,6 +138,20 @@ class Helper {
       
       return `${h}:${m}:${s}`;
    }
+   static resolveTimeNumber(val){ 
+      val = String(val);
+      let parts = val.split(':');
+      if(parts.length === 2){
+         return this.timeNumber(parts[0], parts[1]);
+      }else{
+         return 0;
+      }
+   }
+   static timeNumber(hour, minute){ 
+      hour = parseInt(hour);
+      minute = parseInt(minute);
+      return hour * 10000 + minute * 100;
+   }
    
 }
 

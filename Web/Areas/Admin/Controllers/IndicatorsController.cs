@@ -69,6 +69,7 @@ namespace Web.Areas.Admin.Controllers
 
 		void ValidateRequest(IndicatorViewModel model)
 		{
+
 			var exist = indicatorService.GetByEntity(model.entity);
 			if (exist != null) ModelState.AddModelError("entity", "代碼重複");
 
