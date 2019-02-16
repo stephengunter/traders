@@ -113,7 +113,7 @@
 
 
 <script>
-import draggable from 'vuedraggable'
+import draggable from 'vuedraggable';
 import { mapState } from 'vuex';
 import ErrorList from '@/components/ErrorList';
 

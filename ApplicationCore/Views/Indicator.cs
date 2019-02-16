@@ -37,6 +37,8 @@ namespace ApplicationCore.Views
 
 		public bool withAvg { get; set; }
 
+		public ICollection<MediaViewModel> medias { get; set; } = new List<MediaViewModel>();
+
 
 		public void SetValues(Indicator entity, string updatedBy)
 		{

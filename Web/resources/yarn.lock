@@ -5704,6 +5704,10 @@ sortablejs@^1.7.0:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.8.1.tgz#d19b66cf10aab9521a565b79766f2f3291c18278"
 
+sortablejs@^1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.8.3.tgz#5ae908ef96300966e95440a143340f5dd565a0df"
+
 source-list-map@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-2.0.1.tgz#3993bd873bfc48479cca9ea3a547835c7c154b34"
@@ -6456,6 +6460,10 @@ vuetify-loader@^1.0.8:
   resolved "https://registry.yarnpkg.com/vuetify-loader/-/vuetify-loader-1.0.8.tgz#db99b7325d0336acae3970d411bf7237b27d52bf"
   dependencies:
     loader-utils "^1.1.0"
+
+vuetify-upload-button@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/vuetify-upload-button/-/vuetify-upload-button-1.2.2.tgz#0ab36c491b8a3fa7b4b8ec2fb7366b86c98bf8e1"
 
 vuetify@^1.3.15:
   version "1.3.15"

@@ -10,7 +10,7 @@ namespace ApplicationCore.Models
 		Indicator
 	}
 
-	public class UploadFile : BsseUploadFile
+	public class UploadFile : BaseUploadFile
 	{
 		public PostType PostType { get; set; }
 		public int PostId { get; set; }

@@ -58,8 +58,8 @@ const actions = {
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
          IndicatorService.store(model)
-            .then(stock => {
-               resolve(stock);
+            .then(id => {
+               resolve(id);
             })
             .catch(error => {
                reject(Helper.resolveErrorData(error)); 

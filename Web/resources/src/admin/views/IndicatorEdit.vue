@@ -152,7 +152,11 @@
 										/>
 									</v-flex>
 								</v-layout>
-								<ErrorList  />
+								
+								<MediaEdit ref="mediasEdit" :model="model" />
+
+								<ErrorList />
+
 							</v-container>
 						</v-card-text>
 
@@ -181,12 +185,14 @@ EDIT_INDICATOR, UPDATE_INDICATOR, DELETE_INDICATOR } from '../store/actions.type
 import Helper from '@/common/helper';
 import ErrorList from '@/components/ErrorList';
 import Confirm from '@/components/Confirm';
+import MediaEdit from '../components/media/Edit';
 
 export default {
 	name: 'IndicatorsEditView',
 	components: {
 		ErrorList,
-		Confirm
+		Confirm,
+		MediaEdit
 	},
 	data () {
 		return {
@@ -223,10 +229,6 @@ export default {
 			timeEnd:{
 				selecting: false,
 				val: null
-			},
-
-			validate:{
-				minParam: ''
 			}
 			
 		}
@@ -236,7 +238,6 @@ export default {
 			params: state => state.route.params,
 		}),
 		id(){
-			
 			if(!this.params) return 0;
 			if(!this.params.id) return 0;
 			return parseInt(this.params.id);
@@ -299,9 +300,9 @@ export default {
 					Bus.$emit('errors');
 				})
 		},
-      cancelEdit(){
-			this.model = null;  
-         this.editting = false;
+      cancel(){
+			
+			console.log(this.$refs.mediasEdit.getMedias());
 		},
 		remove(){
 			this.deleting = true;
@@ -323,19 +324,19 @@ export default {
 			this.deleting = false;
 		},
 		onSubmit() {
+			console.log('onSubmit');
          this.$validator.validate().then(valid => {
             if(valid) this.submit();
          });         
       },
       submit(){
+			console.log('submit');
 			this.$store.commit(CLEAR_ERROR);
 			let action = this.id ? UPDATE_INDICATOR : STORE_INDICATOR;
          this.$store.dispatch(action, this.model)
 				.then(() => {
-					this.fetchData();
 					Bus.$emit('success');
-					this.model = null;  
-					this.editting = false;
+					this.$router.push({ path: '/indicators' });
 				})
 				.catch(error => {
 					if(!error)  Bus.$emit('errors');
