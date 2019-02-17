@@ -6,6 +6,7 @@ import auth from './auth.module';
 import users from './users.module';
 import stocks from './stocks.module';
 import indicators from './indicators.module';
+import attachments from './attachments.module';
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ export default new Vuex.Store({
       auth,
       users,
       stocks,
-      indicators
+      indicators,
+      attachments
    }
 });

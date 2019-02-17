@@ -43,6 +43,7 @@ const actions = {
       });
    },
    [CREATE_INDICATOR](context) {
+      context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
          IndicatorService.create()
             .then(model => resolve(model))

@@ -77,6 +77,7 @@ namespace Infrastructure.DataAccess
 			return entity;
 		}
 
+
 		public async Task<T> AddAsync(T entity)
 		{
 			DbSet.Add(entity);
@@ -84,6 +85,7 @@ namespace Infrastructure.DataAccess
 
 			return entity;
 		}
+
 
 		public void Update(T entity)
 		{
@@ -122,6 +124,14 @@ namespace Infrastructure.DataAccess
 		public List<T> GetMany(Expression<Func<T, bool>> criteria)
 		{
 			return DbSet.Where(criteria).ToList();
+		}
+
+		
+
+		public void AddRange(IEnumerable<T> entityList)
+		{
+			DbSet.AddRange(entityList);
+			Save();
 		}
 
 		public void UpdateRange(IEnumerable<T> entityList)

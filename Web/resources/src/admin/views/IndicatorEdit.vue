@@ -163,7 +163,7 @@
 						<v-card-actions>
 							
 							<v-spacer></v-spacer>
-							<v-btn @click.prevent="cancel" color="blue darken-1" flat >Cancel</v-btn>
+							<v-btn @click.prevent="cancel" color="blue darken-1" flat>Cancel</v-btn>
 							<v-btn type="submit" @click.prevent="onSubmit" color="primary" flat>Save</v-btn>
 						</v-card-actions>
 					</v-card>
@@ -198,7 +198,6 @@ export default {
 			selected: [],
 			editting: false,
 			deleting: false,
-			submitting: false,
 
 			minParam: 1,
 			maxParam: 90,
@@ -332,25 +331,36 @@ export default {
          });         
       },
       submit(){
-			console.log('submit');
-			this.submitting = true;
 
 			let medias = this.$refs.mediasEdit.getMedias();
 			this.model.medias = medias;
-
 			
 			this.$store.commit(CLEAR_ERROR);
 			let action = this.id ? UPDATE_INDICATOR : STORE_INDICATOR;
          this.$store.dispatch(action, this.model)
-				.then(() => {
-					Bus.$emit('success');
-					this.$router.push({ path: '/indicators' });
+				.then(id => {
+					this.model.id = id;
+					this.submitMedias();
 				})
 				.catch(error => {
 					if(!error)  Bus.$emit('errors');
 					else this.$store.commit(SET_ERROR, error);
 				})
-      }
+		},
+		submitMedias(){
+			let save = this.$refs.mediasEdit.submit();	
+			save.then(result => {
+					this.onsuccess();
+				})
+				.catch(error => {
+					if(!error)  Bus.$emit('errors');
+					else this.$store.commit(SET_ERROR, error);
+				})
+		},
+		onsuccess(){
+			Bus.$emit('success');
+			this.$router.push({ path: '/indicators' });
+		}
 	}
 }
 </script>

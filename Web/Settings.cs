@@ -10,7 +10,8 @@ namespace Web
 		public string Title { get; set; }
 		public string Url { get; set; }
 		public string AuthSecret { get; set; }
-		
+		public string UploadPath { get; set; }
+
 	}
 
 	public class EmailSettings

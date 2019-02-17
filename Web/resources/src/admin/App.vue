@@ -1,5 +1,6 @@
 <template>
 	<v-app>
+		<loading :active.sync="loading"></loading>
 		<TheToolBar v-if="isAuthenticated" :user="currentUser" 
 			:responsive="responsive"
 		/>

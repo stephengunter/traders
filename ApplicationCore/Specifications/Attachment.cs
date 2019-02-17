@@ -16,7 +16,13 @@ namespace ApplicationCore.Specifications
 		{
 			
 		}
-		
+
+		public AttachmentFilterSpecifications(int postId, string name)
+			: base(a => a.PostId == postId && a.Name == name)
+		{
+
+		}
+
 	}
 
 }

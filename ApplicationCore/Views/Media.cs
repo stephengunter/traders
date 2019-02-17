@@ -1,4 +1,6 @@
-﻿using Infrastructure.Views;
+﻿using ApplicationCore.Models;
+using Infrastructure.Views;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,23 +29,22 @@ namespace ApplicationCore.Views
 		public int height { get; set; }
 
 
+		public void SetValues(UploadFile entity, string updatedBy)
+		{
+			entity.PostId = postId;
+			entity.Name = name;
+			entity.Title = title;
+			entity.Order = order;
 
-		//public UploadFile MapToEntity(string updatedBy, UploadFile entity = null)
-		//{
-		//	if (entity == null) entity = new UploadFile();
-
-		//	entity.PostId = postId;
-		//	entity.Name = name;
-		//	entity.Title = title;
-		//	entity.Order = order;
-
-		//	entity.SetUpdated(updatedBy);
-
-
-		//	return entity;
-		//}
-
-
+			entity.SetUpdated(updatedBy);
+		}
 
 	}
+
+	public class UploadForm
+	{
+		public int postId { get; set; }
+		public List<IFormFile> files { get; set; }
+	}
+
 }

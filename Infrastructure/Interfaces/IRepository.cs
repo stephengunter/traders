@@ -25,7 +25,7 @@ namespace Infrastructure.Interfaces
 		T Get(Expression<Func<T, bool>> criteria);
 		List<T> GetMany(Expression<Func<T, bool>> criteria);
 
-
+		void AddRange(IEnumerable<T> entityList);
 		void UpdateRange(IEnumerable<T> entityList);
 		void DeleteRange(IEnumerable<T> entityList);
 

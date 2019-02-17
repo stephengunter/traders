@@ -7,20 +7,23 @@ using ApplicationCore.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationCore.Views;
+using ApplicationCore.Helpers;
 
 namespace Web.Areas.Admin.Controllers
 {
 	public class IndicatorsController : BaseAdminController
 	{
 		private readonly IIndicatorService indicatorService;
+		private readonly IAttachmentService attachmentService;
 
 		private readonly int minParam = 1;
 		private readonly int maxParam = 90;
 		private readonly int defaultParam = 15;
 
-		public IndicatorsController(IIndicatorService indicatorService)
+		public IndicatorsController(IIndicatorService indicatorService, IAttachmentService attachmentService)
 		{
 			this.indicatorService = indicatorService;
+			this.attachmentService = attachmentService;
 		}
 
 		[HttpGet("")]
@@ -64,7 +67,25 @@ namespace Web.Areas.Admin.Controllers
 			model.SetValues(indicator, CurrentUserId);
 			indicator = await indicatorService.CreateAsync(indicator);
 
-			return Ok(indicator.Id);
+			if (model.medias.IsNullOrEmpty())
+			{
+				indicator = await indicatorService.CreateAsync(indicator);
+				return Ok(indicator.Id);
+			}
+			else
+			{
+				var medias = new List<UploadFile>();
+				foreach (var item in model.medias)
+				{
+					var media = new UploadFile();
+					item.SetValues(media, CurrentUserId);
+					medias.Add(media);
+				}
+
+				indicator = await indicatorService.CreateAsync(indicator, medias);
+				return Ok(indicator.Id);
+
+			}
 		}
 
 		void ValidateRequest(IndicatorViewModel model)
@@ -76,6 +97,16 @@ namespace Web.Areas.Admin.Controllers
 			if (model.minParam < this.minParam) ModelState.AddModelError("minParam", "參數範圍錯誤");
 			if (model.maxParam > this.maxParam) ModelState.AddModelError("maxParam", "參數範圍錯誤");
 			if (model.maxParam <= model.minParam) ModelState.AddModelError("maxParam", "參數範圍錯誤");
+		}
+
+		[HttpGet("edit/{id}")]
+		public async Task<ActionResult> Edit(int id)
+		{
+			var indicator = await indicatorService.GetByIdAsync(id);
+			if (indicator == null) return NotFound();
+
+			var model = indicator.MapViewModel();
+			return Ok(model);
 		}
 
 

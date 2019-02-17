@@ -24,18 +24,39 @@ namespace ApplicationCore.Services
 
 		Indicator GetByEntity(string entity);
 
-		Task<Indicator> CreateAsync(Indicator indicator);
+		Task<Indicator> GetByIdAsync(int id);
+
+		Task<Indicator> CreateAsync(Indicator indicator, ICollection<UploadFile> medias = null);
 	}
 	public class IndicatorService : IIndicatorService
 	{
 		private readonly IDefaultRepository<Indicator> indicatorRepository;
+		private readonly IDefaultRepository<UploadFile> uploadFileRepository;
 
-		public IndicatorService(IDefaultRepository<Indicator> indicatorRepository)
+		public IndicatorService(IDefaultRepository<Indicator> indicatorRepository, IDefaultRepository<UploadFile> uploadFileRepository)
 		{
 			this.indicatorRepository = indicatorRepository;
+			this.uploadFileRepository = uploadFileRepository;
 		}
 
-		public async Task<Indicator> CreateAsync(Indicator indicator) => await indicatorRepository.AddAsync(indicator);
+		public async Task<Indicator> CreateAsync(Indicator indicator, ICollection<UploadFile> medias = null)
+		{
+			indicator = await indicatorRepository.AddAsync(indicator);
+
+			if (!medias.IsNullOrEmpty())
+			{
+				foreach (var item in medias)
+				{
+					item.PostId = indicator.Id;
+					item.PostType = PostType.Indicator;
+				}
+
+				uploadFileRepository.AddRange(medias);
+			}
+
+			return indicator;
+		}
+		
 
 		public async Task<IEnumerable<Indicator>> FetchAsync(bool active)
 		{
@@ -72,5 +93,7 @@ namespace ApplicationCore.Services
 
 			return  indicatorRepository.GetSingleBySpec(filter);
 		}
+
+		public async Task<Indicator> GetByIdAsync(int id) => await indicatorRepository.GetByIdAsync(id);
 	}
 }

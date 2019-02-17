@@ -17,6 +17,7 @@
 
 
 <script>
+import { STORE_ATTACHMENT, DELETE_ATTACHMENT } from '../../store/actions.type';
 
 import FileUpload from '../FileUpload';
 import MediaList from './List';
@@ -132,26 +133,20 @@ export default {
       submit(){
          return new Promise((resolve, reject) => {
             const files = this.$refs.fileUpload.getFiles();
+            console.log('files', files);
 
             if(!files.length){
                resolve(true);
-               return;
+            }else{
+               this.$store.dispatch(STORE_ATTACHMENT, { postId:this.model.id, files })
+                  .then(() => {
+                     resolve(true);
+                  })
+                  .catch(error => {
+                     reject(error);
+                  })
+
             }
-
-            let form = new FormData();
-            form.append('modelId', this.model.id);
-
-            for (let i = 0; i < files.length; i++) {
-               form.append('files', files[i]); 
-            }
-
-            let save = Attachment.store(form);
-            save.then(result => {
-               resolve(true);
-            })
-            .catch(error => {
-               reject(error);
-            })
 
          })
          

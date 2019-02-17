@@ -15,7 +15,13 @@ namespace ApplicationCore.Services
 	{
 		Task<IEnumerable<UploadFile>> FetchAsync(PostType PostType, int postId);
 
+		UploadFile FindByName(string name, int postId);
+
+		Task<UploadFile> GetByIdAsync(int id);
+
 		Task UpdateAsync(UploadFile attachment);
+
+		void UpdateRange(IEnumerable<UploadFile> attachments);
 
 		Task DeleteAsync(UploadFile attachment);
 	}
@@ -36,10 +42,21 @@ namespace ApplicationCore.Services
 			return await uploadFileRepository.ListAsync(filter);
 		}
 
+		public UploadFile FindByName(string name, int postId)
+		{
+			var filter = new AttachmentFilterSpecifications(postId, name);
+
+			return uploadFileRepository.GetSingleBySpec(filter);
+		}
+
+		public async Task<UploadFile> GetByIdAsync(int id) => await uploadFileRepository.GetByIdAsync(id);
+
 		public async Task UpdateAsync(UploadFile attachment) => await uploadFileRepository.UpdateAsync(attachment);
 
 		public async Task DeleteAsync(UploadFile attachment) => await uploadFileRepository.DeleteAsync(attachment);
-
 		
+		public void UpdateRange(IEnumerable<UploadFile> attachments) => uploadFileRepository.UpdateRange(attachments);
+
+
 	}
 }
