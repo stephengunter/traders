@@ -342,7 +342,6 @@ export default {
          });         
       },
       submit(){
-
 			let medias = this.$refs.mediasEdit.getMedias();
 			this.model.medias = medias;
 			
@@ -350,7 +349,8 @@ export default {
 			let action = this.id ? UPDATE_INDICATOR : STORE_INDICATOR;
          this.$store.dispatch(action, this.model)
 				.then(id => {
-					this.model.id = id;
+					if(!this.id) this.model.id = id;
+					
 					this.submitMedias();
 				})
 				.catch(error => {

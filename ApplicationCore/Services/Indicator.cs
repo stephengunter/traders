@@ -45,6 +45,7 @@ namespace ApplicationCore.Services
 
 		public async Task<Indicator> CreateAsync(Indicator indicator, ICollection<UploadFile> medias = null)
 		{
+			indicator.Order = GetNewOrder();
 			indicator = await indicatorRepository.AddAsync(indicator);
 
 			if (!medias.IsNullOrEmpty())
@@ -56,6 +57,11 @@ namespace ApplicationCore.Services
 				}
 
 				uploadFileRepository.AddRange(medias);
+
+				var attachments = await GetIndicatorAttachmentsAsync(indicator.Id);
+				indicator.CoverId = attachments.OrderBy(a => a.Order).FirstOrDefault().Id;
+
+				await indicatorRepository.UpdateAsync(indicator);
 			}
 
 			return indicator;
@@ -63,15 +69,51 @@ namespace ApplicationCore.Services
 
 		public async Task UpdateAsync(Indicator indicator, ICollection<UploadFile> medias)
 		{
-			await indicatorRepository.UpdateAsync(indicator);
+			var currentAttachments = await GetIndicatorAttachmentsAsync(indicator.Id);
 
-			if (medias.IsNullOrEmpty()) return;
+			if (medias.IsNullOrEmpty())
+			{
+				if (!currentAttachments.IsNullOrEmpty())
+				{
+					uploadFileRepository.DeleteRange(currentAttachments);
+				}
 
-			var existMedias = medias.Where(m => m.Id > 0);
-			if (!existMedias.IsNullOrEmpty()) uploadFileRepository.UpdateRange(existMedias);
+				indicator.CoverId = 0;
+				await indicatorRepository.UpdateAsync(indicator);
+			}
+			else
+			{
+				
+				var needRemoveItems = new List<UploadFile>();
 
-			var newMedias = medias.Where(m => m.Id < 1);
-			if (!newMedias.IsNullOrEmpty()) uploadFileRepository.AddRange(newMedias);
+				foreach (var item in currentAttachments)
+				{
+					var exist = medias.Where(m => m.Id == item.Id).FirstOrDefault();
+					if (exist == null)
+					{
+						needRemoveItems.Add(item);
+					}
+					else
+					{
+						uploadFileRepository.Update(exist);
+					}
+				}
+
+				if (!needRemoveItems.IsNullOrEmpty()) uploadFileRepository.DeleteRange(needRemoveItems);
+
+				var newItems = medias.Where(m => m.Id < 1);
+				foreach (var item in newItems)
+				{
+					item.PostId = indicator.Id;
+					item.PostType = PostType.Indicator;
+				}
+				if (!newItems.IsNullOrEmpty()) uploadFileRepository.AddRange(newItems);
+
+
+				indicator.CoverId = medias.FirstOrDefault().Id;
+				await indicatorRepository.UpdateAsync(indicator);
+
+			}
 
 		}
 
@@ -120,5 +162,21 @@ namespace ApplicationCore.Services
 			indicator.Removed = true;
 			await indicatorRepository.UpdateAsync(indicator);
 		}
+
+		async Task<IEnumerable<UploadFile>> GetIndicatorAttachmentsAsync(int id)
+		{
+			var filter = new AttachmentFilterSpecifications(PostType.Indicator, id);
+
+			return await uploadFileRepository.ListAsync(filter);
+		}
+
+		int GetNewOrder()
+		{
+			if (indicatorRepository.DbSet.IsNullOrEmpty()) return 0;
+
+			var maxOrder = indicatorRepository.DbSet.Max(i => i.Order);
+			return maxOrder + 1;
+		}
+
 	}
 }

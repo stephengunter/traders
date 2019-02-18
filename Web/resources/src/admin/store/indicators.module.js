@@ -31,7 +31,7 @@ const actions = {
       return new Promise((resolve, reject) => {
          IndicatorService.fetch(params)
             .then(model => {
-               context.commit(SET_INDICATORS, model);
+               // context.commit(SET_INDICATORS, model);
                resolve(model);
             })
             .catch(error => {
@@ -98,7 +98,6 @@ const actions = {
       });
    },
    [DELETE_INDICATOR](context, id) {
-      console.log(id);
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
          IndicatorService.remove(id)
@@ -119,9 +118,9 @@ const actions = {
 
 
 const mutations = {
-   [SET_INDICATORS](state, model) {
-      state.pageList = model;
-   }
+   // [SET_INDICATORS](state, model) {
+   //    state.pageList = model;
+   // }
 };
 
 export default {

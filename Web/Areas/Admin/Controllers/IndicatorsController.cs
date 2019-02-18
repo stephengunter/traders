@@ -140,36 +140,50 @@ namespace Web.Areas.Admin.Controllers
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 		
 			model.SetValues(indicator, CurrentUserId);
-			
 
 			var medias = await GetMediasAsync(id);
-
-			var existIds = model.medias.Where(m => m.id > 0).Select(m => m.id);
-			var removedItems = medias.Where(m => !existIds.Contains(m.Id));
-			if (!removedItems.IsNullOrEmpty()) attachmentService.DeleteRange(removedItems);
-
-
-
+			var mediaList = new List<UploadFile>();
 			foreach (var item in model.medias)
 			{
-				var attachment = medias.Where(a => a.Id == item.id).FirstOrDefault();
-
-				if (attachment == null)
+				var existAttachment = medias.Where(m => m.Id == item.id).FirstOrDefault();
+				if (existAttachment == null)
 				{
-					var media = new UploadFile();
-					item.SetValues(media, CurrentUserId);
-					medias.Add(media);
+					var attachment = new UploadFile();
+					item.SetValues(attachment, CurrentUserId);
+					mediaList.Add(attachment);
 				}
 				else
 				{
-					item.SetValues(attachment, CurrentUserId);
+					item.SetValues(existAttachment, CurrentUserId);
+					mediaList.Add(existAttachment);
 				}
-
 			}
+
+			//var existIds = model.medias.Where(m => m.id > 0).Select(m => m.id);
+			//var removedItems = medias.Where(m => !existIds.Contains(m.Id));
+			//if (!removedItems.IsNullOrEmpty()) attachmentService.DeleteRange(removedItems);
+
+
+			//foreach (var item in model.medias)
+			//{
+			//	var attachment = medias.Where(a => a.Id == item.id).FirstOrDefault();
+
+			//	if (attachment == null)
+			//	{
+			//		var media = new UploadFile();
+			//		item.SetValues(media, CurrentUserId);
+			//		medias.Add(media);
+			//	}
+			//	else
+			//	{
+			//		item.SetValues(attachment, CurrentUserId);
+			//	}
+
+			//}
 
 			
 
-			await indicatorService.UpdateAsync(indicator, medias);
+			await indicatorService.UpdateAsync(indicator, mediaList);
 
 			return Ok();
 		}

@@ -9,19 +9,15 @@
          <MediaList :medias="medias" @drag-end="onDragEnd"
          @delete="onRemoveMedia" />
       </v-flex>
-      <v-dialog v-model="deleting" width="480px">
-         <Confirm @ok="submitDelete" @cancel="cancelDelete" />
-      </v-dialog>
    </v-layout>
 </template>
 
 
 <script>
-import { STORE_ATTACHMENT, DELETE_ATTACHMENT } from '../../store/actions.type';
+import { STORE_ATTACHMENT } from '../../store/actions.type';
 
 import FileUpload from '../FileUpload';
 import MediaList from './List';
-import Confirm from '@/components/Confirm';
 
 export default {
    name:'MediaEdit',
@@ -37,22 +33,12 @@ export default {
    },
    components: {
 		FileUpload,
-      MediaList,
-      Confirm
+      MediaList
 	},
    data(){
       return {
          title:'新增圖片',
-         medias: [],
-
-         deleting: false,
-
-         deleteConfirm:{
-            id:0,
-            showing:false,
-            message:''
-         },
-      
+         medias: []      
       }
    },
    computed: {
@@ -117,12 +103,6 @@ export default {
          if(!media.id){
             this.$refs.fileUpload.removeFile(media.name);
          }
-      },
-      cancelDelete(){
-         this.deleting = false;
-      },
-      submitDelete(){
-
       },
       submit(){
          return new Promise((resolve, reject) => {

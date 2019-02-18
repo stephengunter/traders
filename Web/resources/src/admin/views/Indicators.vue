@@ -21,12 +21,18 @@
 							</v-flex>
 						</v-layout>
 						
-						<v-layout row wrap>
-							<v-flex xs12 v-for="(item,index) in indicators" :key="index">
-								<indicator-box :model="item" @select="edit">
-								</indicator-box>
-							</v-flex>
+						<v-layout row wrap>	
+							<draggable v-model="pageList.viewList">
+							
+								<v-flex xs12 v-for="item in pageList.viewList" :key="item.id">
+									
+										<indicator-box :model="item" @select="edit" />
+									
+								</v-flex>
+							</draggable>
 						</v-layout>
+							
+						
 						<table-pager :model="pageList" :canPage="false"/>
 						
 					</v-card-text>
@@ -39,6 +45,8 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable';
+
 import { mapState } from 'vuex';
 import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 
@@ -57,7 +65,8 @@ export default {
 		'material-card' : MaterialCard,
 		'indicator-box' : IndicatorBox,
 		'table-pager' : TablePager,
-		Confirm
+		Confirm,
+		draggable
 	},
 	data () {
 		return {
@@ -65,16 +74,20 @@ export default {
 				active: true
 			},
 
+			list:[],
+
+			pageList: null,
+
 			activeOptions: Helper.activeOptions()
 		}
 	},
 	computed: {
-      ...mapState({
-			pageList: state => state.indicators.pageList,
-		}),
-		indicators(){
-			return this.pageList ? this.pageList.viewList : [];
-		}
+      // ...mapState({
+		// 	pageList: state => state.indicators.pageList,
+		// }),
+		// indicators(){
+		// 	return this.pageList ? this.pageList.viewList : [];
+		// }
 	},
 	beforeMount(){
 		this.fetchData();
@@ -83,6 +96,10 @@ export default {
 		fetchData(){
 			this.$store.commit(CLEAR_ERROR);
 			this.$store.dispatch(FETCH_INDICATORS, this.params.active)
+				.then(model => {
+					this.pageList = model;
+					this.list = model.viewList;
+				})
 				.catch(error => {
 					Bus.$emit('errors');
 				})

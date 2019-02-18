@@ -1,13 +1,9 @@
 import AttachmentService from '../services/attachment';
 import Helper from '@/common/helper';
 
-import {
-   STORE_ATTACHMENT, DELETE_ATTACHMENT
-} from './actions.type';
+import { STORE_ATTACHMENT } from './actions.type';
 
-import { SET_LOADING
-} from './mutations.type';
-
+import { SET_LOADING } from './mutations.type';
 
 const initialState = {
    
@@ -40,23 +36,7 @@ const actions = {
                context.commit(SET_LOADING, false);
             });
       });
-   },
-   [DELETE_ATTACHMENT](context, id) {
-      context.commit(SET_LOADING, true);
-      return new Promise((resolve, reject) => {
-         AttachmentService.remove(ids)
-            .then(() => {
-               resolve(true);
-            })
-            .catch(error => {
-               reject(Helper.resolveErrorData(error));
-            })
-            .finally(() => { 
-               context.commit(SET_LOADING, false);
-            });
-      });
-   },
-   
+   }
    
 };
 

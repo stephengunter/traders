@@ -45,6 +45,8 @@ namespace ApplicationCore.Models
 
 		public bool WithAvg { get; set; }
 
+		public int CoverId { get; set; }
+
 
 		public string[] ResolvedParams => Params.Split(',');
 

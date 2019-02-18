@@ -76,14 +76,7 @@ export default {
          return {
             title:'新增圖片/影片',
 				edittingIndex: -1,
-
 				edittingMedia: {},
-
-				deleteConfirm:{
-					id:0,
-               showing:false,
-               message:''
-				},
 				
 				itemKeys: new WeakMap(),
 				currentItemKey: 0,
@@ -150,42 +143,8 @@ export default {
 			onDragEnd ({ oldIndex, newIndex }) {
 				this.$emit('drag-end', { oldIndex, newIndex });
 			},
-			// setMedias(attachments){
-			// 	return new Promise((resolve, reject) => {
-			// 		attachments.forEach((attachment) => {
-			// 			let media=this.medias.find(item=>{
-			// 				return item.name==attachment.name;
-			// 			});
-			// 			if(media){
-			// 				media.path=attachment.path;
-			// 			}else{
-			// 				reject();
-			// 			}
-			// 		});
-			// 		resolve(true);
-
-			// 	})
-				
-			// },
 			onRemoveMedia(media, index){
 				this.$emit('delete', media, index);
-			},
-			removeMedia(index){
-				this.medias.splice(index, 1);
-			},
-			deleteMedia(item, index){
-				let deleteMedia=Attachment.remove(this.deleteConfirm.id);
-				deleteMedia.then(() => {
-					this.deleteConfirm.showing=false;
-
-					let index=this.findFileIndex(null,this.deleteConfirm.id);
-					if(index< 0) return;
-					this.medias.splice(index, 1);
-				})
-				.catch(error => {
-					Helper.BusEmitError(error,'刪除失敗');
-				})
-				
 			},
 			editMedia(media, index){
 				this.edittingIndex = index;
