@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ApplicationCore.Views;
 using ApplicationCore.Helpers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
+using System.IO;
 
 namespace Web.Areas.Admin.Controllers
 {
@@ -65,7 +68,6 @@ namespace Web.Areas.Admin.Controllers
 
 			var indicator = new Indicator();
 			model.SetValues(indicator, CurrentUserId);
-			indicator = await indicatorService.CreateAsync(indicator);
 
 			if (model.medias.IsNullOrEmpty())
 			{
@@ -92,11 +94,20 @@ namespace Web.Areas.Admin.Controllers
 		{
 
 			var exist = indicatorService.GetByEntity(model.entity);
-			if (exist != null) ModelState.AddModelError("entity", "代碼重複");
+			if (exist != null && model.id != exist.Id)
+			{
+				ModelState.AddModelError("entity", "代碼重複");
+			}
 
 			if (model.minParam < this.minParam) ModelState.AddModelError("minParam", "參數範圍錯誤");
 			if (model.maxParam > this.maxParam) ModelState.AddModelError("maxParam", "參數範圍錯誤");
 			if (model.maxParam <= model.minParam) ModelState.AddModelError("maxParam", "參數範圍錯誤");
+		}
+
+		async Task<List<UploadFile>> GetMediasAsync(int id)
+		{
+			var medias = await attachmentService.FetchAsync(PostType.Indicator, id);
+			return medias.GetOrdered().ToList();
 		}
 
 		[HttpGet("edit/{id}")]
@@ -105,10 +116,75 @@ namespace Web.Areas.Admin.Controllers
 			var indicator = await indicatorService.GetByIdAsync(id);
 			if (indicator == null) return NotFound();
 
-			var model = indicator.MapViewModel();
-			return Ok(model);
+			var medias = await GetMediasAsync(id);
+
+			var model = indicator.MapViewModel(medias);
+
+			var form = new IndicatorEditForm() { indicator = model };
+			form.minParam = this.minParam;
+			form.maxParam = this.maxParam;
+		
+			form.LoadOptions();
+
+			return Ok(form);
 		}
 
+		[HttpPut("{id}")]
+		public async Task<ActionResult> Update(int id, [FromBody] IndicatorViewModel model)
+		{
+			var indicator = await indicatorService.GetByIdAsync(id);
+			if (indicator == null) return NotFound();
+
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+			ValidateRequest(model);
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+		
+			model.SetValues(indicator, CurrentUserId);
+			
+
+			var medias = await GetMediasAsync(id);
+
+			var existIds = model.medias.Where(m => m.id > 0).Select(m => m.id);
+			var removedItems = medias.Where(m => !existIds.Contains(m.Id));
+			if (!removedItems.IsNullOrEmpty()) attachmentService.DeleteRange(removedItems);
+
+
+
+			foreach (var item in model.medias)
+			{
+				var attachment = medias.Where(a => a.Id == item.id).FirstOrDefault();
+
+				if (attachment == null)
+				{
+					var media = new UploadFile();
+					item.SetValues(media, CurrentUserId);
+					medias.Add(media);
+				}
+				else
+				{
+					item.SetValues(attachment, CurrentUserId);
+				}
+
+			}
+
+			
+
+			await indicatorService.UpdateAsync(indicator, medias);
+
+			return Ok();
+		}
+
+
+		[HttpDelete("{id}")]
+		public async Task<ActionResult> Delete(int id)
+		{
+			var indicator = await indicatorService.GetByIdAsync(id);
+			if (indicator == null) return NotFound();
+
+			await indicatorService.RemoveAsync(indicator);
+
+			return Ok();
+		}
 
 	}
 }

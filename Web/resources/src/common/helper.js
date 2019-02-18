@@ -138,6 +138,19 @@ class Helper {
       
       return `${h}:${m}:${s}`;
    }
+
+   static hourMinuteString(val){ 
+      val = String(val);
+      if(val.length < 6){
+         val = '0' + val;
+      }
+      let h = val.substring(0, 2);
+      let m = val.substring(2, 4);
+      
+      return `${h}:${m}`;
+   }
+
+
    static resolveTimeNumber(val){ 
       val = String(val);
       let parts = val.split(':');

@@ -13,7 +13,7 @@ namespace ApplicationCore.Views
 {
 	public static class IndicatorViewService
 	{
-		public static IndicatorViewModel MapViewModel(this Indicator indicator)
+		public static IndicatorViewModel MapViewModel(this Indicator indicator, IEnumerable<UploadFile> medias = null)
 		{
 			var paramList = indicator.ResolveParamsValues().ToList();
 
@@ -37,6 +37,12 @@ namespace ApplicationCore.Views
 			};
 
 			model.SetBaseRecordValues(indicator);
+
+			if (!medias.IsNullOrEmpty())
+			{
+				model.medias = medias.Select(m => m.MapViewModel()).ToList();
+			}
+
 			return model;
 		}
 

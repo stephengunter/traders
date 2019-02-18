@@ -27,6 +27,10 @@ namespace ApplicationCore.Services
 		Task<Indicator> GetByIdAsync(int id);
 
 		Task<Indicator> CreateAsync(Indicator indicator, ICollection<UploadFile> medias = null);
+
+		Task UpdateAsync(Indicator indicator, ICollection<UploadFile> medias);
+
+		Task RemoveAsync(Indicator indicator);
 	}
 	public class IndicatorService : IIndicatorService
 	{
@@ -56,7 +60,21 @@ namespace ApplicationCore.Services
 
 			return indicator;
 		}
-		
+
+		public async Task UpdateAsync(Indicator indicator, ICollection<UploadFile> medias)
+		{
+			await indicatorRepository.UpdateAsync(indicator);
+
+			if (medias.IsNullOrEmpty()) return;
+
+			var existMedias = medias.Where(m => m.Id > 0);
+			if (!existMedias.IsNullOrEmpty()) uploadFileRepository.UpdateRange(existMedias);
+
+			var newMedias = medias.Where(m => m.Id < 1);
+			if (!newMedias.IsNullOrEmpty()) uploadFileRepository.AddRange(newMedias);
+
+		}
+
 
 		public async Task<IEnumerable<Indicator>> FetchAsync(bool active)
 		{
@@ -81,19 +99,26 @@ namespace ApplicationCore.Services
 
 		public async Task<IEnumerable<Indicator>> GetActiveIndicatorsAsync()
 		{
-			var spec = new IndicatorFilterSpecifications(active:true);
+			var spec = new IndicatorFilterSpecifications(active: true);
 			return await indicatorRepository.ListAsync(spec);
 		}
 
-		
+
 
 		public Indicator GetByEntity(string entity)
 		{
 			var filter = new IndicatorFilterSpecifications(entity);
 
-			return  indicatorRepository.GetSingleBySpec(filter);
+			return indicatorRepository.GetSingleBySpec(filter);
 		}
 
+
 		public async Task<Indicator> GetByIdAsync(int id) => await indicatorRepository.GetByIdAsync(id);
+
+		public async Task RemoveAsync(Indicator indicator)
+		{
+			indicator.Removed = true;
+			await indicatorRepository.UpdateAsync(indicator);
+		}
 	}
 }

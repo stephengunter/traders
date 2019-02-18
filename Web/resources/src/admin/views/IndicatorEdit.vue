@@ -153,7 +153,7 @@
 									</v-flex>
 								</v-layout>
 								
-								<MediaEdit ref="mediasEdit" :model="model" />
+								<MediaEdit ref="mediasEdit" :postType="postType" :model="model" />
 
 								<ErrorList />
 
@@ -161,13 +161,16 @@
 						</v-card-text>
 
 						<v-card-actions>
-							
+							<v-btn @click.prevent="remove" color="error" flat>Delete</v-btn>
 							<v-spacer></v-spacer>
 							<v-btn @click.prevent="cancel" color="blue darken-1" flat>Cancel</v-btn>
 							<v-btn type="submit" @click.prevent="onSubmit" color="primary" flat>Save</v-btn>
 						</v-card-actions>
 					</v-card>
 				</form>
+				<v-dialog v-model="deleting" width="480px">
+					<Confirm @ok="submitDelete" @cancel="cancelDelete" />
+				</v-dialog>
 			</v-flex>
      </v-layout>
 	</v-container>
@@ -185,15 +188,19 @@ EDIT_INDICATOR, UPDATE_INDICATOR, DELETE_INDICATOR } from '../store/actions.type
 import Helper from '@/common/helper';
 import ErrorList from '@/components/ErrorList';
 import MediaEdit from '../components/media/Edit';
+import Confirm from '@/components/Confirm';
 
 export default {
 	name: 'IndicatorsEditView',
 	components: {
 		ErrorList,
-		MediaEdit
+		MediaEdit,
+		Confirm
 	},
 	data () {
 		return {
+			postType: 'Indicator',
+
 			title: '',
 			selected: [],
 			editting: false,
@@ -287,32 +294,36 @@ export default {
 				})
 			
 		},
-		edit(id){
+		edit(){
 			this.title = '編輯指標';
 			this.$store.commit(CLEAR_ERROR);
 			this.$store.dispatch(EDIT_INDICATOR, this.id)
 				.then(model => {
-					this.model = model;  
+					this.model = model.indicator;
+					this.minParam = model.minParam;
+					this.minParam = model.minParam;
+
+					this.timeBegin.val = Helper.hourMinuteString(this.model.begin);
+					this.timeEnd.val = Helper.hourMinuteString(this.model.end);
+
+					this.typeOptions = model.typeOptions
+					this.sourceOptions = model.sourceOptions
 				})
 				.catch(error => {
 					Bus.$emit('errors');
 				})
 		},
       cancel(){
-			
-			console.log(this.$refs.mediasEdit.getMedias());
+			this.backToIndex();
 		},
 		remove(){
 			this.deleting = true;
 		},
 		submitDelete(){
 			this.$store.commit(CLEAR_ERROR);
-			let ids = this.selected.map(item => item.id);
-			this.$store.dispatch(DELETE_INDICATOR, ids.join(','))
+			this.$store.dispatch(DELETE_INDICATOR, this.id)
 				.then(() => {
-					this.fetchData();
-					this.model = null;  
-					this.deleting = false;
+					this.backToIndex();
 				})
 				.catch(error => {
 					Bus.$emit('errors');
@@ -350,16 +361,16 @@ export default {
 		submitMedias(){
 			let save = this.$refs.mediasEdit.submit();	
 			save.then(result => {
-					this.onsuccess();
+					Bus.$emit('success');
+					this.backToIndex();
 				})
 				.catch(error => {
 					if(!error)  Bus.$emit('errors');
 					else this.$store.commit(SET_ERROR, error);
 				})
 		},
-		onsuccess(){
-			Bus.$emit('success');
-			this.$router.push({ path: '/indicators' });
+		backToIndex(){
+			this.$router.push({ path: '/indicators' });	
 		}
 	}
 }

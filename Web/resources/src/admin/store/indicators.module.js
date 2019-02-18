@@ -75,7 +75,7 @@ const actions = {
          IndicatorService.edit(id)
             .then(model => resolve(model))
             .catch(error => {
-               reject(error);        
+               reject(error);      
             })
             .finally(() => { 
                context.commit(SET_LOADING, false);
@@ -97,10 +97,11 @@ const actions = {
             });
       });
    },
-   [DELETE_INDICATOR](context, ids) {
+   [DELETE_INDICATOR](context, id) {
+      console.log(id);
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
-         IndicatorService.remove(ids)
+         IndicatorService.remove(id)
             .then(() => {
                resolve(true);
             })

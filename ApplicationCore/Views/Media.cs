@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ApplicationCore.Helpers;
 
 namespace ApplicationCore.Views
 {
@@ -12,6 +13,10 @@ namespace ApplicationCore.Views
 		public int id { get; set; }
 
 		public int postId { get; set; }
+
+		public string postType { get; set; }
+
+
 
 		public string type { get; set; }
 
@@ -32,6 +37,7 @@ namespace ApplicationCore.Views
 		public void SetValues(UploadFile entity, string updatedBy)
 		{
 			entity.PostId = postId;
+			entity.PostType = postType.ToPostType();
 			entity.Name = name;
 			entity.Title = title;
 			entity.Order = order;
@@ -43,6 +49,8 @@ namespace ApplicationCore.Views
 
 	public class UploadForm
 	{
+		public string postType { get; set; }
+
 		public int postId { get; set; }
 		public List<IFormFile> files { get; set; }
 	}

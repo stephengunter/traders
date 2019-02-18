@@ -1,6 +1,6 @@
 <template>
    <v-card>
-      <v-img  class="white--text" height="200px" src="https://localhost:44300/uploads/stockmarket.jpg">
+      <v-img @click.prevent="select" class="white--text" height="200px" src="https://localhost:44300/uploads/stockmarket.jpg">
          <v-container fill-height fluid>
             <v-layout fill-height>
                <v-flex xs12 align-end flexbox>
@@ -35,6 +35,11 @@ export default {
          
       }
    },
+   methods: {
+      select(){
+         this.$emit('select', this.model.id);
+      }
+   }
 }
 </script>
 

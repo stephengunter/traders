@@ -13,15 +13,17 @@ namespace ApplicationCore.Services
 {
 	public interface IAttachmentService
 	{
-		Task<IEnumerable<UploadFile>> FetchAsync(PostType PostType, int postId);
+		Task<IEnumerable<UploadFile>> FetchAsync(PostType postType, int postId);
 
-		UploadFile FindByName(string name, int postId);
+		Task<UploadFile> FindByNameAsync(string name, PostType postType, int postId);
 
 		Task<UploadFile> GetByIdAsync(int id);
 
 		Task UpdateAsync(UploadFile attachment);
 
 		void UpdateRange(IEnumerable<UploadFile> attachments);
+
+		void DeleteRange(IEnumerable<UploadFile> attachments);
 
 		Task DeleteAsync(UploadFile attachment);
 	}
@@ -35,18 +37,19 @@ namespace ApplicationCore.Services
 			this.uploadFileRepository = uploadFileRepository;
 		}
 
-		public async Task<IEnumerable<UploadFile>> FetchAsync(PostType PostType, int postId)
+		public async Task<IEnumerable<UploadFile>> FetchAsync(PostType postType, int postId)
 		{
-			var filter = new AttachmentFilterSpecifications(PostType, postId);
+			var filter = new AttachmentFilterSpecifications(postType, postId);
 
 			return await uploadFileRepository.ListAsync(filter);
 		}
 
-		public UploadFile FindByName(string name, int postId)
+		public async Task<UploadFile> FindByNameAsync(string name, PostType postType, int postId)
 		{
-			var filter = new AttachmentFilterSpecifications(postId, name);
+			var attachments = await FetchAsync(postType, postId);
+			if (attachments.IsNullOrEmpty()) return null;
 
-			return uploadFileRepository.GetSingleBySpec(filter);
+			return attachments.Where(a => a.Name == name).FirstOrDefault();
 		}
 
 		public async Task<UploadFile> GetByIdAsync(int id) => await uploadFileRepository.GetByIdAsync(id);
@@ -56,6 +59,8 @@ namespace ApplicationCore.Services
 		public async Task DeleteAsync(UploadFile attachment) => await uploadFileRepository.DeleteAsync(attachment);
 		
 		public void UpdateRange(IEnumerable<UploadFile> attachments) => uploadFileRepository.UpdateRange(attachments);
+
+		public void DeleteRange(IEnumerable<UploadFile> attachments) => uploadFileRepository.DeleteRange(attachments);
 
 
 	}

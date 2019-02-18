@@ -23,7 +23,7 @@
 						
 						<v-layout row wrap>
 							<v-flex xs12 v-for="(item,index) in indicators" :key="index">
-								<indicator-box :model="item">
+								<indicator-box :model="item" @select="edit">
 								</indicator-box>
 							</v-flex>
 						</v-layout>
@@ -91,16 +91,8 @@ export default {
 			this.$router.push({ path: '/indicators/create' });
 		},
 		edit(id){
-			this.$store.commit(CLEAR_ERROR);
-			this.selected = [];
-			this.$store.dispatch(EDIT_STOCK, id)
-				.then(model => {
-					this.model = model;  
-					this.editting = true;
-				})
-				.catch(error => {
-					Bus.$emit('errors');
-				})
+			let path = `/indicators/${id}`;
+			this.$router.push({ path });
 		},
       cancelEdit(){
 			this.model = null;  

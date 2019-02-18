@@ -26,9 +26,13 @@ import Confirm from '@/components/Confirm';
 export default {
    name:'MediaEdit',
    props: {
+      postType:{
+         type: String,
+         default: ''
+      },
       model:{
-         type:Object,
-         default:null
+         type: Object,
+         default: null
       }			
    },
    components: {
@@ -72,30 +76,21 @@ export default {
 				let name = thumbs[i].name;
 				if(!this.fileExist(name)){
 					let media = {
-						id:0,
-						order: this.findMinOrder() + 1,
+						id: 0,
+						order: 0,
 						title: name.split('.')[0],
 						name: name,
 						thumb: thumbs[i].data,
 						type: thumbs[i].type,
 						path:''
 					};
-					this.addMedia(media);
+					this.medias.push(media);
 				}
 			}
-      },
-      addMedia(media){
-			this.medias.push(media);
-			this.sortMedias();
       },
       onDragEnd({ oldIndex, newIndex }){
          const movedItem = this.medias.splice(oldIndex, 1)[0];
          this.medias.splice(newIndex, 0, movedItem);
-      },
-      sortMedias(){
-         this.medias.sort((a, b)=>{
-            return a.order - b.order;
-         })
       },
       fileExist(name){
          let index = this.findFileIndex(name);
@@ -111,16 +106,15 @@ export default {
          }
       },
       getMedias(){
-         let copyMedias = this.medias.map(media => {
-            return {...media , thumb:''};
-         });
+         let copyMedias = [];
+         for (let i = 0; i < this.medias.length; i++) {
+            copyMedias.push({...this.medias[i] , thumb:'', order: i });
+         }
          return copyMedias;
       },
       onRemoveMedia(media, index){
-         if(media.id){
-            
-         }else{
-            this.medias.splice(index, 1);
+         this.medias.splice(index, 1);
+         if(!media.id){
             this.$refs.fileUpload.removeFile(media.name);
          }
       },
@@ -133,34 +127,25 @@ export default {
       submit(){
          return new Promise((resolve, reject) => {
             const files = this.$refs.fileUpload.getFiles();
-            console.log('files', files);
-
             if(!files.length){
                resolve(true);
             }else{
-               this.$store.dispatch(STORE_ATTACHMENT, { postId:this.model.id, files })
+               let model = {
+                  postType: this.postType,
+                  postId:this.model.id,
+                  files
+               };
+
+               this.$store.dispatch(STORE_ATTACHMENT, model)
                   .then(() => {
                      resolve(true);
                   })
                   .catch(error => {
                      reject(error);
                   })
-
             }
 
-         })
-         
-      },
-      findMinOrder(){
-         if(!this.medias.length) return 0;
-
-         let arr = this.medias;
-         let min = arr[0].order;
-         for (let i = 1, len = arr.length; i < len; i++) {
-            let v = arr[i].order;
-            min = (v < min) ? v : min;         
-         }
-         return min;
+         })         
       }
    }
 }

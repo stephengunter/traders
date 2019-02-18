@@ -44,11 +44,12 @@ namespace Web.Areas.Admin.Controllers
 			{
 				if (file.Length > 0)
 				{
-					var attachment = attachmentService.FindByName(file.FileName, form.postId);
+					PostType postType = form.postType.ToPostType();
+					var attachment = await attachmentService.FindByNameAsync(file.FileName, postType, form.postId);
 					if (attachment == null) throw new Exception(String.Format("attachmentService.FindByName({0},{1})", file.FileName, form.postId));
 
 					var upload = await SaveFile(file);
-
+					attachment.PostType = postType;
 					attachment.Type = upload.Type;
 					attachment.Path = upload.Path;
 
@@ -84,17 +85,6 @@ namespace Web.Areas.Admin.Controllers
 
 
 			attachmentService.UpdateRange(attachments);
-			return Ok();
-
-		}
-
-		[HttpDelete]
-		public async Task<IActionResult> Delete(int id)
-		{
-			var entity = await attachmentService.GetByIdAsync(id);
-
-			await attachmentService.DeleteAsync(entity);
-
 			return Ok();
 
 		}

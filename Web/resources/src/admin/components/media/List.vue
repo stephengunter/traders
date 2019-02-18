@@ -16,7 +16,7 @@
 					</a>
 				</td>
 				<td v-if="props.item.id" >
-					<v-img max-width="200" :src="props.item.previewPath" />
+					<v-img max-width="200" :src="getImageUrl(props.item)" />
 				</td>
 				<td v-else>
 					<v-img v-if="props.item.thumb" max-width="200" :src="props.item.thumb" />
@@ -31,7 +31,7 @@
 
 				<td>{{ props.item.type }}</td>
 				<td v-if="edittingIndex == props.index" class="px-1 text-md-center">
-					<a href="#" @click.prevent="save(props.item, props.index)" icon>
+					<a href="#" @click.prevent="updateMedia(props.index)" icon>
 						<v-icon small color="success">mdi-content-save</v-icon>
 					</a>
 					<a href="#" class="ml-3" @click.prevent="cancelEditMedia" icon>
@@ -61,6 +61,8 @@
 <script>
 
 import * as Sortable from "sortablejs";
+
+import { UPLOAD_URL } from '@/common/config'; 
 
 export default {
    name:'MediaList',
@@ -141,6 +143,9 @@ export default {
 			itemKey(item){
 				if (!this.itemKeys.has(item)) this.itemKeys.set(item, ++this.currentItemKey)
 				return this.itemKeys.get(item)
+			},
+			getImageUrl(item){
+				return `${UPLOAD_URL}/${item.previewPath}`;
 			},
 			onDragEnd ({ oldIndex, newIndex }) {
 				this.$emit('drag-end', { oldIndex, newIndex });
