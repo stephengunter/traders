@@ -90,7 +90,7 @@ namespace Web.Areas.Admin.Controllers
 		}
 
 
-		private async Task<UploadFile> SaveFile(IFormFile file)
+		async Task<UploadFile> SaveFile(IFormFile file)
 		{
 			//檢查檔案路徑
 			string folderName = DateTime.Now.ToString("yyyyMMdd");
@@ -119,7 +119,7 @@ namespace Web.Areas.Admin.Controllers
 
 
 		//截取影片預覽圖
-		public void SaveVideoImage(string videoPath, string imgPath)
+		void SaveVideoImage(string videoPath, string imgPath)
 		{
 			Process process = new Process();
 			process.StartInfo.RedirectStandardOutput = true;

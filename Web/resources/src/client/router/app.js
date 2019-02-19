@@ -49,6 +49,18 @@ const links = [
       } 
    },
    {
+      name: 'plans',
+      path: '/plans',
+      component: () => import('../views/Plans'),
+      meta: { 
+         order: 0,
+         icon: 'mdi-format-list-bulleted',
+         title: '訂閱方案',
+         type: 'all',
+         menu: 'main'
+      } 
+   },
+   {
       name: 'watch',
       path: '/watch',
       component: () => import('../views/Watch'),

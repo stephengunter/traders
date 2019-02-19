@@ -18,5 +18,7 @@ export const SET_TRADES = 'setTrades';
 export const SET_POSITION = 'setPosition';
 export const SET_SIGNAL_POSITION = 'setSignalPosition';
 
+export const SET_PLANS = 'setPlans';
+
 export const SET_ERROR = 'setError';
 export const CLEAR_ERROR = 'clearError';

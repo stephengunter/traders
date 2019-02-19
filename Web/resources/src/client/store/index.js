@@ -8,6 +8,8 @@ import account from './account.module';
 import watch from './watch.module';
 import chart from './chart.module';
 import strategy from './strategy.module';
+import indicators from './indicators.module';
+import plans from './plans.module';
 
 Vue.use(Vuex);
 
@@ -20,6 +22,8 @@ export default new Vuex.Store({
       account,
       watch,
       chart,
-      strategy
+      strategy,
+      indicators,
+      plans
    }
 });

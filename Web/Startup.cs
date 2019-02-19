@@ -190,7 +190,8 @@ namespace Web
 			services.AddScoped<IPermissionService, PermissionService>();
 
 			services.AddScoped<IStockService, StockService>();
-			services.AddScoped<IIndicatorService, IndicatorService>();			
+			services.AddScoped<IIndicatorService, IndicatorService>();
+			services.AddScoped<IPlanService, PlanService>();
 			services.AddScoped<ISubscribeService, SubscribeService>();
 			services.AddScoped<IStrategyService, StrategyService>();
 			services.AddScoped<IDayService, DayService>();

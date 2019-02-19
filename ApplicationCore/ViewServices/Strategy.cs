@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ApplicationCore.Views;
 using ApplicationCore.Models;
 using ApplicationCore.Paging;
-using System.Threading.Tasks;
 using System.Linq;
 using ApplicationCore.Helpers;
-using Microsoft.AspNetCore.Identity;
 using Infrastructure.Views;
 
 namespace ApplicationCore.Views

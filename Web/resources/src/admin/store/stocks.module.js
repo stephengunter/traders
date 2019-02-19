@@ -6,8 +6,8 @@ import {
    EDIT_STOCK, UPDATE_STOCK, DELETE_STOCK
 } from './actions.type';
 
-import { SET_STOCKS, SET_LOADING
-} from './mutations.type';
+import { SET_STOCKS, SET_LOADING } from './mutations.type';
+
 
 
 const initialState = {

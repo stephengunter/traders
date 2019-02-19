@@ -35,3 +35,9 @@ export const EDIT_STRATEGY = 'editStrategy';
 export const UPDATE_STRATEGY = 'updateStrategy';
 export const DELETE_STRATEGY = 'deleteStrategy';
 
+//Indicator
+export const FETCH_INDICATORS = 'fetchIndicators';
+
+//Plan
+export const FETCH_PLANS = 'fetchPlans';
+
