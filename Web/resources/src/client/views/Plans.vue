@@ -6,30 +6,22 @@
             <v-layout row wrap>
                <v-flex xs12 sm12 md4>
                   <ul class="headline" style="list-style-type: none; color:#ee4d2d">
-                     <li class="mb-3" >
-                        <span class="cn">一個月</span>
-                        <span class="money ml-1">$1200</span> 
-                     </li>
-                     <li >
-                        <span class="cn">三個月</span>
-                        <span class="money ml-1">$3500</span> 
+                     <li class="mb-3" v-for="item in plans" :key="item.id">
+                        <span class="cn" v-text="monthString(item)"></span>
+                        <span class="money ml-1">${{ item.money }}</span> 
                      </li>
                   </ul>
                </v-flex>
                <v-flex xs12 sm12 md6>
-                  <ul class="mb-0" style="list-style-type: none;">
-                     <li>
+                  <ul style="list-style-type: none;">
+                     <li v-for="(item, index) in descriptions" :key="index" class="mb-1" >
                         <v-icon class="mr-1" color="success">mdi-check</v-icon>
-                        <span class="cn">伺服器端程式開發 ASP.NET Core MVC, PHP, node.js</span>                     
-                     </li>
-                     <li>
-                        <v-icon class="mr-1" color="success">mdi-check</v-icon>
-                        <span class="cn">伺服器端程式開發 ASP.NET Core MVC, PHP, node.js</span>                     
+                        <span class="cn" style="font-size:1.2rem">{{ item }}</span>                     
                      </li>
                   </ul>
                </v-flex>
                <v-flex xs12 sm12 md2>
-                  <v-btn large color="info">
+                  <v-btn to="/subscribes/create" large color="info">
                      <span class="cn" style="font-size:1.2rem">我要訂閱</span>
                   </v-btn>
                </v-flex>
@@ -42,10 +34,10 @@
 </template>
 
 <script>
-
-import Bread from '../components/TheBread';
-
+import { mapState } from 'vuex';
+import Helper from '@/common/helper';
 import { FETCH_PLANS } from '../store/actions.type';
+import Bread from '../components/TheBread';
 
 export default {
    name: 'PlansView',
@@ -54,9 +46,21 @@ export default {
    },
    data () {
       return {
-         pageList: {
-				viewList:[]
-			},
+         descriptions:[
+            '可自訂多個策略',
+            '可選用所有指標',
+            '指標參數可調整',
+            '歷史資料回測功能',
+         ]
+      }
+   },
+   computed: {
+      ...mapState({
+         pageList: state => state.plans.pageList
+      }),
+      plans(){
+         if(!this.pageList) return [];
+         return this.pageList.viewList;
       }
    },
    beforeMount(){
@@ -65,14 +69,14 @@ export default {
    methods: {
       fetchData(){
 			this.$store.dispatch(FETCH_PLANS)
-				.then(model => {
-					this.pageList = model;
-				})
 				.catch(error => {
 					Bus.$emit('errors');
 				})
-		}
+      },
+      monthString(item){
+         let month = Helper.chineseNumber(item.month);
+         return `${month}個月`;
+      }
    }
 }
 </script>
-

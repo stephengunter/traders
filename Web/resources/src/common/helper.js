@@ -13,6 +13,11 @@ class Helper {
       if(error.status && error.status === 400) return error.data;
       return null;      
    }
+   static chineseNumber(num){
+      num = Number(num);
+      let vals = ['一','二','三','四','五','六','七','八','九','十','十一','十二'];
+      return vals[num - 1];
+   }
    static BusEmitError(error, title) {
 
       let msgtitle = title
@@ -80,6 +85,16 @@ class Helper {
        },{
           value: false,
           text: '已下架'
+       }];
+   }
+
+   static payedOptions(){
+      return [{
+          value: true,
+          text: '已付款'
+       },{
+          value: false,
+          text: '尚未付款'
        }];
    }
 

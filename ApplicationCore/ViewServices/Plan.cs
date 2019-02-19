@@ -28,7 +28,7 @@ namespace ApplicationCore.Views
 
 		public static IEnumerable<Plan> GetOrdered(this IEnumerable<Plan> plans)
 		{
-			return plans.OrderByDescending(p => p.Order);
+			return plans.OrderBy(p => p.Order);
 		}
 
 		public static PagedList<Plan, PlanViewModel> GetPagedList(this IEnumerable<Plan> plans, int page = 1, int pageSize = 999)

@@ -10,6 +10,7 @@ import chart from './chart.module';
 import strategy from './strategy.module';
 import indicators from './indicators.module';
 import plans from './plans.module';
+import subscribes from './subscribes.module';
 
 Vue.use(Vuex);
 
@@ -24,6 +25,7 @@ export default new Vuex.Store({
       chart,
       strategy,
       indicators,
-      plans
+      plans,
+      subscribes
    }
 });

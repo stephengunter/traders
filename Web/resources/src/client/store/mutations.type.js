@@ -20,5 +20,7 @@ export const SET_SIGNAL_POSITION = 'setSignalPosition';
 
 export const SET_PLANS = 'setPlans';
 
+export const SET_SUBSCRIBES = 'setSubscribes';
+
 export const SET_ERROR = 'setError';
 export const CLEAR_ERROR = 'clearError';

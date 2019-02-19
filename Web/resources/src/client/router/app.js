@@ -140,6 +140,18 @@ const guestLinks = [
 
 const userLinks = [
    {
+      name: 'create-subscribe',
+      path: '/subscribes/create',
+      component: () => import('../views/SubscribeCreate'),
+      meta: { 
+         order: 0,
+         icon: '',
+         title: '訂閱',
+         type: 'user',
+         menu: 'none'
+      }
+   },
+   {
       name: 'subscribes',
       path: '/subscribes',
       component: () => import('../views/Subscribes'),

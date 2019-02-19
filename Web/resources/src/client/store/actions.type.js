@@ -41,3 +41,6 @@ export const FETCH_INDICATORS = 'fetchIndicators';
 //Plan
 export const FETCH_PLANS = 'fetchPlans';
 
+//Subscribe
+export const SET_SUBSCRIBES = 'fetchSubscribe';
+
