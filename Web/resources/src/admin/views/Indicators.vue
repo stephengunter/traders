@@ -1,5 +1,5 @@
 <template>
-	<v-container v-if="pageList" fluid grid-list-xl fill-height>
+	<v-container fluid grid-list-xl fill-height>
      <v-layout justify-center  align-center>
 			<v-flex xs12>
 				<material-card>
@@ -18,18 +18,19 @@
 									</v-btn>
 									<span class="cn">新增</span>
 								</v-tooltip>
+								<v-tooltip top content-class="top">
+									<v-btn :disabled="!orderChanged" @click.prevent="save" slot="activator"  color="success" icon>
+										<v-icon>mdi-content-save</v-icon>
+									</v-btn>
+									<span class="cn">存檔</span>
+								</v-tooltip>
 							</v-flex>
 						</v-layout>
 						
-						<v-layout row wrap>	
-							<draggable v-model="pageList.viewList">
-							
-								<v-flex xs12 v-for="item in pageList.viewList" :key="item.id">
-									
-										<indicator-box :model="item" @select="edit" />
-									
-								</v-flex>
-							</draggable>
+						<v-layout id="indicatorsList" row wrap>	
+							<v-flex class="sortableRow" xs12 v-for="item in pageList.viewList" :key="itemKey(item)">									
+								<indicator-box :model="item" @select="edit" />
+							</v-flex>
 						</v-layout>
 							
 						
@@ -45,13 +46,12 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable';
+import * as Sortable from 'sortablejs';
 
 import { mapState } from 'vuex';
 import { CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 
-import { FETCH_INDICATORS, CREATE_INDICATOR, STORE_INDICATOR,
-EDIT_INDICATOR, UPDATE_INDICATOR, DELETE_INDICATOR } from '../store/actions.type';
+import { FETCH_INDICATORS, ORDER_INDICATORS } from '../store/actions.type';
 
 import MaterialCard from '../components/material/Card';
 import TablePager from '../components/TablePager';
@@ -65,40 +65,72 @@ export default {
 		'material-card' : MaterialCard,
 		'indicator-box' : IndicatorBox,
 		'table-pager' : TablePager,
-		Confirm,
-		draggable
+		Confirm
 	},
 	data () {
 		return {
 			params: {
 				active: true
 			},
+			
+			pageList: {
+				viewList:[]
+			},
 
-			list:[],
+			activeOptions: Helper.activeOptions(),
 
-			pageList: null,
+			itemKeys: new WeakMap(),
+			currentItemKey: 0,
 
-			activeOptions: Helper.activeOptions()
+			orderChanged: false
 		}
 	},
 	computed: {
-      // ...mapState({
-		// 	pageList: state => state.indicators.pageList,
-		// }),
-		// indicators(){
-		// 	return this.pageList ? this.pageList.viewList : [];
-		// }
+      
 	},
 	beforeMount(){
+		
 		this.fetchData();
 	},
 	methods: {
+		init(){
+			new Sortable(
+					document.getElementById('indicatorsList'),
+					{
+						draggable: '.sortableRow',
+						onEnd: this.onDragEnd
+					}
+				);
+		},
 		fetchData(){
 			this.$store.commit(CLEAR_ERROR);
 			this.$store.dispatch(FETCH_INDICATORS, this.params.active)
 				.then(model => {
 					this.pageList = model;
-					this.list = model.viewList;
+					this.init();
+				})
+				.catch(error => {
+					Bus.$emit('errors');
+				})
+		},
+		itemKey(item){
+			if (!this.itemKeys.has(item)) this.itemKeys.set(item, ++this.currentItemKey)
+			return this.itemKeys.get(item)
+		},
+		onDragEnd ({ oldIndex, newIndex }) {
+			const movedItem = this.pageList.viewList.splice(oldIndex, 1)[0];
+			this.pageList.viewList.splice(newIndex, 0, movedItem);
+			
+			this.orderChanged = true;			
+		},
+		save(){
+			this.$store.commit(CLEAR_ERROR);
+
+			let ids = this.pageList.viewList.map(item => item.id);			
+			this.$store.dispatch(ORDER_INDICATORS, ids.join())
+				.then(() => {
+					this.orderChanged = false;			
+					this.fetchData();
 				})
 				.catch(error => {
 					Bus.$emit('errors');

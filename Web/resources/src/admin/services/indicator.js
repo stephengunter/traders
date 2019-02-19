@@ -25,9 +25,12 @@ const IndicatorService = {
       return BaseService.submit('put', url, model);
    },
    remove(id){
-      console.log(id);
       let url = `${source}/${id}`;
       return BaseService.submit('delete', url);
+   },
+   order(ids){
+      let url = `${source}/${ids}`;
+      return BaseService.submit('post', url);
    }
 };
 

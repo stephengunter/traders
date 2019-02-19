@@ -17,6 +17,8 @@ namespace ApplicationCore.Services
 
 		Task<UploadFile> FindByNameAsync(string name, PostType postType, int postId);
 
+		Task<IEnumerable<UploadFile>> FetchByIdsAsync(IList<int> ids);
+
 		Task<UploadFile> GetByIdAsync(int id);
 
 		Task UpdateAsync(UploadFile attachment);
@@ -50,6 +52,13 @@ namespace ApplicationCore.Services
 			if (attachments.IsNullOrEmpty()) return null;
 
 			return attachments.Where(a => a.Name == name).FirstOrDefault();
+		}
+
+		public async Task<IEnumerable<UploadFile>> FetchByIdsAsync(IList<int> ids)
+		{
+			var filter = new AttachmentFilterSpecifications(ids);
+
+			return await uploadFileRepository.ListAsync(filter);
 		}
 
 		public async Task<UploadFile> GetByIdAsync(int id) => await uploadFileRepository.GetByIdAsync(id);

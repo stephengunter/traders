@@ -165,6 +165,7 @@ class Helper {
       minute = parseInt(minute);
       return hour * 10000 + minute * 100;
    }
+
    
 }
 

@@ -60,9 +60,9 @@
 
 <script>
 
-import * as Sortable from "sortablejs";
+import * as Sortable from 'sortablejs';
 
-import { UPLOAD_URL } from '@/common/config'; 
+import { UPLOAD_URL } from '@/common/config';
 
 export default {
    name:'MediaList',

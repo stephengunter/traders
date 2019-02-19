@@ -33,7 +33,9 @@ namespace ApplicationCore.Views
 				defaultParam = indicator.DefaultParam,
 				minParam = paramList.Min(),
 				maxParam = paramList.Max(),
-				paramList = paramList
+				paramList = paramList,
+
+				coverId = indicator.CoverId
 			};
 
 			model.SetBaseRecordValues(indicator);

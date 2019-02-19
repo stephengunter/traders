@@ -20,5 +20,6 @@ export const STORE_INDICATOR = 'storeIndicator';
 export const EDIT_INDICATOR = 'editIndicator';
 export const UPDATE_INDICATOR = 'updateIndicator';
 export const DELETE_INDICATOR = 'deleteIndicator';
+export const ORDER_INDICATORS = 'orderIndicators';
 
 export const STORE_ATTACHMENT = 'storeAttachment';

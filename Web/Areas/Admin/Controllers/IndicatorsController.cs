@@ -38,6 +38,16 @@ namespace Web.Areas.Admin.Controllers
 
 			var pageList = indicators.GetPagedList();
 
+			var coverIds = pageList.ViewList.Select(m => m.coverId).ToList();
+
+			var covers = await attachmentService.FetchByIdsAsync(coverIds);
+
+			foreach (var item in pageList.ViewList)
+			{
+				var cover = covers.Where(a => a.Id == item.coverId).FirstOrDefault();
+				item.medias = new List<MediaViewModel> { cover.MapViewModel() };
+			}
+
 			return Ok(pageList);
 		}
 
@@ -197,6 +207,16 @@ namespace Web.Areas.Admin.Controllers
 
 			await indicatorService.RemoveAsync(indicator);
 
+			return Ok();
+		}
+
+
+		[HttpPost("{id}")]
+		public async Task<ActionResult> Orders(string id)
+		{
+			var ids = id.Split(',').Select(i => i.ToInt()).ToList();
+
+			await indicatorService.OrdersAsync(ids);
 			return Ok();
 		}
 

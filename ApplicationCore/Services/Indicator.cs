@@ -31,6 +31,8 @@ namespace ApplicationCore.Services
 		Task UpdateAsync(Indicator indicator, ICollection<UploadFile> medias);
 
 		Task RemoveAsync(Indicator indicator);
+
+		Task OrdersAsync(IList<int> ids);
 	}
 	public class IndicatorService : IIndicatorService
 	{
@@ -117,6 +119,17 @@ namespace ApplicationCore.Services
 
 		}
 
+		public async Task OrdersAsync(IList<int> ids)
+		{
+			var indicators = await FetchByIdsAsync(ids);
+			foreach (var indicator in indicators)
+			{
+				indicator.Order = ids.IndexOf(indicator.Id);
+			}
+
+			indicatorRepository.UpdateRange(indicators);
+		}
+
 
 		public async Task<IEnumerable<Indicator>> FetchAsync(bool active)
 		{
@@ -177,6 +190,8 @@ namespace ApplicationCore.Services
 			var maxOrder = indicatorRepository.DbSet.Max(i => i.Order);
 			return maxOrder + 1;
 		}
+
+		
 
 	}
 }

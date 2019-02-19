@@ -3,15 +3,15 @@ import Helper from '@/common/helper';
 
 import {
    FETCH_INDICATORS, CREATE_INDICATOR, STORE_INDICATOR, 
-   EDIT_INDICATOR, UPDATE_INDICATOR, DELETE_INDICATOR
+   EDIT_INDICATOR, UPDATE_INDICATOR, DELETE_INDICATOR, ORDER_INDICATORS
 } from './actions.type';
 
-import { SET_INDICATORS, SET_LOADING
+import { SET_LOADING
 } from './mutations.type';
 
 
 const initialState = {
-   pageList: null
+   
 };
 
 export const state = { ...initialState };
@@ -31,7 +31,6 @@ const actions = {
       return new Promise((resolve, reject) => {
          IndicatorService.fetch(params)
             .then(model => {
-               // context.commit(SET_INDICATORS, model);
                resolve(model);
             })
             .catch(error => {
@@ -112,15 +111,28 @@ const actions = {
             });
       });
    },
+   [ORDER_INDICATORS](context, ids) {
+      context.commit(SET_LOADING, true);
+      return new Promise((resolve, reject) => {
+         IndicatorService.order(ids)
+            .then(() => {
+               resolve(true);
+            })
+            .catch(error => {
+               reject(Helper.resolveErrorData(error));
+            })
+            .finally(() => { 
+               context.commit(SET_LOADING, false);
+            });
+      });
+   },
    
    
 };
 
 
 const mutations = {
-   // [SET_INDICATORS](state, model) {
-   //    state.pageList = model;
-   // }
+   
 };
 
 export default {

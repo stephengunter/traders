@@ -16,7 +16,12 @@ namespace ApplicationCore.Specifications
 		{
 			
 		}
-		
+
+		public AttachmentFilterSpecifications(IList<int> ids) : base(a => ids.Contains(a.Id))
+		{
+
+		}
+
 
 	}
 
