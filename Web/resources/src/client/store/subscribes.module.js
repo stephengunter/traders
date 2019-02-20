@@ -1,6 +1,6 @@
 import SubscribeService from '../services/subscribe';
 
-import { FETCH_SUBSCRIBES } from './actions.type';
+import { FETCH_SUBSCRIBES, CREATE_SUBSCRIBE } from './actions.type';
 import { SET_SUBSCRIBES, SET_LOADING } from './mutations.type';
 
 const initialState = {
@@ -40,7 +40,20 @@ const actions = {
                context.commit(SET_LOADING, false);
             });
       });
-   }   
+   },
+   [CREATE_SUBSCRIBE](context) {
+      context.commit(SET_LOADING, true);
+      return new Promise((resolve, reject) => {
+         SubscribeService.create()
+            .then(model => resolve(model))
+            .catch(error => {
+               reject(error);      
+            })
+            .finally(() => { 
+               context.commit(SET_LOADING, false);
+            });
+      });
+   },
    
 };
 

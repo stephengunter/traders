@@ -54,7 +54,7 @@ const links = [
       component: () => import('../views/Plans'),
       meta: { 
          order: 0,
-         icon: 'mdi-format-list-bulleted',
+         icon: 'mdi-star-circle',
          title: '訂閱方案',
          type: 'all',
          menu: 'main'
@@ -157,7 +157,7 @@ const userLinks = [
       component: () => import('../views/Subscribes'),
       meta: { 
          order: 0,
-         icon: '',
+         icon: 'mdi-format-list-checkbox',
          title: '訂閱紀錄',
          type: 'user',
          menu: 'user'
@@ -169,7 +169,7 @@ const userLinks = [
       component: () => import('../views/ChangePassword'),
       meta: { 
          order: 0,
-         icon: '',
+         icon: 'mdi-key',
          title: '變更密碼',
          type: 'user',
          menu: 'user'

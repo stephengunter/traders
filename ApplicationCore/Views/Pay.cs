@@ -17,7 +17,7 @@ namespace ApplicationCore.Views
 
 		public decimal money { get; set; }
 
-		public string payWay { get; set; }
+		public string payway { get; set; }
 
 		public string date { get; set; }
 

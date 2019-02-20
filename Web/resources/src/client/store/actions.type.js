@@ -43,4 +43,6 @@ export const FETCH_PLANS = 'fetchPlans';
 
 //Subscribe
 export const FETCH_SUBSCRIBES = 'fetchSubscribes';
+export const CREATE_SUBSCRIBE = 'createSubscribe';
+export const STORE_SUBSCRIBE = 'storeSubscribe';
 

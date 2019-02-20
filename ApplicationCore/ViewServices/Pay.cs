@@ -16,7 +16,7 @@ namespace ApplicationCore.Views
 				billId = pay.BillId,
 				code = pay.Code,
 				money = pay.Money,
-				payWay = pay.PayWay.ToText(),
+				payway = pay.PayWay.ToText(),
 				date = pay.CreatedAt.ToString("yyyy/m/d   HH:mm:ss")
 			};
 
@@ -43,11 +43,13 @@ namespace ApplicationCore.Views
 			return pageList;
 		}
 
-		public static string ToText(this PayWay payway)
+		public static string ToText(this PayWay payWay)
 		{
-			return "信用卡";
+			if (payWay == PayWay.Bank) return "ATM轉帳/匯款";
+			else if (payWay == PayWay.Seven) return "便利商店繳費";
+			else if (payWay == PayWay.Credit) return "線上刷卡";
+			else return "";
 		}
-
 
 	}
 

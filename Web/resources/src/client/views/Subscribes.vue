@@ -7,7 +7,7 @@
                <v-flex xs6 md4>
                   <v-radio-group v-model="params.payed" row>
                      <v-radio v-for="(item, index) in payedOptions" :key="index" 
-                        :label="item.text" :value="item.value"
+                        :label="item.text" :value="item.value" color="primary"
 								@change="onPayedChanged"                  
                      />
                   </v-radio-group>
@@ -86,7 +86,6 @@ export default {
    },
    data () {
       return {
-			
          params: {
             payed: true,
 				status: 1

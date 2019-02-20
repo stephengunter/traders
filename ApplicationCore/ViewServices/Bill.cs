@@ -4,6 +4,7 @@ using ApplicationCore.Paging;
 using System.Linq;
 using Infrastructure.Views;
 using ApplicationCore.Helpers;
+using System;
 
 namespace ApplicationCore.Views
 {
@@ -14,18 +15,18 @@ namespace ApplicationCore.Views
 			var model = new BillViewModel
 			{
 				id = bill.Id,
+				payway = bill.PayWay.ToText(),
 				amount = bill.Amount,
 				bankCode = bill.BankCode,
 				bankName = bill.BankName,
 				deadLine = bill.DeadLine.ToShortDateString(),
-				payed = bill.Payed
+				payed = bill.Payed,
+				payedDate = bill.PayedDate.HasValue ? Convert.ToDateTime(bill.PayedDate).ToShortDateString() : ""
 			};
 
 			if (!bill.Pays.IsNullOrEmpty())
 			{
 				model.pays = bill.Pays.Select(p => p.MapViewModel()).ToList();
-
-				model.payedDate = bill.Pays.OrderByDescending(p => p.CreatedAt).FirstOrDefault().CreatedAt.ToShortDateString();
 			}
 
 			model.SetBaseRecordValues(bill);

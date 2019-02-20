@@ -41,6 +41,8 @@ namespace ApplicationCore.Migrations
 
                     b.Property<int>("Order");
 
+                    b.Property<int>("PayWay");
+
                     b.Property<bool>("Removed");
 
                     b.Property<string>("UpdatedBy");

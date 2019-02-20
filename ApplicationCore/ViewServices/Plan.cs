@@ -41,7 +41,12 @@ namespace ApplicationCore.Views
 
 			return pageList;
 		}
-		
+
+		public static BaseOption ToOption(this Plan plan)
+		{
+			return new BaseOption(plan.Id.ToString(), plan.Month.ToString());
+		}
+
 
 	}
 

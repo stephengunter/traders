@@ -10,6 +10,8 @@ namespace ApplicationCore.Models
 {
 	public class Bill : BaseRecord
 	{
+		public PayWay PayWay { get; set; }
+
 		public string Code { get; set; }
 
 		public decimal Amount { get; set; }
@@ -31,6 +33,16 @@ namespace ApplicationCore.Models
 			{
 				if (Pays.IsNullOrEmpty()) return false;
 				return Pays.Where(p => !p.Removed).Sum(p => p.Money) >= Amount;
+			}
+		}
+
+		[NotMapped]
+		public DateTime? PayedDate
+		{
+			get
+			{
+				if (Pays.IsNullOrEmpty()) return null;
+				return Pays.OrderByDescending(p => p.CreatedAt).FirstOrDefault().CreatedAt;
 			}
 		}
 	}

@@ -19,7 +19,6 @@ namespace ApplicationCore.Models
 		public decimal Money { get; set; }
 
 		public ICollection<Subscribe> Subscribes { get; set; }
-
-
+		
 	}
 }

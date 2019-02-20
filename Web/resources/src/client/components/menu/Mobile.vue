@@ -13,7 +13,7 @@
       </v-list>
 
       <v-list v-if="!auth">
-          <v-list-tile v-for="item in guest_links" :key="item.order"  @click.prevent="select(item.name)" >            
+         <v-list-tile v-for="item in guest_links" :key="item.order"  @click.prevent="select(item.name)" >            
             <v-list-tile-action v-if="item.icon">
                <v-icon>{{ item.icon }}</v-icon>
             </v-list-tile-action>
@@ -42,7 +42,9 @@
          </v-list-tile>
 
          <v-list-tile @click.prevent="select('logout')" >            
-           
+            <v-list-tile-action>
+               <v-icon>mdi-logout</v-icon>
+            </v-list-tile-action>
             <v-list-tile-content>
                <v-list-tile-title class="cn">登出</v-list-tile-title>
             </v-list-tile-content>

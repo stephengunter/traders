@@ -13,10 +13,12 @@ namespace Web.Areas.Api.Controllers
 	public class SubscribesController : BaseApiController
 	{
 		private readonly ISubscribeService subscribeService;
+		private readonly IPlanService planService;
 
-		public SubscribesController(ISubscribeService subscribeService)
+		public SubscribesController(ISubscribeService subscribeService, IPlanService planService)
 		{
 			this.subscribeService = subscribeService;
+			this.planService = planService;
 		}
 
 
@@ -32,17 +34,23 @@ namespace Web.Areas.Api.Controllers
 			return Ok(pageList);
 		}
 
-		//[HttpGet("create")]
-		//public async Task<ActionResult> Create()
-		//{
-		//	var plans = await planService.FetchAsync(active: true);
+		[HttpGet("create")]
+		public async Task<ActionResult> Create()
+		{
+			var plans = await planService.GetActivePlansAsync();
 
-		//	plans = plans.GetOrdered();
+			plans = plans.GetOrdered();
 
-		//	var pageList = plans.GetPagedList();
+			var model = new SubscribeEditForm
+			{
+				subscribe = new SubscribeViewModel(),
+				plans = plans.Select(p => p.MapViewModel()).ToList()
+			};
 
-		//	return Ok(pageList);
-		//}
+			model.LoadOptions();
+
+			return Ok(model);
+		}
 
 	}
 }

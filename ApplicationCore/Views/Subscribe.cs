@@ -30,7 +30,7 @@ namespace ApplicationCore.Views
 
 		public PlanViewModel plan { get; set; }
 
-		public BillViewModel bill { get; set; }
+		public BillViewModel bill { get; set; } = new BillViewModel();
 
 	}
 
@@ -39,7 +39,7 @@ namespace ApplicationCore.Views
 	{
 		public SubscribeViewModel subscribe { get; set; }
 
-		public ICollection<BaseOption> planOptions { get; set; }
+		public ICollection<PlanViewModel> plans { get; set; }
 
 		public ICollection<BaseOption> paywayOptions { get; set; }
 	}

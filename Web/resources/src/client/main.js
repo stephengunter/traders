@@ -20,8 +20,11 @@ import store from './store';
 
 import { CHECK_AUTH } from './store/actions.type';
 import JwtService from '@/common/jwt';
+import { SITE_TITLE } from '@/common/config';
 
-router.beforeEach((to, from, next) => {	
+router.beforeEach((to, from, next) => {
+	if(to.meta.title) document.title = `${to.meta.title} — ${SITE_TITLE}`;
+		
 	store.dispatch(CHECK_AUTH).then((user) => {		
 		let needAuth = to.meta.type === 'user';
 		let guestOnly = to.meta.type === 'guest';
@@ -51,6 +54,7 @@ router.beforeEach((to, from, next) => {
 		}else{
 			//沒有token
 			if(needAuth){
+				console.log('needAuth');
 				//需要驗證, 導入login
 				return next({ path: '/login' , query:{ returnUrl: to.path }});
 			}

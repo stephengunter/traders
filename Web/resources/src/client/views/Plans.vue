@@ -5,7 +5,7 @@
          <v-container fluid grid-list-lg>
             <v-layout row wrap>
                <v-flex xs12 sm12 md4>
-                  <ul class="headline" style="list-style-type: none; color:#ee4d2d">
+                  <ul class="headline price no-pt-list">
                      <li class="mb-3" v-for="item in plans" :key="item.id">
                         <span class="cn" v-text="monthString(item)"></span>
                         <span class="money ml-1">${{ item.money }}</span> 

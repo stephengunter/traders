@@ -67,6 +67,17 @@ namespace ApplicationCore.Views
 			return pageList;
 		}
 
+		
+
+		public static void LoadOptions(this SubscribeEditForm form)
+		{
+			var paywayList = EnumHelpers.ToList<PayWay>();
+			form.paywayOptions = paywayList.Select(t => new BaseOption(t.ToString(), t.ToText())).ToList();
+
+		}
+
+
+
 	}
 
 

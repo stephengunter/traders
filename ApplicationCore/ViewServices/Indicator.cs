@@ -66,21 +66,29 @@ namespace ApplicationCore.Views
 
 		public static void LoadOptions(this IndicatorEditForm form)
 		{
-			form.sourceOptions = new List<BaseOption>()
-			{
-				new BaseOption( SourceType.Futures.ToString() ,"期貨" ),
-				new BaseOption( SourceType.Stock.ToString() ,"股票" ),
-				new BaseOption( SourceType.Complex.ToString() ,"複合" ),
-				new BaseOption( SourceType.Market.ToString() ,"市場" )
-			};
+			var sourceTypeList = EnumHelpers.ToList<SourceType>();
+			form.sourceOptions = sourceTypeList.Select(t => new BaseOption(t.ToString(), t.ToText())).ToList();
 
-			form.typeOptions = new List<BaseOption>()
-			{
-				new BaseOption( IndicatorType.Bar.ToString() ,"柱狀圖" ),
-				new BaseOption( IndicatorType.Curve.ToString() ,"折線圖" ),
-				new BaseOption( IndicatorType.None.ToString() ,"無" )
-			};
+			var indicatorTypeList = EnumHelpers.ToList<IndicatorType>();
+			form.typeOptions = indicatorTypeList.Select(t => new BaseOption(t.ToString(), t.ToText())).ToList();
 
+		}
+
+		public static string ToText(this SourceType sourceType)
+		{
+			if (sourceType == SourceType.Futures) return "期貨";
+			else if (sourceType == SourceType.Stock) return "股票";
+			else if (sourceType == SourceType.Complex) return "複合";
+			else if (sourceType == SourceType.Market) return "市場";
+			else return "";
+		}
+
+		public static string ToText(this IndicatorType indicatorType)
+		{
+			if (indicatorType == IndicatorType.Bar) return "柱狀圖";
+			else if (indicatorType == IndicatorType.Curve) return "折線圖";
+			else if (indicatorType == IndicatorType.None) return "無";
+			else return "";
 		}
 
 
