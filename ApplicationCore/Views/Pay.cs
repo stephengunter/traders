@@ -19,5 +19,7 @@ namespace ApplicationCore.Views
 
 		public string payWay { get; set; }
 
+		public string date { get; set; }
+
 	}
 }

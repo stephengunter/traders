@@ -17,12 +17,15 @@ namespace ApplicationCore.Views
 				amount = bill.Amount,
 				bankCode = bill.BankCode,
 				bankName = bill.BankName,
-				deadLine = bill.DeadLine.ToShortDateString()				    
+				deadLine = bill.DeadLine.ToShortDateString(),
+				payed = bill.Payed
 			};
 
 			if (!bill.Pays.IsNullOrEmpty())
 			{
 				model.pays = bill.Pays.Select(p => p.MapViewModel()).ToList();
+
+				model.payedDate = bill.Pays.OrderByDescending(p => p.CreatedAt).FirstOrDefault().CreatedAt.ToShortDateString();
 			}
 
 			model.SetBaseRecordValues(bill);

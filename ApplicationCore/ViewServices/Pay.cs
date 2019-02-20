@@ -16,7 +16,8 @@ namespace ApplicationCore.Views
 				billId = pay.BillId,
 				code = pay.Code,
 				money = pay.Money,
-				payWay = pay.PayWay.ToString()				    
+				payWay = pay.PayWay.ToText(),
+				date = pay.CreatedAt.ToString("yyyy/m/d   HH:mm:ss")
 			};
 
 
@@ -40,6 +41,11 @@ namespace ApplicationCore.Views
 			pageList.List = null;
 
 			return pageList;
+		}
+
+		public static string ToText(this PayWay payway)
+		{
+			return "信用卡";
 		}
 
 

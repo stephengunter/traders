@@ -21,6 +21,8 @@ namespace ApplicationCore.Views
 
 		public string endDate { get; set; }
 
+		public int status { get; set; }
+
 		public string statusText { get; set; }
 
 

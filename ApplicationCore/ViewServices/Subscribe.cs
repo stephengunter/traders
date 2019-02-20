@@ -23,9 +23,21 @@ namespace ApplicationCore.Views
 				userId = subscribe.UserId
 			};
 
-			if (subscribe.Before) model.statusText = "尚未開始";
-			else if (subscribe.Active) model.statusText = "期間內";
-			else if (subscribe.Ended) model.statusText = "已結束";
+			if (subscribe.Before)
+			{
+				model.status = 0;
+				model.statusText = "尚未開始";
+			}
+			else if (subscribe.Active)
+			{
+				model.status = 1;
+				model.statusText = "期間內";
+			}
+			else if (subscribe.Ended)
+			{
+				model.status = 2;
+				model.statusText = "已結束";
+			}
 
 		
 			if (subscribe.User != null) model.user = subscribe.User.MapViewModel();

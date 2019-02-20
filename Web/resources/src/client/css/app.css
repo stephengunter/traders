@@ -6,6 +6,14 @@
     font-size: 1.2rem
 }
 
+.font-md {
+    font-size: 1.2rem
+}
+
+.no-line-link {
+    text-decoration: none;
+}
+
 .money {
     font-family: Helvetica Neue, Helvetica, Arial;
 }

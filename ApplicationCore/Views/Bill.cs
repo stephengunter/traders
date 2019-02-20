@@ -21,6 +21,10 @@ namespace ApplicationCore.Views
 
 		public string bankCode { get; set; }
 
+		public bool payed { get; set; }
+
+		public string payedDate { get; set; }
+
 		public ICollection<PayViewModel> pays { get; set; } = new List<PayViewModel>();
 
 	}
