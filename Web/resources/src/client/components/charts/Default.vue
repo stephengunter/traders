@@ -7,8 +7,8 @@
 
 <script>
 import echarts from 'echarts';
-import * as signalR from '@aspnet/signalr';
 
+import Hub from '@/models/hub';
 import Strategy from '@/models/strategy';
 import Charts from '@/models/chart';
 
@@ -32,6 +32,7 @@ export default {
          chart: null,
          height: 500,
 
+         hubModel: null,
          strategyModel: null,
          chartModel: null,
 
@@ -63,6 +64,10 @@ export default {
          }else return 0;
       }
    },
+   beforeMount(){
+      this.hubModel = new Hub(WATCH_URL);
+      this.hubModel.on('receive', this.getQuote);
+   },
    mounted(){
       window.addEventListener('resize', this.resize)
 	},
@@ -71,7 +76,8 @@ export default {
    },
    methods: {
       init(){
-         this.disconnectHub();
+         this.hubModel.disconnect();
+
          this.$store.commit(SET_LOADING, true);
 
          this.height = 400 + (this.indicators.length * 100);
@@ -94,9 +100,7 @@ export default {
 
         
          if(this.realTime){
-            this.connectHub();
-         }else{
-            this.disconnectHub();
+            this.hubModel.connect();
          }
          
       },
@@ -111,63 +115,7 @@ export default {
             this.$emit('resize');
          }
       },
-      registerHub(){         
-        
-         this.connection = new signalR.HubConnectionBuilder().withUrl(WATCH_URL).build(); 
-        
-         this.connection.start().catch((error) => {
-               console.log(error);
-            });
-
-         // this.connection.on('receive', () => {
-         //    console.log(this.connection)
-         //    console.log('receive');
-         //    this.getQuote();
-         // });
-      },
-      connectHub(){
-         if(this.connection == null) this.registerHub();
-         else{
-            if(this.connection.state === connState.disconnected){
-               this.connection.start()
-                  .catch(error => {
-                     console.log(error);
-                  });
-            }
-         } 
-      },
-      disconnectHub(){
-         if(this.connection != null && this.connection.state === connState.connected){
-            this.connection.stop()
-               .catch(error => {
-                  console.log(error);
-               });
-         } 
-      },
-      // addChartQuotes(quotes){
-      //    let newQuotes = [];
-      //    for (let i = 0; i < quotes.length; i++) {
-      //       let exist = this.quotes.find(q => q.time == quotes[i].time);
-      //       if(!exist){
-      //          newQuotes.push(quotes[i]);
-      //       }
-      //    }
-      //    if(newQuotes.length){
-      //       this.$store.commit(ADD_CHART_QUOTES, newQuotes);
-      //       this.chartModel.addRealTimeQuotes(this.quotes, newQuotes)
-      //          .then(options => {
-      //             this.chart.setOption(options);
-      //             this.loadTrades();
-      //          }).catch(error => {
-      //             console.log(error); 
-      //          })
-      //    }
-         
-        
-         
-      // },
       getQuote(){
-         console.log('getQuote');
          let params = {
             user: this.key,
             time: this.latestTime  

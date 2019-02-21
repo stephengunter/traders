@@ -83,7 +83,7 @@ namespace Web.Areas.Api.Controllers
 			var indicators = await indicatorService.FetchByEntitiesAsync(hasDataIndicatorEntities);
 
 			var inidatorEntities = GetInidatorEntities(selectedStrategy, indicators);
-
+			
 			quotes = quotes.OrderBy(q => q.Time);
 			var model = new ChartsViewModel
 			{
