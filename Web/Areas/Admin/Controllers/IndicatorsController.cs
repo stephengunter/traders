@@ -45,10 +45,21 @@ namespace Web.Areas.Admin.Controllers
 			foreach (var item in pageList.ViewList)
 			{
 				var cover = covers.Where(a => a.Id == item.coverId).FirstOrDefault();
-				item.medias = new List<MediaViewModel> { cover.MapViewModel() };
+				if(cover != null) item.medias = new List<MediaViewModel> { cover.MapViewModel() };
 			}
 
 			return Ok(pageList);
+		}
+
+		//Receiver使用
+		[HttpGet("get")]
+		public async Task<ActionResult> Get()
+		{
+			var indicators = await indicatorService.GetAllAsync();
+
+			indicators = indicators.GetOrdered();
+
+			return Ok(indicators.Select(i => i.MapViewModel()));
 		}
 
 		[HttpGet("create")]

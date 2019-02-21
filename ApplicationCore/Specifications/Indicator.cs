@@ -11,24 +11,29 @@ namespace ApplicationCore.Specifications
 {
 	public class IndicatorFilterSpecifications : BaseSpecification<Indicator>
 	{
-		public IndicatorFilterSpecifications(bool active) : base(s => !s.Removed && s.Active == active)
+		public IndicatorFilterSpecifications() : base(i => !i.Removed)
+		{
+
+		}
+
+		public IndicatorFilterSpecifications(bool active) : base(i => !i.Removed && i.Active == active)
 		{
 			
 		}
 
-		public IndicatorFilterSpecifications(string entitiy) : base(s => !s.Removed && s.Entity == entitiy)
+		public IndicatorFilterSpecifications(string entitiy) : base(i => !i.Removed && i.Entity == entitiy)
 		{
 
 
 		}
 
-		public IndicatorFilterSpecifications(IList<int> ids) : base(s => !s.Removed && ids.Contains(s.Id))
+		public IndicatorFilterSpecifications(IList<int> ids) : base(i => !i.Removed && ids.Contains(i.Id))
 		{
 			
 
 		}
 
-		public IndicatorFilterSpecifications(IList<string> entities) : base(s => !s.Removed && entities.Contains(s.Entity))
+		public IndicatorFilterSpecifications(IList<string> entities) : base(i => !i.Removed && entities.Contains(i.Entity))
 		{
 
 

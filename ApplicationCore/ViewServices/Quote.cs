@@ -44,6 +44,11 @@ namespace ApplicationCore.Views
 
 		}
 
+		public static IEnumerable<Quote> GetOrdered(this IEnumerable<Quote> quotes)
+		{
+			return quotes.OrderBy(q => q.Time);
+		}
+
 	}
 
 

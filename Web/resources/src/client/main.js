@@ -54,7 +54,6 @@ router.beforeEach((to, from, next) => {
 		}else{
 			//沒有token
 			if(needAuth){
-				console.log('needAuth');
 				//需要驗證, 導入login
 				return next({ path: '/login' , query:{ returnUrl: to.path }});
 			}

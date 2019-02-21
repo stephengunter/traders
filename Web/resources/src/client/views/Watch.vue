@@ -90,7 +90,7 @@
             </v-layout>
             <v-layout row>
                <v-flex xs12 >
-                  <v-alert :value="noData"  color="warning"  icon="mdi-alert" outline  class="title">
+                  <v-alert :value="noData"  color="info"  icon="mdi-alert" outline  class="title">
                      <span class="cn" >
                         沒有這一天的資料
                      </span>  
@@ -269,12 +269,12 @@ export default {
          this.$store.dispatch(FETCH_QUOTES, params)
             .then(result => {
                if(result){
-                  this.noData = false;
-                  this.$refs.myChart.init();      
+                  this.noData = false;   
                }else{
                   //沒有資料
                   this.noData = true;
-               }        
+               }
+               this.$refs.myChart.init();  
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
                else this.resolveWatchError(error);

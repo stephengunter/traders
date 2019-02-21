@@ -23,10 +23,11 @@ namespace Web.Areas.Api.Controllers
 		private readonly IIndicatorService indicatorService;
 		private readonly IRealTimeService realTimeService;
 		private readonly IHistoryService historyService;
+		private readonly IDayService dayService;
 
 		public QuotesController(IHttpContextAccessor accessor, ISubscribeService subscribeService, 
 			IStrategyService strategyService, IIndicatorService indicatorService,
-			IRealTimeService realTimeService, IHistoryService historyService)
+			IRealTimeService realTimeService, IHistoryService historyService, IDayService dayService)
 		{
 			this.accessor = accessor;
 			this.subscribeService = subscribeService;
@@ -36,6 +37,8 @@ namespace Web.Areas.Api.Controllers
 
 			this.realTimeService = realTimeService;
 			this.historyService = historyService;
+
+			this.dayService = dayService;
 		}
 
 		[HttpGet("")]
@@ -51,13 +54,30 @@ namespace Web.Areas.Api.Controllers
 			var quotes = await historyService.FetchAsync(date);
 			if (quotes.IsNullOrEmpty())
 			{
-				realTime = true;				
+				realTime = true;
 				quotes = await realTimeService.FetchAsync();
 			}
 
-			quotes = quotes.Where(q => q.Time <= 90500);
+			if (quotes.IsNullOrEmpty())
+			{
+				if (date == DateTime.Today.ToDateNumber())
+				{
+					bool todayIsBusinessDay = await IsBusinessDay(DateTime.Today);
+					if (todayIsBusinessDay)
+					{
+						return Ok(new ChartsViewModel() { realTime = true });
+					}
+				}
 
-			if (quotes.IsNullOrEmpty()) return Ok(new ChartsViewModel());
+				return Ok(new ChartsViewModel());
+			}
+			else
+			{
+				if (quotes.FirstOrDefault().Date != date)
+				{
+					return Ok(new ChartsViewModel());
+				}
+			}
 
 			var hasDataIndicatorEntities = quotes.First().DataList.Select(d => d.Indicator).ToList();
 			var indicators = await indicatorService.FetchByEntitiesAsync(hasDataIndicatorEntities);
@@ -76,6 +96,19 @@ namespace Web.Areas.Api.Controllers
 
 		}
 
+		async Task<bool> IsBusinessDay(DateTime day)
+		{
+			if (day.DayOfWeek == DayOfWeek.Saturday) return false;
+			if (day.DayOfWeek == DayOfWeek.Sunday) return false;
+
+			var holidays = await dayService.FetchHolidaysAsync(day.Year);
+			
+			if (holidays.IsNullOrEmpty()) return true;
+
+			var match = holidays.Where(d => d.Date == day.ToDateNumber()).FirstOrDefault();
+			return match == null;
+		}
+
 		[HttpGet("get")]
 		public async Task<IActionResult> Get(string user, int time)
 		{
@@ -88,8 +121,7 @@ namespace Web.Areas.Api.Controllers
 			
 			if (quotes.IsNullOrEmpty()) return Ok(new List<QuoteViewModel>());
 
-			quotes = quotes.OrderBy(q => q.Time).Take(1);
-
+			//quotes = quotes.OrderBy(q => q.Time);
 
 			return Ok(quotes.Select(q => q.MapViewModel(q.DataList)).ToList());
 

@@ -36,6 +36,13 @@ export default {
          chartModel: null,
 
          connection: null,
+         connState:{
+            connecting: 0,
+            connected: 1,
+            reconnecting: 2,
+            disconnected: 4
+         }
+
 		}
    },
    watch: {
@@ -85,12 +92,13 @@ export default {
                this.resolveError(error);
             })
 
+        
          if(this.realTime){
-            window.setInterval(this.getQuote, 2500);
-            //this.connectHub();
+            this.connectHub();
          }else{
-            //this.disconnectHub();
-         }   
+            this.disconnectHub();
+         }
+         
       },
       loadTrades(){
          this.$store.commit(SET_TRADES, this.chartModel.resolveTrades());
@@ -104,26 +112,37 @@ export default {
          }
       },
       registerHub(){         
-         console.log('registerHub');
-         
-
-
-         // this.connection = new signalR.HubConnectionBuilder().withUrl(WATCH_URL).build(); 
-
-         // this.connection.start().catch((error) => {
-         //    console.log(error);
-         // });
+        
+         this.connection = new signalR.HubConnectionBuilder().withUrl(WATCH_URL).build(); 
+        
+         this.connection.start().catch((error) => {
+               console.log(error);
+            });
 
          // this.connection.on('receive', () => {
+         //    console.log(this.connection)
+         //    console.log('receive');
          //    this.getQuote();
          // });
       },
       connectHub(){
          if(this.connection == null) this.registerHub();
-         else this.connection.start(); 
+         else{
+            if(this.connection.state === connState.disconnected){
+               this.connection.start()
+                  .catch(error => {
+                     console.log(error);
+                  });
+            }
+         } 
       },
       disconnectHub(){
-         if(this.connection != null) this.connection.stop(); 
+         if(this.connection != null && this.connection.state === connState.connected){
+            this.connection.stop()
+               .catch(error => {
+                  console.log(error);
+               });
+         } 
       },
       // addChartQuotes(quotes){
       //    let newQuotes = [];
@@ -148,6 +167,7 @@ export default {
          
       // },
       getQuote(){
+         console.log('getQuote');
          let params = {
             user: this.key,
             time: this.latestTime  

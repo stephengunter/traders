@@ -2,7 +2,13 @@
 	<form class="cn"  @submit.prevent="onSubmit">
 		<v-card>
 			<v-card-title>
-				<h1 class="cn"> {{ title }} </h1>
+				<span class="headline">
+					<span class="cn">{{ title }}</span>
+				</span>
+				<v-spacer></v-spacer>
+				<v-btn @click.prevent="cancel" icon>
+					<v-icon>mdi-close</v-icon>
+				</v-btn>
 			</v-card-title>
 			<v-card-text>
 				<v-container grid-list-md>
