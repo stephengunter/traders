@@ -115,7 +115,8 @@ class TradeManager {
    }
 
    onSignal(signal, dataIndex){
-     
+      console.log('dataIndex',dataIndex);
+      console.log('quotes count',this.quotes.length);
       this.removeTrade(dataIndex);
 
       let profit = this.getProfit(dataIndex);
@@ -235,20 +236,13 @@ class TradeManager {
 
    removeTrade(dataIndex){
       let existIndex = this.trades.findIndex(item => item.index === dataIndex);
-     
       if(existIndex >= 0 ){
-         this.trades.splice(dataIndex, 1);
+         this.trades.splice(existIndex, 1);
       }
    }
 
    addTrade(trade){
-      let existIndex = this.trades.findIndex(item => item.index === trade.index);
-      if(existIndex < 0){
-         this.trades.push(trade);
-      }else{
-         this.trades.splice(existIndex, 1, trade);
-      }
-      
+      this.trades.push(trade);      
    }
 
 

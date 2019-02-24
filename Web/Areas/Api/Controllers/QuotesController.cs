@@ -117,24 +117,14 @@ namespace Web.Areas.Api.Controllers
 
 			if (time == 0) time = 84500;
 
-			//var quotes = await realTimeService.GetLatestAsync(time);
+			var quotes = await realTimeService.GetLatestAsync(time);
 
-			//if (quotes.IsNullOrEmpty()) return Ok(new List<QuoteViewModel>());
+			if (quotes.IsNullOrEmpty()) return Ok(new List<QuoteViewModel>());
 
-			var quotes = await realTimeService.FetchAsync();
-			quotes = quotes.OrderBy(r => Guid.NewGuid()).Take(1);
-			//quotes = quotes.OrderBy(q => q.Time);
-			var viewList = quotes.Select(q => q.MapViewModel(q.DataList)).ToList();
-			foreach (var item in viewList)
-			{
-				item.time = time;
-				foreach (var data in item.dataList)
-				{
-					data.time = time;
-				}
-			}
-			return Ok(viewList);
-			//return Ok(quotes.Select(q => q.MapViewModel(q.DataList)).ToList());
+			
+			quotes = quotes.OrderBy(q => q.Time);
+			
+			return Ok(quotes.Select(q => q.MapViewModel(q.DataList)).ToList());
 
 		}
 

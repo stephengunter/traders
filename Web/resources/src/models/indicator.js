@@ -30,34 +30,43 @@ class Indicator {
       return this.quotes[index].price;
    }
 
-   calculate(startIndex = 0){
+   addSignal(val, index){
+      let bIndex = this.buySignalIndexes.indexOf(index);
+      let sIndex = this.sellSignalIndexes.indexOf(index);
+      if(val > 0 ){
+         if(bIndex < 0 ){
+            this.buySignalIndexes.push(index);
+         }
+         if(sIndex >= 0 ){
+            this.sellSignalIndexes.splice(sIndex, 1);
+         }
+      }else if(val < 0 ){
+         if(sIndex < 0 ){
+            this.sellSignalIndexes.push(index);
+         }
+         if(bIndex >= 0 ){
+            this.buySignalIndexes.splice(bIndex, 1);
+         }         
+      }else {
+         if(bIndex >= 0 ){
+            this.buySignalIndexes.splice(bIndex, 1);
+         }
+         if(sIndex >= 0 ){
+            this.sellSignalIndexes.splice(sIndex, 1);
+         }
+      }
+      
+   }
 
+   calculate(startIndex = 0){
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
          this.calculatePowers(startIndex);
       }else if(this.entity === 'Prices'){
-         for(let i = startIndex; i < this.data.length; i++){
-            let item = this.data[i];   
-            if(this.isDataInTime(item)){
-               if(this.canCountAvg(i)){
-                  let avg = this.countAvg(i);
-                  let val = this.getQuotePrice(i) - avg;
-                  item.result = Math.round(val * 100) / 100;
-                  item.signal = this.createSignal(i);
-               }else{
-                  item.result = 0;
-                  item.signal = 0;  
-               }
-               
-            }else{
-               item.result = 0;
-               item.signal = 0;   
-            }
-         }
+         this.calculatePrices(startIndex);
       }
    }
 
    getSumVal(index){
-      
       let sum = 0;
       for(let i = 0; i <= index; i++){
          sum += Number(this.data[i].val);
@@ -79,6 +88,31 @@ class Indicator {
             item.avg = 0;
             item.signal = 0;   
          }
+
+         this.addSignal(item.signal, i);
+      }
+   }
+
+   calculatePrices(startIndex = 0){
+      for(let i = startIndex; i < this.data.length; i++){
+         let item = this.data[i];   
+         if(this.isDataInTime(item)){
+            if(this.canCountAvg(i)){
+               let avg = this.countAvg(i);
+               let val = this.getQuotePrice(i) - avg;
+               item.result = Math.round(val * 100) / 100;
+               item.signal = this.createSignal(i);
+            }else{
+               item.result = 0;
+               item.signal = 0;  
+            }
+            
+         }else{
+            item.result = 0;
+            item.signal = 0;   
+         }
+
+         this.addSignal(item.signal, i);
       }
    }
 
@@ -118,24 +152,19 @@ class Indicator {
       let data = this.data[index];
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
          if(data.result > data.avg){
-            this.buySignalIndexes.push(index);
             return 1;
          }else if(data.result < data.avg){
-            this.sellSignalIndexes.push(index);
             return -1;
          } 
          else return 0;
       }else if(this.entity === 'Prices'){
          if(data.result > 1){
-            this.buySignalIndexes.push(index);
             return 1;
          }else if(data.result < -1){
-            this.sellSignalIndexes.push(index);
             return -1;
          }
          else return 0;
       }
-      
 
    }
 

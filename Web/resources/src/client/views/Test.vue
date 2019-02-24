@@ -1,7 +1,11 @@
 <template>
    <div class="container">
 
-
+      <ul>
+         <li v-for="(item, index) in trades" :key="index">
+            {{ item.index }} , {{ item.val }}
+         </li>
+      </ul>
 
       <v-dialog v-model="editting" persistent max-width="500px">
          <strategy-edit v-if="editting" 
@@ -14,7 +18,7 @@
       </v-dialog>
       
 
-      <a href="#" @click.prevent="editStrategy(3)">Edit</a>
+      <a href="#" @click.prevent="test">Edit</a>
       
    </div>
    
@@ -36,89 +40,28 @@ export default {
    data () {
       return {
          editting: false,
-         model: null
+         trades: [{
+            index: 20,
+            val : 1
+         },{
+            index: 120,
+            val : 0
+         }]
       }
    },
    methods:{
-      createStrategy(){
-         this.$store.commit(CLEAR_ERROR);
-			this.$store.dispatch(CREATE_STRATEGY)
-				.then(model => {
-               this.model = model;
-					this.editting = true;
-				})
-				.catch(error => {
-					Bus.$emit('errors');
-				})
-      },
-      editStrategy(id){
-         this.$store.commit(CLEAR_ERROR);
-			this.$store.dispatch(EDIT_STRATEGY, id)
-				.then(model => {
-               this.model = model;
-					this.editting = true;
-				})
-				.catch(error => {
-					Bus.$emit('errors');
-				})
-
-
-      },
-      submit(selectedIndicators){
-         let model = {
-            strategy: this.model.strategy,
-            selectedIndicators: selectedIndicators
+      test(){
+         let trade = {
+            index: 120,
+            val : -1
          };
-
-         model.strategy.indicatorSettings.forEach((item, index) => {
-            item.order = index;
-         });
-
-         let action = STORE_STRATEGY;
-         if(model.strategy.id){
-            action = UPDATE_STRATEGY
-         }
-
-         this.$store.commit(CLEAR_ERROR);
-         this.$store
-         .dispatch(action, model)
-         .then(id => {
-            this.onSuccess();              
-         })
-         .catch(error => {
-            if(!error)  Bus.$emit('errors');
-            else this.resolveError(error);
-         })
-      },
-      resolveError(error){       
-         if(error){
-            this.$store.commit(SET_ERROR, error);
+         let existIndex = this.trades.findIndex(item => item.index === trade.index);
+         if(existIndex < 0){
+            this.trades.push(trade);
          }else{
-            Bus.$emit('errors');
+            this.trades.splice(existIndex, 1);
+           // this.trades.splice(existIndex, 1, trade);
          }
-      },
-      onSuccess(){
-         Bus.$emit('success');
-         this.model = null;  
-         this.editting = false;
-      },
-      cancelEdit(){
-         this.model = null;  
-         this.editting = false;
-      },
-      remove(){
-         let id = this.model.strategy.id;
-         this.$store.commit(CLEAR_ERROR);
-         this.$store
-         .dispatch(DELETE_STRATEGY, id)
-         .then(() => {
-            this.model = null;  
-            this.editting = false;             
-         })
-         .catch(error => {
-            if(!error)  Bus.$emit('errors');
-            else this.resolveError(error);
-         })
       }
    }
 }

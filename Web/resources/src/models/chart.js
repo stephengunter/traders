@@ -10,6 +10,13 @@ class Charts {
 
    indicatorSeries = [];
 
+   kLineStyle = {
+      color: '#FD1050',
+      color0: '#0CF49B',
+      borderColor: '#FD1050',
+      borderColor0: '#0CF49B'
+   };
+
    constructor(strategy, quotes) {
 
       this.prices = quotes.map(item => this.mapQuote(item));
@@ -70,34 +77,11 @@ class Charts {
             }
             this.series[0].data = this.prices;
 
-            this.series[0].itemStyle = {
-               color: '#FD1050',
-               color0: '#0CF49B',
-               borderColor: '#FD1050',
-               borderColor0: '#0CF49B'
-            };
+            this.series[0].itemStyle = this.kLineStyle;
             let mainSignals = this.resolveMainSignals();
             let markPoints = mainSignals.map(item => this.convertToMarkPoint(item));
             this.series[0].markPoint.data = markPoints;
 
-            // let series = [{
-            //    type: 'candlestick',
-            //    name: this.priceSeriesName,
-            //    itemStyle: {
-            //       normal: {
-            //          color: '#FD1050',
-            //          color0: '#0CF49B',
-            //          borderColor: '#FD1050',
-            //          borderColor0: '#0CF49B'
-            //       }
-            //    },
-            //    data: this.prices,
-            //    markPoint: {
-            //       data: markPoints
-            //    },
-            // }];
-
-            
 
             let seriesIndex = 1;
             for(let i = 0; i < mainIndicators.length; i++)
@@ -125,6 +109,20 @@ class Charts {
                      this.series[seriesIndex].data[item.index] = item.result;
                   }
                });
+               let colorUp = this.getColor(1);
+               let colorDown = this.getColor(-1);
+               let colorZero = this.getColor(0);
+               this.series[seriesIndex].itemStyle = {
+                  normal: {
+                     color: function(params) {
+                        if(indicator.buySignalIndexes.includes(params.dataIndex)){
+                           return colorUp;
+                        }else if (indicator.sellSignalIndexes.includes(params.dataIndex)){
+                           return  colorDown;
+                        }else return colorZero;
+                     }
+                  }
+               }
                seriesIndex++;
 
                if(indicator.withAvg){
@@ -281,7 +279,7 @@ class Charts {
       }else if(signal.stp < 0 ){
          text = '停損';
          labelColor = this.getColor(-1);
-      } 
+      }
       return {
          coord: [signal.time, signal.price],
          value: text,
@@ -303,14 +301,7 @@ class Charts {
       let series = [{
          type: 'candlestick',
          name: this.priceSeriesName,
-         itemStyle: {
-            normal: {
-               color: '#FD1050',
-               color0: '#0CF49B',
-               borderColor: '#FD1050',
-               borderColor0: '#0CF49B'
-            }
-         },
+         itemStyle: this.kLineStyle,
          data: this.prices,
          markPoint: {
             data: markPoints
