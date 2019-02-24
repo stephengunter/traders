@@ -8,7 +8,7 @@ import {
 
 import { 
    SET_LOADING, SET_REALTIME, SET_INDICATORS,
-   SET_CHART_QUOTES, ADD_CHART_QUOTES 
+   SET_CHART_QUOTES, ADD_CHART_QUOTE 
    
 } from './mutations.type';
 
@@ -56,15 +56,10 @@ const actions = {
       return new Promise((resolve, reject) => {
          QuoteService.get(params)
          .then(quotes => {
-            let newQuotes = [];
             for (let i = 0; i < quotes.length; i++) {
-               let exist = state.quotes.find(q => q.time == quotes[i].time);
-               if(!exist){
-                  newQuotes.push(quotes[i]);
-               }
+               context.commit(ADD_CHART_QUOTE, quotes[i]);
             }
-            context.commit(ADD_CHART_QUOTES, newQuotes);
-            resolve(newQuotes);
+            resolve(quotes);
          })
          .catch(error => { 
             reject(Helper.resolveErrorData(error)); 
@@ -84,12 +79,14 @@ const mutations = {
    [SET_CHART_QUOTES](state, quotes) {
       state.quotes = quotes;
    },
-   [ADD_CHART_QUOTES](state, quotes) {
-      for (let i = 0; i < quotes.length; i++) {
-         state.quotes.push(quotes[i]);
+   [ADD_CHART_QUOTE](state, quote) {
+      let existIndex = state.quotes.findIndex(q => q.time == quote.time);
+      if(existIndex < 0){
+         state.quotes.push(quote);
+      }else{
+         state.quotes.splice(existIndex, 1, quote);
       }
-   }
-   
+   }   
 };
 
 export default {

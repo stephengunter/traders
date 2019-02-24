@@ -40,18 +40,23 @@ class Charts {
       });  
    }
 
-   addQuote(item){
-      
-      this.times.push(Helper.timeString(item.time));  
-      this.prices.push(this.mapQuote(item));
-      this.strategy.addDataList(item.dataList);
+   addUpdateQuote(item){
+      let index = this.quotes.findIndex(q => q.time == item.time);
+      if(index > this.times.length - 1){
+         this.times.push(Helper.timeString(item.time));
+         this.prices.push(this.mapQuote(item));
+         this.strategy.addDataList(item.dataList);
+      }else{
+         this.prices[index] = this.mapQuote(item);
+         this.strategy.updateDataList(item);
+      }
       
    }
 
-   addRealTimeQuotes(newQuotes){
+   updateRealTimeQuotes(newQuotes){
       let startIndex = this.quotes.length - newQuotes.length ;
       for (let i = 0; i < newQuotes.length; i++) {
-         this.addQuote(newQuotes[i]);
+         this.addUpdateQuote(newQuotes[i]);
       }
 
       return new Promise((resolve, reject) => {
@@ -65,17 +70,47 @@ class Charts {
             }
             this.series[0].data = this.prices;
 
+            this.series[0].itemStyle = {
+               color: '#FD1050',
+               color0: '#0CF49B',
+               borderColor: '#FD1050',
+               borderColor0: '#0CF49B'
+            };
             let mainSignals = this.resolveMainSignals();
             let markPoints = mainSignals.map(item => this.convertToMarkPoint(item));
             this.series[0].markPoint.data = markPoints;
+
+            // let series = [{
+            //    type: 'candlestick',
+            //    name: this.priceSeriesName,
+            //    itemStyle: {
+            //       normal: {
+            //          color: '#FD1050',
+            //          color0: '#0CF49B',
+            //          borderColor: '#FD1050',
+            //          borderColor0: '#0CF49B'
+            //       }
+            //    },
+            //    data: this.prices,
+            //    markPoint: {
+            //       data: markPoints
+            //    },
+            // }];
+
+            
 
             let seriesIndex = 1;
             for(let i = 0; i < mainIndicators.length; i++)
             {
                let indicator = mainIndicators[i];
                let vals = indicator.mapChartResult(startIndex);
-               vals.forEach(item => this.series[seriesIndex].data.push(item));
-              
+               vals.forEach(item => {
+                  if(item.index > this.series[seriesIndex].data.length - 1){
+                     this.series[seriesIndex].data.push(item.result);
+                  }else{
+                     this.series[seriesIndex].data[item.index] = item.result;
+                  }
+               });
                seriesIndex++;
             }
 
@@ -83,13 +118,24 @@ class Charts {
             {
                let indicator = subIndicators[i];
                let vals = indicator.mapChartResult(startIndex);
-               vals.forEach(item => this.series[seriesIndex].data.push(item));
-
+               vals.forEach(item => {
+                  if(item.index > this.series[seriesIndex].data.length - 1){
+                     this.series[seriesIndex].data.push(item.result);
+                  }else{
+                     this.series[seriesIndex].data[item.index] = item.result;
+                  }
+               });
                seriesIndex++;
 
                if(indicator.withAvg){
                   let avgs = indicator.mapChartAvg(startIndex);
-                  avgs.forEach(item => this.series[seriesIndex].data.push(item));
+                  avgs.forEach(item => {
+                     if(item.index > this.series[seriesIndex].data.length - 1){
+                        this.series[seriesIndex].data.push(item.avg);
+                     }else{
+                        this.series[seriesIndex].data[item.index] = item.avg;
+                     }
+                  });
                   
                   seriesIndex++;
                }
@@ -302,7 +348,8 @@ class Charts {
       {
          let indicator = subIndicators[i];
          
-         let vals = indicator.mapChartResult();
+         let results = indicator.mapChartResult();
+         let vals = results.map(item => item.result);
          
          let colorUp = this.getColor(1);
          let colorDown = this.getColor(-1);
@@ -337,7 +384,8 @@ class Charts {
          seriesIndex++;
 
          if(indicator.withAvg){
-            let avgs = indicator.mapChartAvg();
+            let avgResults = indicator.mapChartAvg();
+            let avgs = avgResults.map(item => item.avg);
             let avgName =`${indicator.name}(MA${indicator.param})` ;
             
             series.push({

@@ -29,7 +29,7 @@ namespace ApplicationCore.Specifications
 
 	public class QuoteLatestFilterSpecification : BaseSpecification<Quote>
 	{
-		public QuoteLatestFilterSpecification(int time) : base(quote => quote.Time > time)
+		public QuoteLatestFilterSpecification(int time) : base(quote => quote.Time >= time)
 		{
 			AddInclude(q => q.DataList);
 		}

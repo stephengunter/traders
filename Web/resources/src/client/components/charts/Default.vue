@@ -123,13 +123,16 @@ export default {
         
          this.$store.dispatch(GET_QUOTES, params)
             .then(quotes => {
-               this.chartModel.addRealTimeQuotes(quotes)
-               .then(options => {
-                  this.chart.setOption(options);
-                  this.loadTrades();
-               }).catch(error => {
-                  this.resolveError(error);
-               })
+               if(quotes.length){
+                  this.chartModel.updateRealTimeQuotes(quotes)
+                  .then(options => {
+                     this.chart.setOption(options);
+                     this.loadTrades();
+                  }).catch(error => {
+                     this.resolveError(error);
+                  })
+               }
+               
             }).catch(error => {
                this.resolveError(error);
             })

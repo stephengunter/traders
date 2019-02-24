@@ -140,19 +140,35 @@ class Indicator {
    }
 
    mapChartResult(startIndex = 0){
-      let dataList = startIndex ? this.data.slice(startIndex) : this.data;
-      
-      return dataList.map(item => {
-         if(item.hasOwnProperty('result')) return item.result;
-         else return item.val;
-      });
-      
+      let results = [];
+      for(let i = startIndex; i < this.data.length; i++){
+         let item = this.data[i];
+         if(item.hasOwnProperty('result')){
+            results.push({
+               index: i,
+               result: item.result
+            });
+         }else{
+            results.push({
+               index: i,
+               result: item.val
+            });
+         }
+      }
+      return results; 
    }
 
    mapChartAvg(startIndex = 0){
-      let dataList = startIndex ? this.data.slice(startIndex) : this.data;
-      
-      return dataList.map(item => item.avg);
+      let results = [];
+      for(let i = startIndex; i < this.data.length; i++){
+         let item = this.data[i];
+         results.push({
+            index: i,
+            avg: item.avg
+         });
+      }
+
+      return results;
       
    }
 

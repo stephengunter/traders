@@ -32,6 +32,16 @@ class Strategy {
       }
    }
 
+   updateDataList(quote){
+      let dataList = quote.dataList;
+      for (let i = 0; i < dataList.length; i++) {
+         let data = dataList[i];
+         let indicator = this.getIndicator(data.indicator);
+         let index = indicator.data.findIndex(d => d.time == quote.time);
+         indicator.data.splice(index, 1, data);
+      }
+   }
+
    getIndicator(entity){
       return this.indicators.find(i => i.entity == entity);
    }
