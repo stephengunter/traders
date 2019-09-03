@@ -5,7 +5,7 @@
             :exclude="existFileNames" @file-added="onFileAdded"
          />
       </v-flex>
-         <v-flex xs12 >
+      <v-flex xs12 >
          <MediaList :medias="medias" @drag-end="onDragEnd"
          @delete="onRemoveMedia" />
       </v-flex>

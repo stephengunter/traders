@@ -32,6 +32,8 @@ namespace ApplicationCore.Services
 
 		void UpdateRange(IEnumerable<Stock> stocks);
 	}
+
+
 	public class StockService : IStockService
 	{
 		private readonly IDefaultRepository<Stock> stockRepository;

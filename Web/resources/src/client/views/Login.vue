@@ -7,7 +7,7 @@
          <RegisterForm :model="registerModel" @submit="onSubmitRegister" />         
       </div>
       <div v-else>
-         <h1 class="cn">登入</h1>
+         <h1 class="cn">登入 - 請使用測試帳號traderstest@gmail.com 密碼test@traders</h1>
          <ErrorList />
          <LoginForm @submit="onSubmit" />
          <v-layout class="mt-3 cn" row wrap>
@@ -108,7 +108,7 @@ export default {
                this.$router.push({ path: this.returnUrl });
             }
          }
-         else this.$router.push({ name: 'home' });
+         else this.$router.push({ path: '/watch' });
       },
       oAuthLoginFailed(){
          Bus.$emit('errors', { msg: '登入失敗' });

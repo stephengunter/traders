@@ -143,6 +143,13 @@ namespace ApplicationCore.DataAccess
 
 			await CreateUserIfNotExist(userManager, username, fullname, password, roles);
 
+			username = "traderstest@gmail.com";
+			fullname = "測試帳號";
+			roles = new List<string>();
+			password = "test@traders";
+
+			await CreateUserIfNotExist(userManager, username, fullname, password, roles);
+
 
 			for (int i = 0; i < 20; i++)
 			{
@@ -271,7 +278,7 @@ namespace ApplicationCore.DataAccess
 
 		public static async Task SeedStrategies(UserManager<User> userManager, DefaultContext context)
 		{
-			var names = new string[] { "traders.com.tw@gmail.com", "leojuan@gmail.com" };
+			var names = new string[] { "traders.com.tw@gmail.com", "leojuan@gmail.com", "traderstest@gmail.com" };
 			foreach (var name in names)
 			{
 				var user = await userManager.FindByNameAsync(name);
@@ -349,7 +356,7 @@ namespace ApplicationCore.DataAccess
 
 		public static async Task SeedSubscribes(UserManager<User> userManager, DefaultContext context)
 		{
-			var names = new string[] { "traders.com.tw@gmail.com", "leojuan@gmail.com" };
+			var names = new string[] { "traders.com.tw@gmail.com", "leojuan@gmail.com", "traderstest@gmail.com" };
 			foreach (var name in names)
 			{
 				var user = await userManager.FindByNameAsync(name);

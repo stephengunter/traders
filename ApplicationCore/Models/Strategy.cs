@@ -24,6 +24,7 @@ namespace ApplicationCore.Models
 
 		public int STPW { get; set; } //停利
 
+		public int OutTime { get; set; } //收盤出場時間
 
 		public bool NoStop => STPL == 0 && STPW == 0;
 

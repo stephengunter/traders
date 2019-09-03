@@ -6,7 +6,6 @@
 					<v-card-text >
 						<v-layout row>
 							<v-flex xs12 sm6 md6>
-								 
 								<form @submit.prevent="search">
 									<v-text-field
 										v-model="params.keyword"
@@ -232,7 +231,7 @@ export default {
 					if(!error)  Bus.$emit('errors');
 					else this.$store.commit(SET_ERROR, error);
 				})
-      }
+		}
 	}
 }
 </script>

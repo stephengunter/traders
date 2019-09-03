@@ -10,7 +10,7 @@
         white--text
         xs12
       >
-        &copy;2018 — <strong><span class="cn">交易者</span> traders.com.tw</strong>
+        &copy;2018 — <strong><span class="cn">交易者</span></strong>
       </v-flex>
     </v-layout>
   </v-footer>

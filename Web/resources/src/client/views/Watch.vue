@@ -27,7 +27,12 @@
                      slot="activator" v-model="dateString" label="日期"
                      prepend-icon="mdi-canlendar"
                      />
-                     <v-date-picker v-model="dateString" locale="zh-cn" @input="onDateChanged" />
+                     <v-date-picker v-model="dateString" locale="zh-cn"
+                     min="2019-08-20"
+                     :max="today"
+                     :allowed-dates="allowedDates"
+                     @input="onDateChanged" 
+                     />
                   </v-menu>
                </v-flex>
                <v-flex v-if="responsive" xs2 class="text-sm-right">
@@ -132,6 +137,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import Helper from '@/common/helper';
 import { mapState } from 'vuex';
 import { INIT_WATCH, FETCH_QUOTES,
@@ -157,6 +163,8 @@ export default {
    },
    data () {
       return {
+         today: moment().format('YYYY-MM-DD'),
+         emptyDates: ['2019-08-28', '2019-08-29', '2019-08-30'],
          strategyId: 0,
          dateString: '',
          showDatePicker: false,
@@ -228,7 +236,7 @@ export default {
                this.dateString = Helper.toDateString(this.date);
                this.strategyId = this.strategies[0].id;
 
-               this.fetchQuotes();       
+               this.fetchQuotes();   
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
                else this.resolveWatchError(error);
@@ -251,6 +259,9 @@ export default {
             this.$store.commit(SET_STRATEGY, strategy);
             this.fetchQuotes();
          }
+      },
+      allowedDates(val){
+         return this.emptyDates.indexOf(val) < 0
       },
       onDateChanged(){
          this.showDatePicker = false;

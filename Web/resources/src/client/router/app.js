@@ -1,18 +1,6 @@
 
 const links = [
    {
-      name: 'test',
-      path: '/test',
-      component: () => import('../views/Test'), 
-      meta: { 
-         order: 0,
-         icon: '',
-         title: '',
-         type: 'all',
-         menu: 'none'
-      }        
-   },
-   {
       name: 'auth',
       path: '/auth',
       component: () => import('../views/Auth'), 

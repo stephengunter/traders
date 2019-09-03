@@ -2,10 +2,13 @@
    <v-toolbar dark color="primary" app>
       
       <v-toolbar-title class="headline">
-         <span class="site-title cn">交易者</span>
-         <v-icon class="site-icon">mdi-finance</v-icon>
-         <span class="site-sub-title cn">台指當沖策略平台</span>         
+         <a class="site-link" href="#/">
+            <span class="site-title cn">交易者</span>
+            <v-icon class="site-icon">mdi-finance</v-icon>
+            <span class="site-sub-title cn">台指當沖策略平台</span>
+         </a> 
       </v-toolbar-title>
+
       <v-spacer></v-spacer>
 
       <!-- 有登入 -->
@@ -115,6 +118,10 @@ export default {
 .site-title{
    font-size: 2.2rem!important;
    padding-right: 16px;
+}
+.site-link{
+   color: #fff;
+   text-decoration: none;
 }
 .site-sub-title{
    font-size: 1.4rem;

@@ -152,9 +152,9 @@ namespace Web
 					policy.Requirements.Add(new HasPermissionRequirement(Permissions.Admin.ToString())));
 			});
 
-			services.AddCors(options => options.AddPolicy("api",
-				p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
-			));
+			//services.AddCors(options => options.AddPolicy("api",
+			//	p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+			//));
 
 			// Register the Swagger generator, defining 1 or more Swagger documents
 			services.AddSwaggerGen(c =>
@@ -237,7 +237,7 @@ namespace Web
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 
-			app.UseCors("api");
+			//app.UseCors("api");
 
 			app.UseSwaggerUI(c =>
 			{

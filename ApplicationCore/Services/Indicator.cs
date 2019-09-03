@@ -14,8 +14,6 @@ namespace ApplicationCore.Services
 {
 	public interface IIndicatorService
 	{
-		
-
 		Task<IEnumerable<Indicator>> FetchAsync(bool active);
 
 		Task<IEnumerable<Indicator>> FetchByIdsAsync(IList<int> ids);

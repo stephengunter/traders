@@ -295,6 +295,8 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<int>("OutTime");
+
                     b.Property<int>("STPL");
 
                     b.Property<int>("STPW");

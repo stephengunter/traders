@@ -115,8 +115,7 @@ class TradeManager {
    }
 
    onSignal(signal, dataIndex){
-      console.log('dataIndex',dataIndex);
-      console.log('quotes count',this.quotes.length);
+      
       this.removeTrade(dataIndex);
 
       let profit = this.getProfit(dataIndex);
