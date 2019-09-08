@@ -14,13 +14,13 @@ class Strategy {
       for (let property in data) {
          this[property] = data[property];
       }
-
+     
       this.indicators = indicators.map(indicator => {
          let settings = this.getIndicatorSettings(indicator.id);
          let beginTimeIndex = this.tradeManager.getTimeIndex(indicator.begin);
          return new Indicator(indicator, settings.arg, beginTimeIndex, quotes);
       });
-
+    
       this.endSignalTime = this.tradeManager.getTimeIndex(133000);
    }
 

@@ -109,7 +109,11 @@ export default {
 }
 </script>
 
-
+<style lang="scss">
+* :not(.v-icon) {
+  font-family: "微軟正黑體",sans-serif!important;
+}
+</style>
 <style scoped>
 .main-content{
 	min-height: 680px

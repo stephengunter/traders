@@ -1,4 +1,3 @@
-
 class Indicator {
 
    quotes = [];
@@ -14,7 +13,6 @@ class Indicator {
       for (let property in model) {
          this[property] = model[property];
       }
-
       this.quotes = quotes;
       this.data = quotes.map(q => q.dataList.find(data => data.indicator == this.entity));
 

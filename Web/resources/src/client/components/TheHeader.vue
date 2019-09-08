@@ -3,16 +3,16 @@
       
       <v-toolbar-title class="headline">
          <a class="site-link" href="#/">
-            <span class="site-title cn">交易者</span>
+            <span class="site-title">交易者</span>
             <v-icon class="site-icon">mdi-finance</v-icon>
-            <span class="site-sub-title cn">台指當沖策略平台</span>
+            <span class="site-sub-title">台指當沖策略平台</span>
          </a> 
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
 
       <!-- 有登入 -->
-      <v-toolbar-items v-if="isAuthenticated"  class="hidden-sm-and-down cn">
+      <v-toolbar-items v-if="isAuthenticated"  class="hidden-sm-and-down">
          <v-btn v-for="item in menuLinks" :key="item.order" class="route-link" flat
          :to="item.path"
          > 
@@ -27,7 +27,7 @@
       </v-toolbar-items>
 
       <!-- 沒登入 -->
-      <v-toolbar-items v-else class="hidden-sm-and-down cn">
+      <v-toolbar-items v-else class="hidden-sm-and-down">
          <v-btn v-for="item in menuLinks" :key="item.order" class="route-link" flat
           :to="item.path"
          > 

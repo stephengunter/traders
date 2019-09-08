@@ -4,7 +4,7 @@
       <v-layout v-if="result < 0" row wrap>
          <v-flex xs12>
             <v-alert :value="true"  color="error"  icon="mdi-alert" outline  class="title">
-               <span class="cn" >
+               <span>
                   {{ errMsg }}
                </span>  
             </v-alert>
@@ -46,7 +46,7 @@
                               </v-btn>
                            </v-list-tile-action>
                            <v-list-tile-content>
-                              <v-list-tile-title class="cn">重新整理</v-list-tile-title>
+                              <v-list-tile-title>重新整理</v-list-tile-title>
                            </v-list-tile-content>
                         </v-list-tile>
                         <v-list-tile @click.prevent="editStrategy" >
@@ -56,7 +56,7 @@
                               </v-btn>
                            </v-list-tile-action>
                            <v-list-tile-content>
-                              <v-list-tile-title class="cn">策略設定</v-list-tile-title>
+                              <v-list-tile-title>策略設定</v-list-tile-title>
                            </v-list-tile-content>
                         </v-list-tile>
                         <v-list-tile @click.prevent="createStrategy" >
@@ -66,7 +66,7 @@
                               </v-btn>
                            </v-list-tile-action>
                            <v-list-tile-content>
-                              <v-list-tile-title class="cn">新增策略</v-list-tile-title>
+                              <v-list-tile-title>新增策略</v-list-tile-title>
                            </v-list-tile-content>
                         </v-list-tile>
                      </v-list>
@@ -77,34 +77,34 @@
                      <v-btn @click.prevent="refresh" class="mr-1" slot="activator"  color="info" icon>
                         <v-icon>mdi-refresh</v-icon>
                      </v-btn>
-                     <span class="cn">重新整理</span>
+                     <span>重新整理</span>
                   </v-tooltip>
                   <v-tooltip top content-class="top">
                      <v-btn @click.prevent="editStrategy" class="mr-1" slot="activator"  color="success" icon>
                         <v-icon>mdi-settings</v-icon>
                      </v-btn>
-                     <span class="cn">策略設定</span>
+                     <span>策略設定</span>
                   </v-tooltip>
                   <v-tooltip top content-class="top">
                      <v-btn @click.prevent="createStrategy" slot="activator"  color="primary" icon>
                         <v-icon>mdi-plus</v-icon>
                      </v-btn>
-                     <span class="cn">新增策略</span>
+                     <span>新增策略</span>
                   </v-tooltip>
                </v-flex>
             </v-layout>
             <v-layout row>
                <v-flex xs12 >
                   <v-alert :value="noData"  color="info"  icon="mdi-alert" outline  class="title">
-                     <span class="cn" >
+                     <span>
                         沒有這一天的資料
                      </span>  
                   </v-alert>
                   <v-alert v-if="realtimeView" :value="realTime"  :color="realtimeView.color" class="title">
-                     <span class="cn" >
+                     <span>
                         策略信號：{{ realtimeView.signalText }}
                      </span>
-                     <span class="cn ml-3" >
+                     <span class="ml-3" >
                         即時部位：{{ realtimeView.position }}
                      </span>
                   </v-alert>
@@ -287,6 +287,7 @@ export default {
                }
                this.$refs.myChart.init();  
             }).catch(error => {
+               console.log('error',error);
                if(!error)  Bus.$emit('errors');
                else this.resolveWatchError(error);
             })
