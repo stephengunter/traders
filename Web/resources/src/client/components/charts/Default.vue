@@ -65,6 +65,7 @@ export default {
       }
    },
    beforeMount(){
+     
       this.hubModel = new Hub(WATCH_URL);
       this.hubModel.on('receive', this.getQuote);
    },
@@ -89,8 +90,8 @@ export default {
          
          this.chartModel.init()
             .then(options => {
-               this.chart = echarts.init(document.getElementById('chart-watch'));                     
-               this.chart.setOption(options);
+               this.chart = echarts.init(document.getElementById('chart-watch'));
+               this.chart.setOption(options, true);
 
                this.resize();
                this.$store.commit(SET_LOADING, false);
