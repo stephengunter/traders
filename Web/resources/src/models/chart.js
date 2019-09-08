@@ -33,11 +33,14 @@ class Charts {
          .then(() => {
             let mainIndicators = this.strategy.getMainIndicators();
             let subIndicators = this.strategy.getSubIndicators();
+          
             this.xAxis = this.initXAxis(subIndicators, this.times);
             this.yAxis = this.initYAxis(subIndicators);
+           
             this.grids = this.initGrids(subIndicators);
+           
             this.series = this.initSeries(mainIndicators, subIndicators);
-
+           
             resolve(this.defaultOptions());
          })
          .catch(error => {
