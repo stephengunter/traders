@@ -10,126 +10,12 @@
             </v-alert>
          </v-flex>
       </v-layout>
-      <v-card v-if="result > 0">
+      <v-card>
          <v-card-text>
-            <v-layout row wrap>
-               <v-flex xs10 class="d-inline-flex">
-                  <v-select style="width:180px"
-                  :items="strategyOptions"  label="策略"
-                  v-model="strategyId" @change="onStrategyChanged"
-                  />
-                  <v-menu :close-on-content-click="false"
-                  v-model="showDatePicker"
-                  :nudge-right="40"  full-width min-width="290px"
-                  lazy  transition="scale-transition" offset-y
-                  >
-                     <v-text-field readonly class="ml-3"
-                     slot="activator" v-model="dateString" label="日期"
-                     prepend-icon="mdi-calendar"
-                     />
-                     <v-date-picker v-model="dateString" locale="zh-cn"
-                     min="2019-08-20"
-                     :max="today"
-                     :allowed-dates="allowedDates"
-                     @input="onDateChanged" 
-                     />
-                  </v-menu>
-               </v-flex>
-               <v-flex v-if="responsive" xs2 class="text-sm-right">
-                  <v-menu offset-y class="hidden-md-and-up">
-                     <v-toolbar-side-icon  slot="activator" />
-                     <v-list>
-                        <v-list-tile @click.prevent="refresh" >
-                           <v-list-tile-action>
-                               <v-btn class="mr-1" slot="activator"  color="info" icon>
-                                 <v-icon>mdi-refresh</v-icon>
-                              </v-btn>
-                           </v-list-tile-action>
-                           <v-list-tile-content>
-                              <v-list-tile-title>重新整理</v-list-tile-title>
-                           </v-list-tile-content>
-                        </v-list-tile>
-                        <v-list-tile @click.prevent="editStrategy" >
-                           <v-list-tile-action>
-                              <v-btn class="mr-1" slot="activator"  color="success" icon>
-                                 <v-icon>mdi-settings</v-icon>
-                              </v-btn>
-                           </v-list-tile-action>
-                           <v-list-tile-content>
-                              <v-list-tile-title>策略設定</v-list-tile-title>
-                           </v-list-tile-content>
-                        </v-list-tile>
-                        <v-list-tile @click.prevent="createStrategy" >
-                           <v-list-tile-action>
-                              <v-btn slot="activator" color="primary" icon>
-                                 <v-icon>mdi-plus</v-icon>
-                              </v-btn>
-                           </v-list-tile-action>
-                           <v-list-tile-content>
-                              <v-list-tile-title>新增策略</v-list-tile-title>
-                           </v-list-tile-content>
-                        </v-list-tile>
-                     </v-list>
-                  </v-menu>
-               </v-flex>
-               <v-flex v-else xs2 class="text-sm-right">
-                  <v-tooltip top content-class="top">
-                     <v-btn @click.prevent="refresh" class="mr-1" slot="activator"  color="info" icon>
-                        <v-icon>mdi-refresh</v-icon>
-                     </v-btn>
-                     <span>重新整理</span>
-                  </v-tooltip>
-                  <v-tooltip top content-class="top">
-                     <v-btn @click.prevent="editStrategy" class="mr-1" slot="activator"  color="success" icon>
-                        <v-icon>mdi-settings</v-icon>
-                     </v-btn>
-                     <span>策略設定</span>
-                  </v-tooltip>
-                  <v-tooltip top content-class="top">
-                     <v-btn @click.prevent="createStrategy" slot="activator"  color="primary" icon>
-                        <v-icon>mdi-plus</v-icon>
-                     </v-btn>
-                     <span>新增策略</span>
-                  </v-tooltip>
-               </v-flex>
-            </v-layout>
-            <v-layout row>
-               <v-flex xs12 >
-                  <v-alert :value="noData"  color="info"  icon="mdi-alert" outline  class="title">
-                     <span>
-                        沒有這一天的資料
-                     </span>  
-                  </v-alert>
-                  <v-alert v-if="realtimeView" :value="realTime"  :color="realtimeView.color" class="title">
-                     <span>
-                        策略信號：{{ realtimeView.signalText }}
-                     </span>
-                     <span class="ml-3" >
-                        即時部位：{{ realtimeView.position }}
-                     </span>
-                  </v-alert>
-                  <charts-default v-show="!noData" ref="myChart" 
-                  :strategy="strategy"
-                  @resize="onResize"
-                  />
-               </v-flex>
-               
-            </v-layout>
-            <v-layout row>
-               <v-flex xs12 >
-                  <trade-list />
-               </v-flex>
-            </v-layout>
-
-            <v-dialog v-model="editting" persistent max-width="500px">
-               <strategy-edit v-if="editting" 
-               :strategy="settings.model.strategy"
-               :selected_indicators="settings.model.selectedIndicators"
-               :indicators="settings.model.indicators"               
-               @submit="submitStrategy" @cancel="cancelEditStrategy"
-               @remove="removeStrategy"
-               />
-            </v-dialog>
+            <Menu :strategy_options="strategyOptions" :strategy_id="strategyId"
+               :min_date="minDate" :max_date="today" :empty_dates="emptyDates"
+            />
+            
          </v-card-text>
       </v-card>
    </div>
@@ -149,6 +35,7 @@ import { INIT_WATCH, FETCH_QUOTES,
 import { SET_RESPONSIVE, SET_DATE, SET_STRATEGY, CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 
 import Bread from '../components/TheBread';
+import Menu from '../components/research/Menu';
 import ChartsDefault from '../components/charts/Default';
 import StrategyEdit from '../components/strategies/Edit';
 import TradeList from '../components/trades/List';
@@ -157,12 +44,14 @@ export default {
    name: 'WatchView',
    components: {
       Bread,
+      Menu,
       'charts-default' : ChartsDefault,
       'strategy-edit' : StrategyEdit,
       'trade-list' : TradeList
    },
-   data(){
+   data () {
       return {
+         minDate: '2019-08-20',
          today: moment().format('YYYY-MM-DD'),
          emptyDates: ['2019-08-28', '2019-08-29', '2019-08-30'],
          strategyId: 0,
@@ -236,7 +125,7 @@ export default {
                this.dateString = Helper.toDateString(this.date);
                this.strategyId = this.strategies[0].id;
 
-               this.fetchQuotes();   
+               //this.fetchQuotes();   
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
                else this.resolveWatchError(error);

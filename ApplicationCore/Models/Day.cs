@@ -8,7 +8,8 @@ namespace ApplicationCore.Models
 	public enum DayType
 	{
 		Holiday,
-		Extra
+		Extra,
+        Empty
 	}
 
 	public class Day : BaseEntity

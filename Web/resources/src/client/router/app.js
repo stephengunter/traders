@@ -66,7 +66,7 @@ const links = [
       component: () => import('../views/Research'),
       meta: { 
          order: 0,
-         icon: 'mdi-monitor-cellphone',
+         icon: 'mdi-database-check',
          title: '研究室',
          type: 'user',
          menu: 'main'
