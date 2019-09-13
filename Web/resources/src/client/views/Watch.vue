@@ -28,7 +28,7 @@
                      prepend-icon="mdi-calendar"
                      />
                      <v-date-picker v-model="dateString" locale="zh-cn"
-                     min="2019-08-20"
+                     :min="minDate"
                      :max="today"
                      :allowed-dates="allowedDates"
                      @input="onDateChanged" 
@@ -184,6 +184,7 @@ export default {
       ...mapState({
          responsive: state => state.app.responsive,
          key: state => state.watch.key,
+         minDate: state => state.watch.minDate,
          date: state => state.watch.date,
          strategy: state => state.watch.strategy,
          strategies: state => state.watch.strategies,

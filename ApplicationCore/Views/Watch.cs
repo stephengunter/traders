@@ -6,7 +6,9 @@ namespace ApplicationCore.Views
 {
 	public class WatchViewModel
 	{
-		public string key { get; set; }
+        public string minDate { get; set; }
+
+        public string key { get; set; }
 
 		public int date { get; set; }
 

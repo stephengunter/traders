@@ -1,5 +1,5 @@
 <template>
-   <v-layout v-if="responsive" row  wrap>
+   <v-layout v-if="responsive" row wrap>
       <v-flex xs10>
          <v-select
             :items="strategy_options"  label="策略"

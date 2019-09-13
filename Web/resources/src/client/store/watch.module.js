@@ -7,13 +7,14 @@ import {
 } from './actions.type';
 
 import { 
-   SET_LOADING, SET_KEY, SET_DATE,
+   SET_LOADING, SET_KEY, SET_DATE, SET_MINDATE,
    SET_STRATEGY, SET_STRATEGIES 
 } from './mutations.type';
 
  
 const state = {
    key: '',
+   minDate: '',
    date: '',
    strategy: null,
    strategies: [],
@@ -29,6 +30,7 @@ const actions = {
       return new Promise((resolve, reject) => {
          WatchService.init()
          .then(model => {
+            context.commit(SET_MINDATE, model.minDate);
             context.commit(SET_KEY, model.key);
             context.commit(SET_DATE, model.date);
             context.commit(SET_STRATEGY, model.strategies[0]);
@@ -49,6 +51,9 @@ const actions = {
 const mutations = {
    [SET_KEY](state, key) {
       state.key = key;
+   },
+   [SET_MINDATE](state, val) {
+      state.minDate = val;
    },
    [SET_DATE](state, date) {
       state.date = date;

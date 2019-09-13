@@ -16,6 +16,61 @@
                :min_date="minDate" :max_date="today" :empty_dates="emptyDates"
             />
             
+            <h1>回測結果</h1>
+            <v-card class="pa-2" outlined color="cyan lighten-5">
+               <v-layout row wrap class="mt-1">
+                  <v-flex xs4 sm3 class="headline text-md-right">
+                     毛損益：
+                  </v-flex>
+                  <v-flex xs2 sm3 class="headline text-md-left">
+                     -213
+                  </v-flex>
+                  <v-flex xs4 sm3 class="headline text-md-right">
+                     淨損益：
+                  </v-flex>
+                  <v-flex xs2 sm3 class="headline text-md-left">
+                     -320
+                  </v-flex>
+
+                  <v-flex xs4 sm3 class="headline text-md-right">
+                     交易日：
+                  </v-flex>
+                  <v-flex xs2 sm3 class="headline text-md-left">
+                     36
+                  </v-flex>
+                  <v-flex xs4 sm3 class="headline text-md-right">
+                     交易總回數：
+                  </v-flex>
+                  <v-flex xs2 sm3 class="headline text-md-left">
+                     420
+                  </v-flex>
+               </v-layout>
+            </v-card>
+            <v-layout row>
+               <v-flex sm12>
+                  <v-data-table :headers="headers" :items="trades" hide-actions class="trades-table">
+                     <template slot="headerCell" slot-scope="{ header }">
+                        <span class="subheading font-weight-light text-success text--darken-3 cn">
+                           {{ header.text }}
+                        </span>
+                     </template>
+                     <template slot="items" slot-scope="props">
+                        <td>
+                           <v-tooltip top content-class="top">
+                              <a href="#" @click.prevent="details" slot="activator" style="text-decoration: none;">
+                                 {{ props.item.date }}
+                              </a>
+                              <span>查看詳情</span>
+                           </v-tooltip>
+
+
+                        </td>
+                        <td>{{ props.item.profit }}</td>
+                        <td>{{ props.item.counts }}</td>
+                     </template>
+                  </v-data-table>
+               </v-flex>
+            </v-layout>
          </v-card-text>
       </v-card>
    </div>
@@ -65,7 +120,29 @@ export default {
          settings:{
             action: '',
             model: null
-         }
+         },
+
+         headers: [
+				{
+					sortable: false,
+					text: '日期',
+					value: 'date'
+				},
+				{
+					sortable: false,
+					text: '損益',
+					value: 'profit'
+				},
+				{
+					sortable: false,
+					text: '交易回數',
+					value: 'counts'
+				}
+         ],
+         
+         trades:[{
+            date: '2019-9-11', profit: -24, counts: 12
+         }]
          
       }
    },
@@ -87,29 +164,7 @@ export default {
       },
       editting(){
          return this.settings.action != '';
-      },
-      realtimeView(){
-         if(this.position && this.signalPosition){
-            let signalText = '中立';
-            let color = 'blue lighten-3';
-
-            if(this.signalPosition.val > 0 ){
-               signalText = '多';
-               color = 'red';
-            }else if(this.signalPosition.val < 0 ){
-               signalText = '空';
-               color = 'green';
-            }
-
-            return {
-               signalText: signalText,
-               position: this.position.val,
-               color: color
-            }
-         }else return null;
-         
       }
-      
    },
    beforeMount(){
       this.init();
@@ -180,6 +235,9 @@ export default {
                if(!error)  Bus.$emit('errors');
                else this.resolveWatchError(error);
             })
+      },
+      details(){
+
       },
       refresh(){
          this.fetchQuotes();
@@ -264,4 +322,10 @@ export default {
    }
 }
 </script>
+
+<style scoped>
+.trades-table td {
+   font-size: 1.2em;
+}
+</style>
 

@@ -142,15 +142,12 @@ namespace Web
 					policy.Requirements.Add(new HasPermissionRequirement(Permissions.Admin.ToString())));
 
 			});
-
 			
-
-			// api user claim policy
-			services.AddAuthorization(options =>
-			{
-				options.AddPolicy(Permissions.Admin.ToString(), policy =>
-					policy.Requirements.Add(new HasPermissionRequirement(Permissions.Admin.ToString())));
-			});
+			//services.AddAuthorization(options =>
+			//{
+			//	options.AddPolicy(Permissions.Admin.ToString(), policy =>
+			//		policy.Requirements.Add(new HasPermissionRequirement(Permissions.Admin.ToString())));
+			//});
 
             services.AddCors(options => options.AddPolicy("api",
                 p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()

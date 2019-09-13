@@ -18,16 +18,20 @@ namespace Web.Areas.Api.Controllers
 	[Authorize]
 	public class WatchController : BaseApiController
 	{
-		private readonly IHttpContextAccessor accessor;
+        private readonly AppSettings settings;
+
+        private readonly IHttpContextAccessor accessor;
 		private readonly ISubscribeService subscribeService;
 		private readonly IStrategyService strategyService;
 		private readonly IRealTimeService realTimeService;
 		private readonly IHistoryService dataService;
 
-		public WatchController(IHttpContextAccessor accessor, ISubscribeService subscribeService,
+		public WatchController(IOptions<AppSettings> settings, IHttpContextAccessor accessor, ISubscribeService subscribeService,
 			IStrategyService strategyService, IRealTimeService realTimeService, IHistoryService dataService)
 		{
-			this.accessor = accessor;
+            this.settings = settings.Value;
+
+            this.accessor = accessor;
 			this.subscribeService = subscribeService;
 			this.strategyService = strategyService;
 			this.realTimeService = realTimeService;
@@ -54,6 +58,7 @@ namespace Web.Areas.Api.Controllers
 			var strategies = await GetUserStrategiesAsync();
 			var model = new WatchViewModel()
 			{
+                minDate = settings.MinDate,
 				date = date,
 				strategies = strategies.Select(s => s.MapViewModel()).ToList(),
 				key = CurrentUserId
