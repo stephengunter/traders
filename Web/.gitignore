@@ -331,3 +331,10 @@ ASALocalRun/
 
 # ignore a file type
 *.json
+
+
+wwwroot/uploads/
+
+wwwroot/js/
+
+wwwroot/css/
