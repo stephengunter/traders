@@ -61,6 +61,18 @@ const links = [
       } 
    },
    {
+      name: 'research',
+      path: '/research',
+      component: () => import('../views/Research'),
+      meta: { 
+         order: 0,
+         icon: 'mdi-monitor-cellphone',
+         title: '研究室',
+         type: 'user',
+         menu: 'main'
+      } 
+   },
+   {
       name: 'confirm-email',
       path: '/confirm-email',
       component: () => import('../views/ConfirmEmail'),

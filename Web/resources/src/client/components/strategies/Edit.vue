@@ -3,7 +3,7 @@
 		<v-card>
 			<v-card-title>
 				<span class="headline">
-					<span class="cn">{{ title }}</span>
+					<span>{{ title }}</span>
 				</span>
 				<v-spacer></v-spacer>
 				<v-btn @click.prevent="cancel" icon>
@@ -28,7 +28,10 @@
 							/>
 						</v-flex>
 					</v-layout>
-					<v-layout>
+					<v-layout row>
+						<v-flex xs12 class="title">使用指標</v-flex>
+					</v-layout>
+					<v-layout>	
 						<v-list>
 							<draggable v-model="strategy.indicatorSettings">
 								<v-list-tile style="cursor: move;" v-for="item in enableSettings" :key="item.indicatorId">
