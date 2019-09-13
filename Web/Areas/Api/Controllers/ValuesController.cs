@@ -21,11 +21,23 @@ namespace Web.Areas.Api.Controllers
 		[HttpGet("")]
 		public IActionResult Index()			 
 		{
-			int min = 1;
-			int max = 90;
-			int d = 5;
-			var arr = new string[] { min.ToString(), max.ToString(), d.ToString() };
-			return Ok(String.Join(",", arr));
+			var positionFilePath = @"C:\position.txt";
+			var fileNames = new List<string>();
+
+			var accounts = "0067662,9800191".Split(',');
+			foreach (var account in accounts)
+			{
+				fileNames.Add(positionFilePath.Replace("position", $"position_{account}"));
+			};
+
+
+		
+			return Ok(fileNames);
+			//int min = 1;
+			//int max = 90;
+			//int d = 5;
+			//var arr = new string[] { min.ToString(), max.ToString(), d.ToString() };
+			//return Ok(String.Join(",", arr));
 			//return list
 		}
 
