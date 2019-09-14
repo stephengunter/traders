@@ -17,8 +17,9 @@ namespace ApplicationCore.Services
 		Task UpdateAsync(Quote quote);
 		Quote GetQuote(int date, int time);
 		Task<IEnumerable<Quote>> FetchAsync(int date);
+        Task<IEnumerable<Quote>> FetchRangeAsync(int begin, int end);
 
-		Task<IEnumerable<Quote>> FetchAllAsync();
+        Task<IEnumerable<Quote>> FetchAllAsync();
 
 		int LatestDate();
 	}
@@ -50,7 +51,13 @@ namespace ApplicationCore.Services
 			return await quoteRepository.ListAsync(spec);
 		}
 
-		public async Task<IEnumerable<Quote>> FetchAllAsync()
+        public async Task<IEnumerable<Quote>> FetchRangeAsync(int begin, int end)
+        {
+            var spec = new QuoteFilterByRangeSpecification(begin, end);
+            return await quoteRepository.ListAsync(spec);
+        }
+
+        public async Task<IEnumerable<Quote>> FetchAllAsync()
 		{
 			var spec = new QuoteFilterSpecification();
 			return await quoteRepository.ListAsync(spec);

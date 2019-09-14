@@ -20,7 +20,9 @@ namespace ApplicationCore.Views
     {
         public int strategy { get; set; }
 
-        public string[] dates { get; set; }
+        public int beginDate { get; set; }
+
+        public int endDate { get; set; }
 
     }
 }

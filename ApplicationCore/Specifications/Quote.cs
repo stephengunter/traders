@@ -27,7 +27,16 @@ namespace ApplicationCore.Specifications
 		}
 	}
 
-	public class QuoteLatestFilterSpecification : BaseSpecification<Quote>
+    public class QuoteFilterByRangeSpecification : BaseSpecification<Quote>
+    {
+        public QuoteFilterByRangeSpecification(int begin, int end) : base(quote => quote.Date >= begin && quote.Date <= end)
+        {
+            AddInclude(q => q.DataList);
+        }
+    }
+
+
+    public class QuoteLatestFilterSpecification : BaseSpecification<Quote>
 	{
 		public QuoteLatestFilterSpecification(int time) : base(quote => quote.Time >= time)
 		{

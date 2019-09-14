@@ -24,10 +24,10 @@ namespace Web.Areas.Api.Controllers
 		private readonly ISubscribeService subscribeService;
 		private readonly IStrategyService strategyService;
 		private readonly IRealTimeService realTimeService;
-		private readonly IHistoryService dataService;
+		private readonly IHistoryService historyService;
 
 		public ResearchController(IOptions<AppSettings> settings, IHttpContextAccessor accessor, ISubscribeService subscribeService,
-			IStrategyService strategyService, IRealTimeService realTimeService, IHistoryService dataService)
+			IStrategyService strategyService, IRealTimeService realTimeService, IHistoryService historyService)
 		{
             this.settings = settings.Value;
 
@@ -35,7 +35,7 @@ namespace Web.Areas.Api.Controllers
 			this.subscribeService = subscribeService;
 			this.strategyService = strategyService;
 			this.realTimeService = realTimeService;
-			this.dataService = dataService;
+			this.historyService = historyService;
 		}
 
 		 
@@ -53,7 +53,7 @@ namespace Web.Areas.Api.Controllers
 
 			await subscribeService.CreateKeysAsync(CurrentUserId, ip);
 
-			int maxDate = dataService.LatestDate();
+			int maxDate = historyService.LatestDate();
             if (maxDate == 0) maxDate = DateTime.Today.ToDateNumber();
 
             var strategies = await GetUserStrategiesAsync();
@@ -71,10 +71,16 @@ namespace Web.Areas.Api.Controllers
         [HttpPost("Resolve")]
         public async Task<ActionResult> Resolve([FromBody] ResearchViewModel model)
         {
-            await ValidateRequestAsync(model);
+            ValidateRequest(model);
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            
+            var selectedStrategy = strategyService.GetById(model.strategy);
+            if (selectedStrategy == null) throw new Exception("Action: Api/Research/Resolve , Strategy Not Found. id = " + model.strategy.ToString());
+
+
+            var quotes = await historyService.FetchRangeAsync(model.beginDate, model.endDate);
+
+            var dates = quotes.Select(q => q.Date).Distinct();
 
             return Ok();
         }
@@ -91,14 +97,13 @@ namespace Web.Areas.Api.Controllers
 
 		}
 
-        async Task ValidateRequestAsync(ResearchViewModel model)
+        void ValidateRequest(ResearchViewModel model)
         {
+            string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            if (!subscribeService.CheckKey(CurrentUserId, ip)) ModelState.AddModelError("user", "權限不足或重複登入");
 
-            //if (model.ParentId > 0)
-            //{
-            //    var parent = await _subjectsService.GetByIdAsync(model.ParentId);
-            //    if (parent == null) ModelState.AddModelError("parentId", "主科目不存在");
-            //}
+            if(model.beginDate > model.endDate) ModelState.AddModelError("date", "日期錯誤");
+
         }
 
     }
