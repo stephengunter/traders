@@ -43,7 +43,7 @@
             </v-list>
          </v-menu>
       </v-flex>
-      <v-flex xs10 class="d-inline-flex">
+      <v-flex xs12 class="d-inline-flex">
          <v-menu 
             v-model="datePickers[0].show"
             :nudge-right="40"  full-width min-width="290px"
@@ -76,10 +76,12 @@
                @input="onDateChanged()" 
             />
          </v-menu>
-      </v-flex>
-      <v-flex xs2 class="text-sm-right">
 
+         <v-btn @click.prevent="refresh" color="info" >開始回測</v-btn>
       </v-flex>
+      <!-- <v-flex xs2 class="text-sm-right">
+         <v-btn @click.prevent="refresh" color="info" >開始回測</v-btn>
+      </v-flex> -->
    </v-layout>
    <v-layout v-else row>
       <v-flex xs10 class="d-inline-flex">
@@ -118,15 +120,13 @@
                :allowed-dates="allowedDates"
                @input="onDateChanged()" 
             />
+          
          </v-menu>
+
+         <v-btn @click.prevent="refresh" color="info" >開始回測</v-btn>
       </v-flex>
       <v-flex xs2 class="text-sm-right">
-         <v-tooltip top content-class="top">
-            <v-btn @click.prevent="refresh" class="mr-1" slot="activator"  color="info" icon>
-               <v-icon>mdi-refresh</v-icon>
-            </v-btn>
-            <span>重新整理</span>
-         </v-tooltip>
+         
          <v-tooltip top content-class="top">
             <v-btn @click.prevent="editStrategy" class="mr-1" slot="activator"  color="success" icon>
                <v-icon>mdi-settings</v-icon>
@@ -146,11 +146,14 @@
 
 
 <script>
-import { mapState } from 'vuex';
 
 export default {
    name: 'ResearchMenu',
    props: {
+      responsive:{
+         type: Boolean,
+         default: false
+      },
       strategy_options: {
          type: Array,
          default: null
@@ -158,6 +161,10 @@ export default {
       strategy_id: {
          type: Number,
          default: 0
+      },
+      seleted_dates: {
+         type: Array,
+         default: null
       },
       min_date: {
          type: String,
@@ -173,18 +180,6 @@ export default {
       },
 
    },
-   computed: {
-      ...mapState({
-         responsive: state => state.app.responsive,
-         key: state => state.watch.key,
-         date: state => state.watch.date,
-         strategy: state => state.watch.strategy,
-         strategies: state => state.watch.strategies,
-         realTime: state => state.chart.realTime,
-         position: state => state.strategy.position,
-         signalPosition: state => state.strategy.signalPosition
-      })
-   },
    data(){
       return {
          strategyId: 0,
@@ -196,19 +191,24 @@ export default {
       }
    },
    watch: {
-      strategy_id(){
-         this.init();
+      strategy_id(val){
+         this.strategyId = val;
       }
    },
    methods: {
       init(){
          this.strategyId = this.strategy_id;
+         if(this.seleted_dates){
+            for(let i = 0; i < this.seleted_dates.length; i++){
+               this.datePickers[i].val = this.seleted_dates[i];
+            }
+         }
       },
       allowedDates(val){
          return this.empty_dates.indexOf(val) < 0
       },
       onStrategyChanged(){
-
+         this.$emit('strategy-changed', this.strategyId);
       },
       onDateChanged(){
          // this.showDatePicker = false;
@@ -216,7 +216,11 @@ export default {
          // this.fetchQuotes();
       },
       refresh(){
-
+         let params = {
+            strategy: this.strategyId,
+            dates: [this.datePickers[0].val, this.datePickers[1].val]
+         };
+         this.$emit('submit', params);
       },
       editStrategy(){
 

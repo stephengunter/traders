@@ -122,7 +122,7 @@ class Helper {
       return options;
    }
 
-   static toDateString(val){ 
+   static toDateString(val){
       val = String(val);
       if(val.length != 8) return '';
 

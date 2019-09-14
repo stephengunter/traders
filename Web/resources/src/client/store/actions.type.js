@@ -27,6 +27,9 @@ export const INIT_WATCH = 'initWatch';
 export const FETCH_QUOTES = 'fetchQuotes';
 export const GET_QUOTES = 'getQuotes';
 
+//Research
+export const INIT_RESEARCH = 'initResearch';
+export const RESOLVE_RESEARCH = 'resolveResearch';
 
 //Strategy
 export const CREATE_STRATEGY = 'createStrategy';

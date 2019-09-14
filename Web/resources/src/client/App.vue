@@ -77,7 +77,7 @@ export default {
       this.onResponsiveInverted()
       window.addEventListener('resize', this.onResponsiveInverted)
 	},
-	beforeDestroy () {
+	beforeDestroy(){
       window.removeEventListener('resize', this.onResponsiveInverted)
    },
 	methods: {

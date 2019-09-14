@@ -16,7 +16,7 @@ using ApplicationCore.Helpers;
 namespace Web.Areas.Api.Controllers
 {
 	[Authorize]
-	public class WatchController : BaseApiController
+	public class ResearchController : BaseApiController
 	{
         private readonly AppSettings settings;
 
@@ -26,7 +26,7 @@ namespace Web.Areas.Api.Controllers
 		private readonly IRealTimeService realTimeService;
 		private readonly IHistoryService dataService;
 
-		public WatchController(IOptions<AppSettings> settings, IHttpContextAccessor accessor, ISubscribeService subscribeService,
+		public ResearchController(IOptions<AppSettings> settings, IHttpContextAccessor accessor, ISubscribeService subscribeService,
 			IStrategyService strategyService, IRealTimeService realTimeService, IHistoryService dataService)
 		{
             this.settings = settings.Value;
@@ -53,13 +53,14 @@ namespace Web.Areas.Api.Controllers
 
 			await subscribeService.CreateKeysAsync(CurrentUserId, ip);
 
-			int date = GetLatestDate();
+			int maxDate = dataService.LatestDate();
+            if (maxDate == 0) maxDate = DateTime.Today.ToDateNumber();
 
-			var strategies = await GetUserStrategiesAsync();
-			var model = new WatchViewModel()
+            var strategies = await GetUserStrategiesAsync();
+			var model = new ResearchIndexViewModel()
 			{
                 minDate = settings.MinDate,
-				date = date,
+				maxDate = maxDate.ToDatetime().ToDateString(),
 				strategies = strategies.Select(s => s.MapViewModel()).ToList(),
 				key = CurrentUserId
 			};
@@ -67,7 +68,18 @@ namespace Web.Areas.Api.Controllers
 			return Ok(model);
 		}
 
-		async Task<IEnumerable<Strategy>> GetUserStrategiesAsync()
+        [HttpPost("Resolve")]
+        public async Task<ActionResult> Resolve([FromBody] ResearchViewModel model)
+        {
+            await ValidateRequestAsync(model);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            
+
+            return Ok();
+        }
+
+        async Task<IEnumerable<Strategy>> GetUserStrategiesAsync()
 		{
 			var strategies = await strategyService.FetchByUserAsync(CurrentUserId);
 			if (strategies.IsNullOrEmpty())
@@ -79,15 +91,15 @@ namespace Web.Areas.Api.Controllers
 
 		}
 
+        async Task ValidateRequestAsync(ResearchViewModel model)
+        {
 
-		int GetLatestDate()
-		{
-			int date = realTimeService.LatestDate();
-			if (date == 0) date = dataService.LatestDate();
-			if (date == 0) date = DateTime.Today.ToDateNumber();
+            //if (model.ParentId > 0)
+            //{
+            //    var parent = await _subjectsService.GetByIdAsync(model.ParentId);
+            //    if (parent == null) ModelState.AddModelError("parentId", "主科目不存在");
+            //}
+        }
 
-			return date;
-		}
-
-	}
+    }
 }

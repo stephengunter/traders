@@ -6,6 +6,7 @@ import auth from './auth.module';
 import password from './password.module';
 import account from './account.module';
 import watch from './watch.module';
+import research from './research.module';
 import chart from './chart.module';
 import strategy from './strategy.module';
 import indicators from './indicators.module';
@@ -22,6 +23,7 @@ export default new Vuex.Store({
       password,
       account,
       watch,
+      research,
       chart,
       strategy,
       indicators,
