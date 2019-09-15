@@ -156,6 +156,7 @@ export default {
             })
       },
       onDateQuotesLoaded(){
+         console.log('onDateQuotesLoaded');
          this.strategyModel = new Strategy(this.strategy, this.indicators, this.dateQuotes);
          // for (let i = 0; i < this.dateQuotes.length; i++) {
          //    let date = this.dateQuotes[i].date;
@@ -175,8 +176,6 @@ export default {
          let dates = this.dateQuotes.map(item => item.date);
         
          this.calculateByDay(dates);
-
-         console.log(this.models);
 
       },
       oncalculateComplete(){
@@ -229,7 +228,8 @@ export default {
       submit(model){
          this.$store.dispatch(RESOLVE_RESEARCH, model)
             .then(model => {
-               this.onDateQuotesLoaded();
+               console.log(model);
+               //this.onDateQuotesLoaded();
             }).catch(error => {
                console.log('error',error);
                if(!error)  Bus.$emit('errors');

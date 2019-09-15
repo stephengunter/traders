@@ -1,5 +1,6 @@
 import Helper from '@/common/helper';
 import ResearchService from '../services/research';
+import Strategy from '@/models/strategy';
 
 
 import {
@@ -20,11 +21,39 @@ const state = {
    strategies: [],
    indicators: [],
    dateQuotes: [],
+   report: null,
+   model: null
 };
 
 const getters = {
    
 };
+
+var strategyModel = null;
+var dateTrades = [];
+const initStrategy = (indicators, dateQuotes) => strategyModel = new Strategy(state.strategy, indicators, dateQuotes);
+
+const calculate = (dates, resolve, reject) => {
+   let date  = dates.shift();
+   strategyModel.setDate(date);
+
+   strategyModel.calculate()
+   .then(() => {
+      let tradeResult = strategyModel.getTradeResult();
+      dateTrades.push({
+         date, tradeResult
+      });
+      if(dates.length) calculate(dates, resolve, reject);
+      else{
+         state.report = {
+            dateTrades
+         };
+         resolve(state.report);
+      }
+   }).catch(error => {
+      reject(error);
+   })
+}
 
 const actions = {
    [INIT_RESEARCH](context) {
@@ -32,6 +61,7 @@ const actions = {
       return new Promise((resolve, reject) => {
          ResearchService.init()
          .then(model => {
+           
             context.commit(SET_MINDATE, model.minDate);
             context.commit(SET_MAXDATE, model.maxDate);
             context.commit(SET_KEY, model.key);
@@ -52,9 +82,14 @@ const actions = {
       return new Promise((resolve, reject) => {
          ResearchService.resolve(model)
             .then(model => {
-               context.commit(SET_DATE_QUOTES, model.dateQuotes);
+               initStrategy(model.indicators, model.dateQuotes);
+              
                context.commit(SET_INDICATORS, model.indicators);
-               resolve(model);
+               context.commit(SET_DATE_QUOTES, model.dateQuotes);
+
+               let dates = model.dateQuotes.map(item => item.date);
+               calculate(dates, resolve, reject);
+               
             })
             .catch(error => {
                reject(Helper.resolveErrorData(error)); 

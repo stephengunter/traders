@@ -8,9 +8,9 @@ class Strategy {
    quotes = [];
    date = 0;
 
-   constructor(data, indicators, dateQuotes, date = 0) {
-      for (let property in data) {
-         this[property] = data[property];
+   constructor(model, indicators, dateQuotes, date = 0) {
+      for (let property in model) {
+         this[property] = model[property];
       }
 
       this.dateQuotes = dateQuotes;
@@ -43,8 +43,9 @@ class Strategy {
 
       let model = this.dateQuotes.find(item => item.date === date);
       this.quotes = model.quotes;
-      console.log(this.quotes[0]);
+      
       this.tradeManager = new TradeManager(this.quotes, this.stpw, this.stpl);
+      this.indicators.forEach(indicator => indicator.setQuotes(this.quotes));
    }
 
    addDataList(dataList){
@@ -83,7 +84,7 @@ class Strategy {
    }
 
    calculate(startIndex = 0){
-      console.log('calculate');
+      
       return new Promise((resolve, reject) => {
          for (let i = 0; i < this.indicators.length; i++) {
             this.indicators[i].calculate(startIndex);
@@ -92,7 +93,7 @@ class Strategy {
          for (let index = startIndex; index < this.quotes.length; index++) {
             let dataList = [];
             for (let j = 0; j < this.indicators.length; j++) {
-               let data = this.indicators[j].data[index];
+               let data = this.indicators[j].getData(index);
                dataList.push({
                   indicator: data.indicator,
                   signal : data.signal
@@ -130,6 +131,39 @@ class Strategy {
 
    getTrades(){
       return this.tradeManager.getTrades();        
+   }
+
+   getTradeResult(){
+      let trades = this.getTrades();
+      if(!trades) return null;
+
+      let views = [];
+      let sum = 0;
+      for (let i = 0; i < trades.length; i++) {
+         
+         if(i % 2 === 0){
+            let inTrade = trades[i];
+            let outTrade = (i === trades.length - 1) ? null : trades[i + 1];
+
+            let result = outTrade ? outTrade.result : 0;
+
+            sum += result;
+
+            let item = {
+               val: inTrade.val,
+               inTrade: inTrade,
+               outTrade: outTrade,
+               result: result
+            };
+            
+            views.push(item);
+         }
+      }
+
+      return {
+         views: views,
+         total: sum
+      };      
    }
 
    getPosition(index){
