@@ -1,7 +1,7 @@
 import Helper from '@/common/helper';
 import ResearchService from '../services/research';
 import Strategy from '@/models/strategy';
-
+import ResearchReport from '@/models/researchReport';
 
 import {
    INIT_RESEARCH, RESOLVE_RESEARCH
@@ -45,9 +45,7 @@ const calculate = (dates, resolve, reject) => {
       });
       if(dates.length) calculate(dates, resolve, reject);
       else{
-         state.report = {
-            dateTrades
-         };
+         state.report = new ResearchReport(dateTrades);
          resolve(state.report);
       }
    }).catch(error => {

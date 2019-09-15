@@ -126,44 +126,15 @@ class Strategy {
 
    getIndicatorSignal(entity, dataIndex){
       let indicator = this.getIndicator(entity);
-      return indicator.data[dataIndex].signal;
+      indicator.getData(dataIndex).signal;
    }
 
-   getTrades(){
-      return this.tradeManager.getTrades();        
+   getTradeItems(){
+      return this.tradeManager.tradeItems;
    }
 
    getTradeResult(){
-      let trades = this.getTrades();
-      if(!trades) return null;
-
-      let views = [];
-      let sum = 0;
-      for (let i = 0; i < trades.length; i++) {
-         
-         if(i % 2 === 0){
-            let inTrade = trades[i];
-            let outTrade = (i === trades.length - 1) ? null : trades[i + 1];
-
-            let result = outTrade ? outTrade.result : 0;
-
-            sum += result;
-
-            let item = {
-               val: inTrade.val,
-               inTrade: inTrade,
-               outTrade: outTrade,
-               result: result
-            };
-            
-            views.push(item);
-         }
-      }
-
-      return {
-         views: views,
-         total: sum
-      };      
+      return this.tradeManager.result;     
    }
 
    getPosition(index){

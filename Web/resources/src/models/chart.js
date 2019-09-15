@@ -263,8 +263,8 @@ class Charts {
    }
 
    resolveTrades(){
-      let trades = this.strategy.getTrades();
-      return trades.map(item => {
+      let tradeItems = this.strategy.getTradeItems();
+      return tradeItems.map(item => {
          return {
             ...item , time: this.times[item.index]
          }
