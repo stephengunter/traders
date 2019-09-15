@@ -25,6 +25,10 @@ export default {
       strategy: {
          type: Object,
          default: null
+      },
+      date: {
+         type: Number,
+         default: 0
       }
    },
    data () {
@@ -65,7 +69,6 @@ export default {
       }
    },
    beforeMount(){
-     
       this.hubModel = new Hub(WATCH_URL);
       this.hubModel.on('receive', this.getQuote);
    },
@@ -83,8 +86,8 @@ export default {
 
          this.height = 400 + (this.indicators.length * 100);
         
-        
-         this.strategyModel = new Strategy(this.strategy, this.indicators, this.quotes); 
+         let dateQuotes = [{ date: this.date, quotes: this.quotes }];
+         this.strategyModel = new Strategy(this.strategy, this.indicators, dateQuotes); 
          
          this.chartModel = new Charts(this.strategyModel, this.quotes);
          

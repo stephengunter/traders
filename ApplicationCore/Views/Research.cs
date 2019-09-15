@@ -16,7 +16,7 @@ namespace ApplicationCore.Views
 		
 	}
 
-    public class ResearchViewModel
+    public class ResearchRequestModel
     {
         public int strategy { get; set; }
 
@@ -25,4 +25,13 @@ namespace ApplicationCore.Views
         public int endDate { get; set; }
 
     }
+
+    public class ResearchViewModel
+    {
+        public ICollection<IndicatorViewModel> indicators { get; set; } = new List<IndicatorViewModel>();
+
+        public ICollection<DateQuotesViewModel> dateQuotes { get; set; } = new List<DateQuotesViewModel>();
+
+    }
+    
 }

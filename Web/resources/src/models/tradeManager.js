@@ -45,7 +45,7 @@ class TradeManager {
 
    getPosition(index){
       let trades = this.trades;
-      if(index > 0) trades = this.trades.filter(item => item.index <= index);
+      if(index > 0) trades = trades.filter(item => item.index <= index);
 
       if(trades){
          return trades[trades.length - 1];
@@ -61,7 +61,7 @@ class TradeManager {
 
    getSignalPosition(index){
       let trades = this.trades;
-      if(index > 0) trades = this.trades.filter(item => item.index <= index);
+      if(index > 0) trades = trades.filter(item => item.index <= index);
 
       if(trades){
          let signalPosition = null;

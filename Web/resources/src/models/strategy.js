@@ -4,16 +4,27 @@ import TradeManager from './tradeManager';
 class Strategy {
 
    signals = [];
+   dateQuotes = [];
    quotes = [];
+   date = 0;
 
-   constructor(data, indicators, quotes) {
-      this.tradeManager = new TradeManager(quotes, data.stpw, data.stpl);
-
-      this.quotes = quotes;
-
+   constructor(data, indicators, dateQuotes, date = 0) {
       for (let property in data) {
          this[property] = data[property];
       }
+
+      this.dateQuotes = dateQuotes;
+
+      if(date){
+         let model = dateQuotes.find(item => item.date === date);
+         this.quotes = model.quotes;
+         this.date = date;
+      }else{
+         this.quotes = dateQuotes[0].quotes;
+         this.date = dateQuotes[0].date;
+      } 
+      
+      this.tradeManager = new TradeManager(this.quotes, this.stpw, this.stpl);
 
       this.indicators = [];
       for (let i = 0; i < indicators.length; i++) {
@@ -22,9 +33,18 @@ class Strategy {
          if(!settings) continue;
 
          let beginTimeIndex = this.tradeManager.getTimeIndex(indicator.begin);
-         this.indicators.push(new Indicator(indicator, settings.arg, beginTimeIndex, quotes));
+         this.indicators.push(new Indicator(indicator, settings.arg, beginTimeIndex, this.quotes));
       }
       this.endSignalTime = this.tradeManager.getTimeIndex(133000);
+   }
+
+   setDate(date){
+      if(date === this.date) return;
+
+      let model = this.dateQuotes.find(item => item.date === date);
+      this.quotes = model.quotes;
+      console.log(this.quotes[0]);
+      this.tradeManager = new TradeManager(this.quotes, this.stpw, this.stpl);
    }
 
    addDataList(dataList){
@@ -63,7 +83,7 @@ class Strategy {
    }
 
    calculate(startIndex = 0){
-      
+      console.log('calculate');
       return new Promise((resolve, reject) => {
          for (let i = 0; i < this.indicators.length; i++) {
             this.indicators[i].calculate(startIndex);

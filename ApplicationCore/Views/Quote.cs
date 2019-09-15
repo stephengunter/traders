@@ -32,5 +32,9 @@ namespace ApplicationCore.Views
 	}
 
 
-	
+    public class DateQuotesViewModel
+    {
+        public int date { get; set; }
+        public ICollection<QuoteViewModel> quotes { get; set; }
+    }
 }

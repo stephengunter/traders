@@ -109,7 +109,7 @@
                      </span>
                   </v-alert>
                   <charts-default v-show="!noData" ref="myChart" 
-                  :strategy="strategy"
+                  :strategy="strategy" :date="date"
                   @resize="onResize"
                   />
                </v-flex>

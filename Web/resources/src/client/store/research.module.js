@@ -8,7 +8,7 @@ import {
 
 import { 
    SET_LOADING, SET_KEY, SET_MAXDATE, SET_MINDATE,
-   SET_STRATEGY, SET_STRATEGIES 
+   SET_STRATEGY, SET_STRATEGIES, SET_INDICATORS, SET_DATE_QUOTES 
 } from './mutations.type';
 
  
@@ -18,6 +18,8 @@ const state = {
    maxDate: '',
    strategy: null,
    strategies: [],
+   indicators: [],
+   dateQuotes: [],
 };
 
 const getters = {
@@ -49,8 +51,10 @@ const actions = {
       context.commit(SET_LOADING, true);
       return new Promise((resolve, reject) => {
          ResearchService.resolve(model)
-            .then(() => {
-               resolve(true);
+            .then(model => {
+               context.commit(SET_DATE_QUOTES, model.dateQuotes);
+               context.commit(SET_INDICATORS, model.indicators);
+               resolve(model);
             })
             .catch(error => {
                reject(Helper.resolveErrorData(error)); 
@@ -78,6 +82,12 @@ const mutations = {
    },
    [SET_STRATEGIES](state, strategies) {
       state.strategies = strategies;
+   },
+   [SET_INDICATORS](state, indicators) {
+      state.indicators = indicators;
+   },
+   [SET_DATE_QUOTES](state, dateQuotes) {
+      state.dateQuotes = dateQuotes;
    }
 };
 

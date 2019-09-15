@@ -28,6 +28,8 @@
 <script>
 import moment from 'moment';
 import Helper from '@/common/helper';
+import Strategy from '@/models/strategy';
+
 import { mapState } from 'vuex';
 import { INIT_RESEARCH, RESOLVE_RESEARCH,
    CREATE_STRATEGY, STORE_STRATEGY,
@@ -45,6 +47,27 @@ import DaysTable from '../components/research/Days';
 import ChartsDefault from '../components/charts/Default';
 import StrategyEdit from '../components/strategies/Edit';
 import TradeList from '../components/trades/List';
+
+const updateManagefee = (done) => {
+   let apiEndPoint = getApiEndPoint('core');
+   let model  = models.shift();
+   let id = model.id;
+   console.log('updateManagefee id:',id);
+   setTimeout(() => {
+      request(apiEndPoint)
+      .put(`/api/fundoperation/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(model)
+      .expect(204)
+      .end((err, res) => {
+         if (err) return done(err);
+         else{
+            if(models.length) updateManagefee(done);
+            else done();
+         }
+      });
+   }, 1000);
+}
 
 export default {
    name: 'WatchView',
@@ -68,6 +91,8 @@ export default {
             error: false,
             msg: ''
          },
+
+         strategyModel: null,
          
          noData: false,
 
@@ -75,6 +100,8 @@ export default {
             action: '',
             model: null
          },
+         
+         models:[],
          
          trades:[{
             date: '2019-9-11', profit: -24, counts: 12
@@ -90,9 +117,8 @@ export default {
          maxDate: state => state.research.maxDate,
          strategy: state => state.research.strategy,
          strategies: state => state.research.strategies,
-         realTime: state => state.chart.realTime,
-         position: state => state.strategy.position,
-         signalPosition: state => state.strategy.signalPosition
+         indicators: state => state.research.indicators,
+         dateQuotes: state => state.research.dateQuotes
       }),
       strategyOptions(){
          return this.strategies.map(item => ({
@@ -126,10 +152,52 @@ export default {
               
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
-               else this.resolveWatchError(error);
+               else this.resolveResearchError(error);
             })
       },
-      resolveWatchError(error){
+      onDateQuotesLoaded(){
+         this.strategyModel = new Strategy(this.strategy, this.indicators, this.dateQuotes);
+         // for (let i = 0; i < this.dateQuotes.length; i++) {
+         //    let date = this.dateQuotes[i].date;
+         //    this.strategyModel.setDate(date);
+
+         //    this.strategyModel.calculate()
+         //    .then(() => {
+         //       let trades = this.strategyModel.getTrades();
+         //       this.models.push({
+         //          date, trades
+         //       })
+         //    }).catch(error => {
+         //       console.log(error);
+         //    })
+         // }
+
+         let dates = this.dateQuotes.map(item => item.date);
+        
+         this.calculateByDay(dates);
+
+         console.log(this.models);
+
+      },
+      oncalculateComplete(){
+         console.log('oncalculateComplete', this.models);
+      },
+      calculateByDay(dates){
+         let date  = dates.shift();
+         this.strategyModel.setDate(date);
+         this.strategyModel.calculate()
+         .then(() => {
+            let trades = this.strategyModel.getTrades();
+            this.models.push({
+               date, trades
+            });
+            if(dates.length) this.calculateByDay(dates);
+            else this.oncalculateComplete();
+         }).catch(error => {
+            console.log(error);
+         })
+      },
+      resolveResearchError(error){
          if(error.hasOwnProperty('subscribe')){
             this.errMsg = '您還沒有完成訂閱或者不在訂閱期間內';
             this.result = -1;
@@ -158,27 +226,18 @@ export default {
       onResize(){
          this.$store.commit(SET_RESPONSIVE, Helper.isSmallScreen());
       },
-      submit(data){
-         this.$store.dispatch(RESOLVE_RESEARCH, data)
-            .then(result => {
-               // if(result){
-               //    this.noData = false;   
-               // }else{
-               //    //沒有資料
-               //    this.noData = true;
-               // }
-               // this.$refs.myChart.init();  
+      submit(model){
+         this.$store.dispatch(RESOLVE_RESEARCH, model)
+            .then(model => {
+               this.onDateQuotesLoaded();
             }).catch(error => {
                console.log('error',error);
                if(!error)  Bus.$emit('errors');
-               else this.resolveWatchError(error);
+               else this.resolveResearchError(error);
             })
       },
       details(){
 
-      },
-      refresh(){
-         this.fetchQuotes();
       },
       cancelEditStrategy(){
          this.settings.model = null;

@@ -146,6 +146,7 @@
 
 
 <script>
+import Helper from '@/common/helper';
 
 export default {
    name: 'ResearchMenu',
@@ -216,11 +217,12 @@ export default {
          // this.fetchQuotes();
       },
       refresh(){
-         let params = {
+         let model = {
             strategy: this.strategyId,
-            dates: [this.datePickers[0].val, this.datePickers[1].val]
+            beginDate: Helper.dateNumber(this.datePickers[0].val),
+            endDate: Helper.dateNumber(this.datePickers[1].val)
          };
-         this.$emit('submit', params);
+         this.$emit('submit', model);
       },
       editStrategy(){
 

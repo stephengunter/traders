@@ -23,18 +23,18 @@ namespace Web.Areas.Api.Controllers
         private readonly IHttpContextAccessor accessor;
 		private readonly ISubscribeService subscribeService;
 		private readonly IStrategyService strategyService;
-		private readonly IRealTimeService realTimeService;
-		private readonly IHistoryService historyService;
+        private readonly IIndicatorService indicatorService;
+        private readonly IHistoryService historyService;
 
 		public ResearchController(IOptions<AppSettings> settings, IHttpContextAccessor accessor, ISubscribeService subscribeService,
-			IStrategyService strategyService, IRealTimeService realTimeService, IHistoryService historyService)
+			IStrategyService strategyService, IIndicatorService indicatorService, IHistoryService historyService)
 		{
             this.settings = settings.Value;
 
             this.accessor = accessor;
 			this.subscribeService = subscribeService;
 			this.strategyService = strategyService;
-			this.realTimeService = realTimeService;
+            this.indicatorService = indicatorService;
 			this.historyService = historyService;
 		}
 
@@ -69,20 +69,42 @@ namespace Web.Areas.Api.Controllers
 		}
 
         [HttpPost("Resolve")]
-        public async Task<ActionResult> Resolve([FromBody] ResearchViewModel model)
+        public async Task<ActionResult> Resolve([FromBody] ResearchRequestModel request)
         {
-            ValidateRequest(model);
+            ValidateRequest(request);
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var selectedStrategy = strategyService.GetById(model.strategy);
-            if (selectedStrategy == null) throw new Exception("Action: Api/Research/Resolve , Strategy Not Found. id = " + model.strategy.ToString());
+            var selectedStrategy = strategyService.GetById(request.strategy);
+            if (selectedStrategy == null) throw new Exception("Action: Api/Research/Resolve , Strategy Not Found. id = " + request.strategy.ToString());
 
+            var indicatorIds = selectedStrategy.IndicatorSettings.Select(item => item.IndicatorId).ToList();
+            var indicators = await indicatorService.FetchByIdsAsync(indicatorIds);
 
-            var quotes = await historyService.FetchRangeAsync(model.beginDate, model.endDate);
+            var inidatorEntities = indicators.Select(i => i.Entity).ToList();
 
-            var dates = quotes.Select(q => q.Date).Distinct();
+            var quotes = await historyService.FetchRangeAsync(request.beginDate, request.endDate);
 
-            return Ok();
+            var model = new ResearchViewModel { indicators = indicators.Select(i => i.MapViewModel()).ToList() };
+
+            var dates = quotes.Select(q => q.Date).Distinct().OrderBy(date => date);
+            foreach (var date in dates)
+            {
+                var dateQuotes = quotes.Where(q => q.Date == date);
+                dateQuotes = dateQuotes.GetOrdered();
+                dateQuotes.Select(q => q.MapViewModel(q.DataList.Where(d => inidatorEntities.Contains(d.Indicator)))).ToList();
+
+                model.dateQuotes.Add(
+                    new DateQuotesViewModel
+                    {
+                        date = date,
+                        quotes = dateQuotes.Select(q => q.MapViewModel(q.DataList.Where(d => inidatorEntities.Contains(d.Indicator)))).ToList()
+                    }
+                );
+            }
+
+            
+
+            return Ok(model);
         }
 
         async Task<IEnumerable<Strategy>> GetUserStrategiesAsync()
@@ -97,7 +119,7 @@ namespace Web.Areas.Api.Controllers
 
 		}
 
-        void ValidateRequest(ResearchViewModel model)
+        void ValidateRequest(ResearchRequestModel model)
         {
             string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
             if (!subscribeService.CheckKey(CurrentUserId, ip)) ModelState.AddModelError("user", "權限不足或重複登入");

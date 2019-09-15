@@ -8,9 +8,9 @@ const ResearchService = {
       let url = source;
       return BaseService.fetch(url);
    },
-   resolve(data) {
+   resolve(model) {
       let url = `${source}/resolve`;
-      return BaseService.submit('post', url, data);
+      return BaseService.submit('post', url, model);
    }
 };
 
