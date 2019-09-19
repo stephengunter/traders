@@ -17,6 +17,8 @@
                :date_string="dateString"
                :min_date="minDate" :max_date="today"
                :empty_dates="emptyDates"
+               @changed="onParamsChanged" @refresh="refresh"
+               @edit-strategy="editStrategy" @create-strategy="createStrategy"
             />
             <v-layout row>
                <v-flex xs12 >
@@ -182,21 +184,23 @@ export default {
    },
    methods: {
 		init(){
+         this.menu.ready = false;
+
          this.settings.action = '';
          this.settings.model = null;
 
-         this.hubModel = new Hub(WATCH_URL);
-         this.hubModel.on('receive', this.getRealTimeQuotes);
+         if(this.hubModel){
+            this.hubModel.disconnect();
+         }else{
+            this.hubModel = new Hub(WATCH_URL);
+            this.hubModel.on('receive', this.getRealTimeQuotes);
+         }
 
          this.$store.dispatch(INIT_WATCH)
             .then(() => {
                this.result = 1;
                this.menu.ready = true;
-               this.fetchQuotes();
-               //let strategy = this.strategies.find(item => item.id == params.strategy);
-         //if(strategy.id !== this.strategyId)  this.$store.commit(SET_STRATEGY, strategy);
-         //this.$store.commit(SET_WATCH_DATE, Helper.dateNumber(params.date));
-               //this.onParamsChanged({ strategy: this.strategies[0].id, date: this.dateString });   
+               this.fetchQuotes();  
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
                else this.resolveInitError(error);
@@ -213,26 +217,11 @@ export default {
             Bus.$emit('errors');
          }
       },
-      allowedDates(val){
-         return this.emptyDates.indexOf(val) < 0
-      },
       onParamsChanged(params){
          let strategy = this.strategies.find(item => item.id == params.strategy);
          if(strategy.id !== this.strategyId)  this.$store.commit(SET_STRATEGY, strategy);
          this.$store.commit(SET_WATCH_DATE, Helper.dateNumber(params.date));
 
-         this.fetchQuotes();
-      },
-      onStrategyChanged(val){
-         let strategy = this.strategies.find(item => item.id == val);
-         if(strategy.id !== this.strategy.id){
-            this.$store.commit(SET_STRATEGY, strategy);
-            this.fetchQuotes();
-         }
-      },
-      onDateChanged(){
-         this.showDatePicker = false;
-         this.$store.commit(SET_WATCH_DATE, Helper.dateNumber(this.dateString));
          this.fetchQuotes();
       },
       onResize(){
@@ -348,28 +337,26 @@ export default {
          }
 
          this.$store.commit(CLEAR_ERROR);
-         this.$store
-         .dispatch(action, model)
-         .then(id => {
-            this.onSettingsUpdated(true);              
-         })
-         .catch(error => {
-            if(!error)  Bus.$emit('errors');
-            else this.resolveSettingsError(error);
-         })
+         this.$store.dispatch(action, model)
+            .then(id => {
+               this.onSettingsUpdated(true);              
+            })
+            .catch(error => {
+               if(!error)  Bus.$emit('errors');
+               else this.resolveSettingsError(error);
+            })
       },
       removeStrategy(){
          let id = this.strategyId;
          this.$store.commit(CLEAR_ERROR);
-         this.$store
-         .dispatch(DELETE_STRATEGY, id)
-         .then(() => {
-            this.onSettingsUpdated();           
-         })
-         .catch(error => {
-            if(!error)  Bus.$emit('errors');
-            else this.resolveSettingsError(error);
-         })
+         this.$store.dispatch(DELETE_STRATEGY, id)
+            .then(() => {
+               this.onSettingsUpdated();           
+            })
+            .catch(error => {
+               if(!error)  Bus.$emit('errors');
+               else this.resolveSettingsError(error);
+            })
       },
       resolveSettingsError(error){       
          if(error){
@@ -380,7 +367,6 @@ export default {
       },
       onSettingsUpdated(showMsg){
          this.init();
-
          if(showMsg) Bus.$emit('success');
       }
    }

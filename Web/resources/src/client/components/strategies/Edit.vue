@@ -97,8 +97,14 @@
 								data-vv-as="停利"
 								required
 							/>
+							
 						</v-flex>
-						
+						<v-flex xs12>
+							<v-slider
+          v-model="slider" :tick-size="0.1"
+          thumb-label="always"
+        ></v-slider>
+						</v-flex>
 					</v-layout>
 					<ErrorList />
 				</v-container>
@@ -148,6 +154,7 @@ export default {
 	},
 	data () {
 		return {
+			slider: 40,
 			selectedIndicators: []
 		}
 	},

@@ -11,10 +11,10 @@
             lazy  transition="scale-transition" offset-y
          >
             <v-text-field readonly class="ml-3"
-               slot="activator" v-model="date_string" label="日期"
+               slot="activator" v-model="dateString" label="日期"
                prepend-icon="mdi-calendar"
             />
-            <v-date-picker v-model="date_string" locale="zh-cn"
+            <v-date-picker v-model="dateString" locale="zh-cn"
                :min="min_date"
                :max="max_date"
                :allowed-dates="allowedDates"
@@ -133,7 +133,6 @@ export default {
       init(){
          this.strategyId = this.strategy_id;
          this.dateString = this.date_string;
-         console.log('init');
       },
       allowedDates(val){
          return this.empty_dates.indexOf(val) < 0
@@ -148,22 +147,17 @@ export default {
       onParamsChanged(){
          this.$emit('changed', {
             strategy: this.strategyId,
-            date: Helper.dateNumber(this.dateString)
+            date: this.dateString
          });
       },
       refresh(){
-         let model = {
-            strategy: this.strategyId,
-            beginDate: Helper.dateNumber(this.datePickers[0].val),
-            endDate: Helper.dateNumber(this.datePickers[1].val)
-         };
-         this.$emit('submit', model);
+         this.$emit('refresh');
       },
       editStrategy(){
-
+         this.$emit('edit-strategy');
       },
       createStrategy(){
-
+         this.$emit('create-strategy');
       }
 
    }
