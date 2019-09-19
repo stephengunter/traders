@@ -12,87 +12,12 @@
       </v-layout>
       <v-card v-if="result > 0">
          <v-card-text>
-            <v-layout row wrap>
-               <v-flex xs10 class="d-inline-flex">
-                  <v-select style="width:180px"
-                  :items="strategyOptions"  label="策略"
-                  v-model="strategyId" @change="onStrategyChanged"
-                  />
-                  <v-menu :close-on-content-click="false"
-                  v-model="showDatePicker"
-                  :nudge-right="40"  full-width min-width="290px"
-                  lazy  transition="scale-transition" offset-y
-                  >
-                     <v-text-field readonly class="ml-3"
-                     slot="activator" v-model="dateString" label="日期"
-                     prepend-icon="mdi-calendar"
-                     />
-                     <v-date-picker v-model="dateString" locale="zh-cn"
-                     :min="minDate"
-                     :max="today"
-                     :allowed-dates="allowedDates"
-                     @input="onDateChanged" 
-                     />
-                  </v-menu>
-               </v-flex>
-               <v-flex v-if="responsive" xs2 class="text-sm-right">
-                  <v-menu offset-y class="hidden-md-and-up">
-                     <v-toolbar-side-icon  slot="activator" />
-                     <v-list>
-                        <v-list-tile @click.prevent="refresh" >
-                           <v-list-tile-action>
-                               <v-btn class="mr-1" slot="activator"  color="info" icon>
-                                 <v-icon>mdi-refresh</v-icon>
-                              </v-btn>
-                           </v-list-tile-action>
-                           <v-list-tile-content>
-                              <v-list-tile-title>重新整理</v-list-tile-title>
-                           </v-list-tile-content>
-                        </v-list-tile>
-                        <v-list-tile @click.prevent="editStrategy" >
-                           <v-list-tile-action>
-                              <v-btn class="mr-1" slot="activator"  color="success" icon>
-                                 <v-icon>mdi-settings</v-icon>
-                              </v-btn>
-                           </v-list-tile-action>
-                           <v-list-tile-content>
-                              <v-list-tile-title>策略設定</v-list-tile-title>
-                           </v-list-tile-content>
-                        </v-list-tile>
-                        <v-list-tile @click.prevent="createStrategy" >
-                           <v-list-tile-action>
-                              <v-btn slot="activator" color="primary" icon>
-                                 <v-icon>mdi-plus</v-icon>
-                              </v-btn>
-                           </v-list-tile-action>
-                           <v-list-tile-content>
-                              <v-list-tile-title>新增策略</v-list-tile-title>
-                           </v-list-tile-content>
-                        </v-list-tile>
-                     </v-list>
-                  </v-menu>
-               </v-flex>
-               <v-flex v-else xs2 class="text-sm-right">
-                  <v-tooltip top content-class="top">
-                     <v-btn @click.prevent="refresh" class="mr-1" slot="activator"  color="info" icon>
-                        <v-icon>mdi-refresh</v-icon>
-                     </v-btn>
-                     <span>重新整理</span>
-                  </v-tooltip>
-                  <v-tooltip top content-class="top">
-                     <v-btn @click.prevent="editStrategy" class="mr-1" slot="activator"  color="success" icon>
-                        <v-icon>mdi-settings</v-icon>
-                     </v-btn>
-                     <span>策略設定</span>
-                  </v-tooltip>
-                  <v-tooltip top content-class="top">
-                     <v-btn @click.prevent="createStrategy" slot="activator"  color="primary" icon>
-                        <v-icon>mdi-plus</v-icon>
-                     </v-btn>
-                     <span>新增策略</span>
-                  </v-tooltip>
-               </v-flex>
-            </v-layout>
+            <Menu v-if="menu.ready" :responsive="responsive"
+               :strategy_options="strategyOptions" :strategy_id="strategyId"
+               :date_string="dateString"
+               :min_date="minDate" :max_date="today"
+               :empty_dates="emptyDates"
+            />
             <v-layout row>
                <v-flex xs12 >
                   <v-alert :value="noData"  color="info"  icon="mdi-alert" outline  class="title">
@@ -108,16 +33,17 @@
                         即時部位：{{ realtimeView.position }}
                      </span>
                   </v-alert>
-                  <charts-default v-show="!noData" ref="myChart" 
-                  :strategy="strategy" :date="date"
-                  @resize="onResize"
+                  <charts-default v-show="!noData" ref="myChart"
+                  :responsive="responsive" 
+                  :strategy_model="strategyModel" :charts_model="chartsModel"
+                  @resize="onResize" @init-completed="onChartsInitCompleted"
                   />
                </v-flex>
                
             </v-layout>
             <v-layout row>
                <v-flex xs12 >
-                  <trade-list />
+                  <trade-list :result="trade.result" />
                </v-flex>
             </v-layout>
 
@@ -137,18 +63,23 @@
 </template>
 
 <script>
+import { mapState, mapGetters } from 'vuex';
 import moment from 'moment';
+import Hub from '@/models/hub';
+import { WATCH_URL } from '@/common/config';
 import Helper from '@/common/helper';
-import { mapState } from 'vuex';
-import { INIT_WATCH, FETCH_QUOTES,
+
+import { INIT_WATCH, FETCH_QUOTES, INIT_STRATEGY, INIT_CHART,
+   GET_REALTIME_QUOTES,
    CREATE_STRATEGY, STORE_STRATEGY,
    EDIT_STRATEGY, UPDATE_STRATEGY,
    DELETE_STRATEGY } from '../store/actions.type';
 
 
-import { SET_RESPONSIVE, SET_DATE, SET_STRATEGY, CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
+import { SET_RESPONSIVE, SET_WATCH_DATE, SET_STRATEGY, CLEAR_ERROR, SET_ERROR } from '../store/mutations.type';
 
 import Bread from '../components/TheBread';
+import Menu from '../components/watch/Menu';
 import ChartsDefault from '../components/charts/Default';
 import StrategyEdit from '../components/strategies/Edit';
 import TradeList from '../components/trades/List';
@@ -157,6 +88,8 @@ export default {
    name: 'WatchView',
    components: {
       Bread,
+      Menu,
+      'charts-default' : ChartsDefault,
       'charts-default' : ChartsDefault,
       'strategy-edit' : StrategyEdit,
       'trade-list' : TradeList
@@ -164,10 +97,10 @@ export default {
    data(){
       return {
          today: moment().format('YYYY-MM-DD'),
-         emptyDates: ['2019-08-28', '2019-08-29', '2019-08-30'],
-         strategyId: 0,
-         dateString: '',
-         showDatePicker: false,
+
+         menu: {
+            ready: false,
+         },
 
          result: 0,
          errMsg: '',
@@ -176,46 +109,67 @@ export default {
          settings:{
             action: '',
             model: null
-         }
-         
+         },
+
+         trade: {
+            result: null,
+            position: null,
+            signalPosition: null
+         },
+
+         hubModel: null
       }
    },
    computed: {
       ...mapState({
          responsive: state => state.app.responsive,
-         key: state => state.watch.key,
+         key: state => state.auth.key,
          minDate: state => state.watch.minDate,
+         emptyDates: state => state.watch.emptyDates,
          date: state => state.watch.date,
-         strategy: state => state.watch.strategy,
-         strategies: state => state.watch.strategies,
-         realTime: state => state.chart.realTime,
+         strategy: state => state.strategy.strategy,
+         strategies: state => state.strategy.strategies,
+         strategyModel: state => state.strategy.strategyModel,
+         chartsModel: state => state.charts.chartsModel,
+         indicators: state => state.indicator.indicators,
+         realTime: state => state.quote.realTime,
+         dateQuotesList: state => state.quote.dateQuotesList,
          position: state => state.strategy.position,
          signalPosition: state => state.strategy.signalPosition
       }),
+      ...mapGetters(['quoteLatestTime']),
       strategyOptions(){
          return this.strategies.map(item => ({
                value: item.id, text: item.name 
              }))
       },
+      dateString(){
+         return this.date ? Helper.toDateString(this.date) : '';
+      },
+      strategyId(){
+         return this.strategy ? this.strategy.id : 0;
+      },
       editting(){
          return this.settings.action != '';
       },
       realtimeView(){
-         if(this.position && this.signalPosition){
+         let position = this.trade.position;
+         let signalPosition = this.trade.signalPosition;
+         if(position && signalPosition){
             let signalText = '中立';
             let color = 'blue lighten-3';
 
-            if(this.signalPosition.val > 0 ){
+            if(signalPosition.val > 0 ){
                signalText = '多';
                color = 'red';
-            }else if(this.signalPosition.val < 0 ){
+            }else if(signalPosition.val < 0 ){
                signalText = '空';
                color = 'green';
             }
 
             return {
                signalText: signalText,
-               position: this.position.val,
+               position: position.val,
                color: color
             }
          }else return null;
@@ -231,19 +185,24 @@ export default {
          this.settings.action = '';
          this.settings.model = null;
 
+         this.hubModel = new Hub(WATCH_URL);
+         this.hubModel.on('receive', this.getRealTimeQuotes);
+
          this.$store.dispatch(INIT_WATCH)
             .then(() => {
                this.result = 1;
-               this.dateString = Helper.toDateString(this.date);
-               this.strategyId = this.strategies[0].id;
-
-               this.fetchQuotes();   
+               this.menu.ready = true;
+               this.fetchQuotes();
+               //let strategy = this.strategies.find(item => item.id == params.strategy);
+         //if(strategy.id !== this.strategyId)  this.$store.commit(SET_STRATEGY, strategy);
+         //this.$store.commit(SET_WATCH_DATE, Helper.dateNumber(params.date));
+               //this.onParamsChanged({ strategy: this.strategies[0].id, date: this.dateString });   
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
-               else this.resolveWatchError(error);
+               else this.resolveInitError(error);
             })
       },
-      resolveWatchError(error){
+      resolveInitError(error){
          if(error.hasOwnProperty('subscribe')){
             this.errMsg = '您還沒有完成訂閱或者不在訂閱期間內';
             this.result = -1;
@@ -254,6 +213,16 @@ export default {
             Bus.$emit('errors');
          }
       },
+      allowedDates(val){
+         return this.emptyDates.indexOf(val) < 0
+      },
+      onParamsChanged(params){
+         let strategy = this.strategies.find(item => item.id == params.strategy);
+         if(strategy.id !== this.strategyId)  this.$store.commit(SET_STRATEGY, strategy);
+         this.$store.commit(SET_WATCH_DATE, Helper.dateNumber(params.date));
+
+         this.fetchQuotes();
+      },
       onStrategyChanged(val){
          let strategy = this.strategies.find(item => item.id == val);
          if(strategy.id !== this.strategy.id){
@@ -261,36 +230,77 @@ export default {
             this.fetchQuotes();
          }
       },
-      allowedDates(val){
-         return this.emptyDates.indexOf(val) < 0
-      },
       onDateChanged(){
          this.showDatePicker = false;
-         this.$store.commit(SET_DATE, Helper.dateNumber(this.dateString));
+         this.$store.commit(SET_WATCH_DATE, Helper.dateNumber(this.dateString));
          this.fetchQuotes();
       },
       onResize(){
          this.$store.commit(SET_RESPONSIVE, Helper.isSmallScreen());
       },
       fetchQuotes(){
+         this.hubModel.disconnect();
          let params = {
             user: this.key,
-            date: this.date,
-            strategy: this.strategy.id  
+            strategy: this.strategyId,
+            date: this.date
          };
          this.$store.dispatch(FETCH_QUOTES, params)
-            .then(result => {
-               if(result){
-                  this.noData = false;   
-               }else{
-                  //沒有資料
-                  this.noData = true;
-               }
-               this.$refs.myChart.init();  
+         .then(model => {
+            this.noData = model.noData;
+            this.initStrategy();
+         }).catch(error => {
+            Bus.$emit('errors');
+         })
+      },
+      initStrategy(){
+         let indicatorIds = this.strategy.indicatorSettings.map(item => item.indicatorId);
+         let indicators = this.indicators.filter(item => indicatorIds.includes(item.id));
+         let date = this.date;
+         let dateQuotesList = this.dateQuotesList;
+         this.$store.dispatch(INIT_STRATEGY, { date, indicators, dateQuotesList })
+         .then(() => {
+            this.initCharts();            
+         }).catch(error => {
+            Bus.$emit('errors');
+         })
+      },
+      initCharts(){
+         this.$store.dispatch(INIT_CHART, this.strategyModel)
+            .then(() => {
+               this.$refs.myChart.init();
+               this.loadTrades(); 
             }).catch(error => {
-               console.log('error',error);
-               if(!error)  Bus.$emit('errors');
-               else this.resolveWatchError(error);
+               Bus.$emit('errors');
+            })
+      },
+      onChartsInitCompleted(){
+         if(this.realTime) this.hubModel.connect();
+      },
+      loadTrades(){
+         this.trade.result = this.strategyModel.tradeResult;
+         this.trade.position = this.strategyModel.latestTradePosition;
+         this.trade.signalPosition = this.strategyModel.latestSignalPosition;
+      },
+      getRealTimeQuotes(){
+         let params = {
+            user: this.key,
+            time: this.quoteLatestTime  
+         };
+         this.$store.dispatch(GET_REALTIME_QUOTES, params)
+            .then(quotes => {
+               if(quotes.length) this.updateRealTimeQuotes(quotes);               
+            }).catch(error => {
+               Bus.$emit('errors');
+            })
+      },
+      updateRealTimeQuotes(quotes){
+         this.chartsModel.updateRealTimeQuotes(quotes)
+            .then(() => {
+               this.$refs.myChart.update();
+               this.loadTrades();
+            }).catch(error => {
+               Bus.$emit('errors');
             })
       },
       refresh(){

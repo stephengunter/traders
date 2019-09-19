@@ -1,87 +1,82 @@
 import Helper from '@/common/helper';
 
 class Charts {
-   strategy = null;
-   quotes = [];
-   priceSeriesName = '報價';
 
-   prices = [];
-   times = [];
+   constructor(strategy) {
+      this._strategy = strategy;
+      this._priceSeriesName = '報價';
+      this._kLineStyle = {
+         color: '#FD1050',
+         color0: '#0CF49B',
+         borderColor: '#FD1050',
+         borderColor0: '#0CF49B'
+      };
+      this._indicatorSeries = [];
 
-   indicatorSeries = [];
+      let quotes = strategy.quotes;
+      this._prices = quotes.map(item => this.mapQuote(item));
+      this._times = quotes.map(item => Helper.timeString(item.time));
+      
+   }
 
-   kLineStyle = {
-      color: '#FD1050',
-      color0: '#0CF49B',
-      borderColor: '#FD1050',
-      borderColor0: '#0CF49B'
-   };
+   get quotes() {
+      return this._strategy.quotes;
+   }
 
-   constructor(strategy, quotes) {
-
-      this.prices = quotes.map(item => this.mapQuote(item));
-      this.times = quotes.map(item => Helper.timeString(item.time));
-
-      this.quotes = quotes;
-      this.strategy = strategy;
+   get options() {
+      return this.defaultOptions();
    }
 
    init(){
       
       return new Promise((resolve, reject) => {
-         this.strategy.calculate()
-         .then(() => {
-            let mainIndicators = this.strategy.getMainIndicators();
-            let subIndicators = this.strategy.getSubIndicators();
-          
-            this.xAxis = this.initXAxis(subIndicators, this.times);
-            this.yAxis = this.initYAxis(subIndicators);
-           
-            this.grids = this.initGrids(subIndicators);
-           
-            this.series = this.initSeries(mainIndicators, subIndicators);
-           
-            resolve(this.defaultOptions());
-         })
-         .catch(error => {
-            reject(error); 
-         })
+         let mainIndicators = this._strategy.getMainIndicators();
+         let subIndicators = this._strategy.getSubIndicators();
          
+         this.xAxis = this.initXAxis(subIndicators, this._times);
+         this.yAxis = this.initYAxis(subIndicators);
+         
+         this.grids = this.initGrids(subIndicators);
+         
+         this.series = this.initSeries(mainIndicators, subIndicators);
+         
+         resolve(true);         
       });  
    }
 
    addUpdateQuote(item){
       let index = this.quotes.findIndex(q => q.time == item.time);
-      if(index > this.times.length - 1){
-         this.times.push(Helper.timeString(item.time));
-         this.prices.push(this.mapQuote(item));
-         this.strategy.addDataList(item.dataList);
+      if(index > this._times.length - 1){
+         this._times.push(Helper.timeString(item.time));
+         this._prices.push(this.mapQuote(item));
+         
+         this._strategy.addDataList(item.dataList);
       }else{
-         this.prices[index] = this.mapQuote(item);
-         this.strategy.updateDataList(item);
+         this._prices[index] = this.mapQuote(item);
+         this._strategy.updateDataList(item);
       }
       
    }
 
    updateRealTimeQuotes(newQuotes){
-      let startIndex = this.quotes.length - newQuotes.length ;
       for (let i = 0; i < newQuotes.length; i++) {
          this.addUpdateQuote(newQuotes[i]);
       }
-
+      let startIndex = this.quotes.length - newQuotes.length ;
       return new Promise((resolve, reject) => {
-         this.strategy.calculate(startIndex)
+         this._strategy.calculate(startIndex)
          .then(() => {
-            let mainIndicators = this.strategy.getMainIndicators();
-            let subIndicators = this.strategy.getSubIndicators();
+            let mainIndicators = this._strategy.getMainIndicators();
+            let subIndicators = this._strategy.getSubIndicators();
 
             for (let i = 0; i < this.xAxis; i++) {
-               this.xAxis[i].data = this.times;
+               this.xAxis[i].data = this._times;
             }
-            this.series[0].data = this.prices;
+            this.series[0].data = this._prices;
 
-            this.series[0].itemStyle = this.kLineStyle;
+            this.series[0].itemStyle = this._kLineStyle;
             let mainSignals = this.resolveMainSignals();
+           
             let markPoints = mainSignals.map(item => this.convertToMarkPoint(item));
             this.series[0].markPoint.data = markPoints;
 
@@ -143,7 +138,7 @@ class Charts {
 
             }
             
-            resolve(this.defaultOptions());
+            resolve(true);
          })
          .catch(error => { 
             reject(error); 
@@ -158,7 +153,7 @@ class Charts {
    }
 
    getPrice(index){
-      return this.prices[index][1];    
+      return this._prices[index][1];    
    }
 
    getTradePrice(index){
@@ -175,7 +170,7 @@ class Charts {
    initXAxis(subIndicators){
       let xAxis = [{
             type: 'category',
-            data: this.times,
+            data: this._times,
             axisLine: {
                lineStyle: {
                   color: '#8392A5'
@@ -201,7 +196,7 @@ class Charts {
       {
          xAxis.push({
             type: 'category',
-            data: this.times,
+            data: this._times,
             gridIndex: i + 1,
             axisTick: {
                show: false
@@ -250,6 +245,7 @@ class Charts {
    resolveMainSignals(){
       let signals = [];
       let trades = this.resolveTrades();
+      
       for(let i = 0; i < trades.length; i++){
          let trade = trades[i];
          let exist = signals.find(item => item.index === trade.index);
@@ -263,10 +259,10 @@ class Charts {
    }
 
    resolveTrades(){
-      let tradeItems = this.strategy.getTradeItems();
+      let tradeItems = this._strategy.getTradeItems();
       return tradeItems.map(item => {
          return {
-            ...item , time: this.times[item.index]
+            ...item , time: this._times[item.index]
          }
       });
       
@@ -303,9 +299,9 @@ class Charts {
 
       let series = [{
          type: 'candlestick',
-         name: this.priceSeriesName,
-         itemStyle: this.kLineStyle,
-         data: this.prices,
+         name: this._priceSeriesName,
+         itemStyle: this._kLineStyle,
+         data: this._prices,
          markPoint: {
             data: markPoints
          },
@@ -328,7 +324,7 @@ class Charts {
             }
          });
 
-         this.indicatorSeries.push({
+         this._indicatorSeries.push({
             index: seriesIndex,
             entity: indicator.entity,
             grid: 'main',
@@ -368,7 +364,7 @@ class Charts {
                }
          });
 
-         this.indicatorSeries.push({
+         this._indicatorSeries.push({
             index: seriesIndex,
             entity: indicator.entity,
             grid: 'sub',
@@ -396,7 +392,7 @@ class Charts {
                }
             });
 
-            this.indicatorSeries.push({
+            this._indicatorSeries.push({
                index: seriesIndex,
                entity: indicator.entity,
                grid: 'sub',
@@ -456,8 +452,8 @@ class Charts {
 
    getTootip(){
 
-      let strategy = this.strategy;
-      let indicatorSeries = this.indicatorSeries;
+      let strategy = this._strategy;
+      let indicatorSeries = this._indicatorSeries;
       let getColor = this.getColor;
 
       return {
@@ -548,9 +544,6 @@ class Charts {
 
      
    }
-
-
-   
 
 }
 

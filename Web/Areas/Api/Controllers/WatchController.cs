@@ -23,18 +23,21 @@ namespace Web.Areas.Api.Controllers
         private readonly IHttpContextAccessor accessor;
 		private readonly ISubscribeService subscribeService;
 		private readonly IStrategyService strategyService;
-		private readonly IRealTimeService realTimeService;
+        private readonly IIndicatorService indicatorService;
+        private readonly IRealTimeService realTimeService;
 		private readonly IHistoryService dataService;
 
 		public WatchController(IOptions<AppSettings> settings, IHttpContextAccessor accessor, ISubscribeService subscribeService,
-			IStrategyService strategyService, IRealTimeService realTimeService, IHistoryService dataService)
+			IStrategyService strategyService, IIndicatorService indicatorService,
+            IRealTimeService realTimeService, IHistoryService dataService)
 		{
             this.settings = settings.Value;
 
             this.accessor = accessor;
 			this.subscribeService = subscribeService;
 			this.strategyService = strategyService;
-			this.realTimeService = realTimeService;
+            this.indicatorService = indicatorService;
+            this.realTimeService = realTimeService;
 			this.dataService = dataService;
 		}
 
@@ -56,12 +59,15 @@ namespace Web.Areas.Api.Controllers
 			int date = GetLatestDate();
 
 			var strategies = await GetUserStrategiesAsync();
-			var model = new WatchViewModel()
+            var indicators = await indicatorService.GetActiveIndicatorsAsync();
+
+            var model = new WatchViewModel()
 			{
                 minDate = settings.MinDate,
 				date = date,
 				strategies = strategies.Select(s => s.MapViewModel()).ToList(),
-				key = CurrentUserId
+                indicators = indicators.Select(i => i.MapViewModel()).ToList(),
+                key = CurrentUserId
 			};
 
 			return Ok(model);

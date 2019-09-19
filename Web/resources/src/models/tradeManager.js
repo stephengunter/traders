@@ -1,18 +1,14 @@
 import Trade from './trade';
+import DayTradeResult from './dayTradeResult';
 
 class TradeManager {
-   
-   times = [];
-   _tradeItems = [];
-   quotes = [];
-   stpw = 0;
-   stpl = 0;
-
-   constructor(quotes, stpw, stpl) {
-      this.quotes = quotes;
-      this.stpw = stpw;
-      this.stpl = 0 - stpl;
+   constructor(stpw, stpl, cost = 0) {
+      this._quotes = [];
+      this._stpw = stpw;
+      this._stpl = 0 - stpl;
+      this._cost = cost;
       this._tradeItems = [];
+      this._times = [];
 
       let time = 84600;
       while (time <= 134500) {
@@ -22,10 +18,16 @@ class TradeManager {
          else if(time === 116000) time = 120000;
          else if(time === 126000) time = 130000;
 
-         this.times.push(time);
+         this._times.push(time);
          time += 100;
       }
 
+   }
+
+   init(date, quotes){
+      this._date = date;
+      this._quotes = quotes;
+      this._tradeItems = [];
    }
 
    get tradeItems() {
@@ -34,9 +36,9 @@ class TradeManager {
 
    get result() {
       if(!this._tradeItems) return null;
-
+      
       let tradeItems = this._tradeItems;
-      let views = [];
+      let trades = [];
       let sum = 0;
       for (let i = 0; i < tradeItems.length; i++) {
          
@@ -46,23 +48,20 @@ class TradeManager {
 
             let trade = new Trade(inTrade, outTrade);
             
-            views.push(trade);
+            trades.push(trade);
             sum += trade.profit;
          }
       }
 
-      return {
-         views: views,
-         total: sum
-      }; 
+      return new DayTradeResult(this._date, trades);
    }
 
    getTimeIndex(time){
-      return this.times.indexOf(time);
+      return this._times.indexOf(time);
    }
 
    getPrice(index){
-      return this.quotes[index].price;    
+      return this._quotes[index].price;    
    }
 
    getTradePrice(index){
@@ -117,8 +116,8 @@ class TradeManager {
    
 
    checkSTP(profit){
-      if(this.stpw !== 0 && profit >= this.stpw) return 1;
-      else if(this.stpl !== 0 && profit <= this.stpl) return -1;
+      if(this._stpw !== 0 && profit >= this._stpw) return 1;
+      else if(this._stpl !== 0 && profit <= this._stpl) return -1;
       return 0;
    }
 
@@ -137,13 +136,12 @@ class TradeManager {
             profit = currentPosition.price - price;
          }
 
-      }
+   }
 
       return profit;
    }
 
    onSignal(signal, dataIndex){
-      
       this.removeTrade(dataIndex);
 
       let profit = this.getProfit(dataIndex);
@@ -222,7 +220,7 @@ class TradeManager {
 
       this.addTrade({
          index: dataIndex,
-         time: this.times[dataIndex],
+         time: this._times[dataIndex],
          val: 0,
          price: this.getTradePrice(dataIndex),
          text: text,
@@ -239,7 +237,7 @@ class TradeManager {
       
       this.addTrade({
          index: dataIndex,
-         time: this.times[dataIndex],
+         time: this._times[dataIndex],
          val: 0,
          price: tradeItemPrice,
          text: text,
@@ -252,7 +250,7 @@ class TradeManager {
    in(dataIndex, val){
       this.addTrade({
          index: dataIndex,
-         time: this.times[dataIndex],
+         time: this._times[dataIndex],
          val: val,
          price: this.getTradePrice(dataIndex),
          text: val > 0 ? '多單進場' : '空單進場',

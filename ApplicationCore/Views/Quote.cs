@@ -31,8 +31,18 @@ namespace ApplicationCore.Views
 
 	}
 
+	public class QuoteIndexViewModel
+	{
 
-    public class DateQuotesViewModel
+		public bool realTime { get; set; }
+
+		public ICollection<DateQuotesViewModel> dateQuotesList { get; set; } = new List<DateQuotesViewModel>();
+
+        public bool NoData => dateQuotesList.IsNullOrEmpty();
+    }
+
+
+	public class DateQuotesViewModel
     {
         public int date { get; set; }
         public ICollection<QuoteViewModel> quotes { get; set; }

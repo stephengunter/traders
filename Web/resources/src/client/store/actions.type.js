@@ -24,8 +24,13 @@ export const RESET_PASSWORD = 'resetPassword';
 
 //Watch
 export const INIT_WATCH = 'initWatch';
+
+//Quotes
 export const FETCH_QUOTES = 'fetchQuotes';
-export const GET_QUOTES = 'getQuotes';
+export const GET_REALTIME_QUOTES = 'getRealtimeQuotes';
+
+//Chart
+export const INIT_CHART = 'initChart';
 
 //Research
 export const INIT_RESEARCH = 'initResearch';
@@ -37,6 +42,7 @@ export const STORE_STRATEGY = 'storeStrategy';
 export const EDIT_STRATEGY = 'editStrategy';
 export const UPDATE_STRATEGY = 'updateStrategy';
 export const DELETE_STRATEGY = 'deleteStrategy';
+export const INIT_STRATEGY = 'initStrategy';
 
 //Indicator
 export const FETCH_INDICATORS = 'fetchIndicators';

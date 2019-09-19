@@ -10,13 +10,13 @@
                :min_date="minDate" :max_date="maxDate" :empty_dates="emptyDates"
                @strategy-changed="onStrategyChanged"   @submit="submit"
             />
-            
-            <h1>回測結果</h1>
-            <Report />
-
+            <div v-if="report">
+               <h1>回測結果</h1>
+               <Report :model="report" />
+            </div>
             <v-layout row>
                <v-flex sm12>
-                  <days-table :trades="trades" />
+                  <days-table v-if="false" :trades="trades" />
                </v-flex>
             </v-layout>
          </v-card-text>
@@ -48,29 +48,8 @@ import ChartsDefault from '../components/charts/Default';
 import StrategyEdit from '../components/strategies/Edit';
 import TradeList from '../components/trades/List';
 
-const updateManagefee = (done) => {
-   let apiEndPoint = getApiEndPoint('core');
-   let model  = models.shift();
-   let id = model.id;
-   console.log('updateManagefee id:',id);
-   setTimeout(() => {
-      request(apiEndPoint)
-      .put(`/api/fundoperation/${id}`)
-      .set('Authorization', `Bearer ${token}`)
-      .send(model)
-      .expect(204)
-      .end((err, res) => {
-         if (err) return done(err);
-         else{
-            if(models.length) updateManagefee(done);
-            else done();
-         }
-      });
-   }, 1000);
-}
-
 export default {
-   name: 'WatchView',
+   name: 'ResearchView',
    components: {
       Bread,
       Forbidden,
@@ -91,8 +70,6 @@ export default {
             error: false,
             msg: ''
          },
-
-         strategyModel: null,
          
          noData: false,
 
@@ -101,7 +78,7 @@ export default {
             model: null
          },
          
-         models:[],
+         
          
          trades:[{
             date: '2019-9-11', profit: -24, counts: 12
@@ -118,7 +95,8 @@ export default {
          strategy: state => state.research.strategy,
          strategies: state => state.research.strategies,
          indicators: state => state.research.indicators,
-         dateQuotes: state => state.research.dateQuotes
+         dateQuotes: state => state.research.dateQuotes,
+         report: state => state.research.report
       }),
       strategyOptions(){
          return this.strategies.map(item => ({
@@ -152,51 +130,10 @@ export default {
               
             }).catch(error => {
                if(!error)  Bus.$emit('errors');
-               else this.resolveResearchError(error);
+               else this.resolveInitError(error);
             })
       },
-      onDateQuotesLoaded(){
-         console.log('onDateQuotesLoaded');
-         this.strategyModel = new Strategy(this.strategy, this.indicators, this.dateQuotes);
-         // for (let i = 0; i < this.dateQuotes.length; i++) {
-         //    let date = this.dateQuotes[i].date;
-         //    this.strategyModel.setDate(date);
-
-         //    this.strategyModel.calculate()
-         //    .then(() => {
-         //       let trades = this.strategyModel.getTrades();
-         //       this.models.push({
-         //          date, trades
-         //       })
-         //    }).catch(error => {
-         //       console.log(error);
-         //    })
-         // }
-
-         let dates = this.dateQuotes.map(item => item.date);
-        
-         this.calculateByDay(dates);
-
-      },
-      oncalculateComplete(){
-         console.log('oncalculateComplete', this.models);
-      },
-      calculateByDay(dates){
-         let date  = dates.shift();
-         this.strategyModel.setDate(date);
-         this.strategyModel.calculate()
-         .then(() => {
-            let trades = this.strategyModel.getTrades();
-            this.models.push({
-               date, trades
-            });
-            if(dates.length) this.calculateByDay(dates);
-            else this.oncalculateComplete();
-         }).catch(error => {
-            console.log(error);
-         })
-      },
-      resolveResearchError(error){
+      resolveInitError(error){
          if(error.hasOwnProperty('subscribe')){
             this.errMsg = '您還沒有完成訂閱或者不在訂閱期間內';
             this.result = -1;
@@ -227,14 +164,18 @@ export default {
       },
       submit(model){
          this.$store.dispatch(RESOLVE_RESEARCH, model)
-            .then(model => {
-               console.log(model);
-               //this.onDateQuotesLoaded();
+            .then(() => {
+               this.onResolved();
             }).catch(error => {
-               console.log('error',error);
                if(!error)  Bus.$emit('errors');
                else this.resolveResearchError(error);
             })
+      },
+      resolveResearchError(error){
+         console.log(error);
+      },
+      onResolved(){
+
       },
       details(){
 

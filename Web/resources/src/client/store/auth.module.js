@@ -19,12 +19,13 @@ import {
    
 } from './actions.type';
 
-import { SET_AUTH, PURGE_AUTH, SET_USER, 
+import { SET_AUTH, PURGE_AUTH, SET_USER, SET_KEY,
    SET_LOADING 
 } from './mutations.type';
 
  
 const initialState = {
+   key: '',
    user: {},
    isAuthenticated: !!JwtService.getToken()
 };
@@ -178,6 +179,9 @@ const actions = {
 const mutations = {
    [SET_USER](state, user) {
       state.user = user;
+   },
+   [SET_KEY](state, key) {
+      state.key = key;
    },
    [SET_AUTH](state, model) {
       

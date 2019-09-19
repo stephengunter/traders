@@ -1,17 +1,22 @@
 import StrategyService from '../services/strategy';
 import Helper from '@/common/helper';
+import Strategy from '@/models/strategy';
 
 import {
    CREATE_STRATEGY, STORE_STRATEGY, 
    EDIT_STRATEGY, UPDATE_STRATEGY,
-   DELETE_STRATEGY
+   DELETE_STRATEGY, INIT_STRATEGY
 } from './actions.type';
 
 import { 
-   SET_LOADING, SET_TRADES, SET_POSITION, SET_SIGNAL_POSITION
+   SET_LOADING, SET_STRATEGY, SET_STRATEGIES, SET_STRATEGY_MODEL,
+   SET_TRADES, SET_POSITION, SET_SIGNAL_POSITION
 } from './mutations.type';
 
 const initialState = {
+   strategies: [],
+   strategy: null,
+   strategyModel: null,
    trades: [],
    position: null,
    signalPosition: null
@@ -109,10 +114,41 @@ const actions = {
             });
       });
    },
+   [INIT_STRATEGY](context, model) {
+      let date = model.date;
+      let indicators = model.indicators;
+      let dateQuotesList = model.dateQuotesList;
+
+      context.commit(SET_LOADING, true);
+      return new Promise((resolve, reject) => {
+         let strategyModel = new Strategy(state.strategy, indicators, dateQuotesList);
+         strategyModel.init(date);
+         strategyModel.calculate()
+         .then(() => {
+            context.commit(SET_STRATEGY_MODEL, strategyModel);
+            resolve(true);
+         })
+         .catch(error => {  
+            reject(Helper.resolveErrorData(error));
+         })
+         .finally(() => { 
+            context.commit(SET_LOADING, false);
+         });
+      });
+   },
 };
 
 
 const mutations = {
+   [SET_STRATEGY](state, strategy) {
+      state.strategy = strategy;
+   },
+   [SET_STRATEGIES](state, strategies) {
+      state.strategies = strategies;
+   },
+   [SET_STRATEGY_MODEL](state, strategyModel) {
+      state.strategyModel = strategyModel;
+   },
    [SET_POSITION](state, item) {
       state.position = item;
    },

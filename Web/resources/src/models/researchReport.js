@@ -9,8 +9,15 @@ class ResearchReport {
       this._totalProfit = totalProfit;
    }
 
-   get totalProfit() {
+   get grossProfit(){
       return this._totalProfit;
+   }
+   get netProfit(){
+      return this._totalProfit;
+   }
+
+   get tradeCount(){
+      return this._tradeCount;
    }
    
 }

@@ -1,23 +1,27 @@
 class DayTradeResult {
-   constructor(trades) {
-      this._val = inTrade.val;
-      this._inTrade = inTrade;
-      this._outTrade = outTrade;
-      this._profit = outTrade ? outTrade.profit : 0;
+   constructor(date, trades) {
+      this._date = date;
+      this._trades = trades;
    }
-   get val() {
-      return this._inTrade.val;
+
+   get date() {
+      return this._date;
+   }
+
+   get trades() {
+      return this._trades;
    }
    
-   get inTrade() {
-      return this._inTrade;
+   get tradeCount() {
+      return this._trades.length;
    }
-   get outTrade() {
+
+   get grossProfit() {
       return this._outTrade;
    }
 
-   get profit() {
-      return this._profit;
+   get netProfit(){
+      return this._totalProfit;
    }
 }
 

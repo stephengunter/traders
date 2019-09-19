@@ -8,7 +8,7 @@ import {
 } from './actions.type';
 
 import { 
-   SET_LOADING, SET_KEY, SET_MAXDATE, SET_MINDATE,
+   SET_LOADING, SET_KEY, SET_MAXDATE, SET_MINDATE, SET_RESEARCH_REPORT,
    SET_STRATEGY, SET_STRATEGIES, SET_INDICATORS, SET_DATE_QUOTES 
 } from './mutations.type';
 
@@ -21,21 +21,21 @@ const state = {
    strategies: [],
    indicators: [],
    dateQuotes: [],
-   report: null,
-   model: null
+   report: null
 };
 
 const getters = {
    
 };
 
+var _context = null;
 var strategyModel = null;
 var dateTrades = [];
 const initStrategy = (indicators, dateQuotes) => strategyModel = new Strategy(state.strategy, indicators, dateQuotes);
 
 const calculate = (dates, resolve, reject) => {
    let date  = dates.shift();
-   strategyModel.setDate(date);
+   strategyModel.init(date);
 
    strategyModel.calculate()
    .then(() => {
@@ -45,8 +45,8 @@ const calculate = (dates, resolve, reject) => {
       });
       if(dates.length) calculate(dates, resolve, reject);
       else{
-         state.report = new ResearchReport(dateTrades);
-         resolve(state.report);
+         _context.commit(SET_RESEARCH_REPORT, new ResearchReport(dateTrades));
+         resolve(true);
       }
    }).catch(error => {
       reject(error);
@@ -77,9 +77,12 @@ const actions = {
    },
    [RESOLVE_RESEARCH](context, model) {
       context.commit(SET_LOADING, true);
+      context.commit(SET_RESEARCH_REPORT, null);
       return new Promise((resolve, reject) => {
          ResearchService.resolve(model)
             .then(model => {
+               _context = context;
+               
                initStrategy(model.indicators, model.dateQuotes);
               
                context.commit(SET_INDICATORS, model.indicators);
@@ -121,6 +124,9 @@ const mutations = {
    },
    [SET_DATE_QUOTES](state, dateQuotes) {
       state.dateQuotes = dateQuotes;
+   },
+   [SET_RESEARCH_REPORT](state, report) {
+      state.report = report;
    }
 };
 
