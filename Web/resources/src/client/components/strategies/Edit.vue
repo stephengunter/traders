@@ -99,12 +99,14 @@
 							/>
 							
 						</v-flex>
-						<v-flex xs12>
-							<v-slider
-          v-model="slider" :tick-size="0.1"
-          thumb-label="always"
-        ></v-slider>
-						</v-flex>
+						<v-flex xs6>
+							<v-text-field label="交易成本(點)"
+								v-model="foo" readonly
+								prepend-inner-icon="mdi-menu-down" append-icon="mdi-menu-up"
+								@click:prepend-inner="changeCost(false)"								
+								@click:append="changeCost(true)"
+							/>
+						</v-flex>	
 					</v-layout>
 					<ErrorList />
 				</v-container>
@@ -154,7 +156,7 @@ export default {
 	},
 	data () {
 		return {
-			slider: 40,
+			foo: String(2.0),
 			selectedIndicators: []
 		}
 	},
@@ -184,6 +186,54 @@ export default {
 		});
 	},
 	methods: {
+		changeCost(add){
+			let parts = this.foo.split('.');
+			let int = parseInt(parts[0]);
+			let point = 0;
+			if(parts.length > 1) point = parseInt(parts[1]);
+
+			if(add){
+				point += 1;
+				if(point === 10){
+					int += 1;
+					point = 0;
+				}
+			}else{
+				if(point === 0 ){
+					point = 10;
+					int -= 1;
+				}
+				point -= 1;
+			}
+
+			this.foo = `${int}.${point}`;
+		},
+		addCost(){
+			let parts = this.foo.split('.');
+			let int = parseInt(parts[0]);
+			let point = 0;
+			if(parts.length > 1) point = parseInt(parts[1]);
+				
+			point += 1;
+			if(point === 10){
+				int += 1;
+				point = 0;
+			} 
+			this.foo = `${int}.${point}`;
+		},
+		minusCost(){
+			let parts = this.foo.split('.');
+			let int = parseInt(parts[0]);
+			let point = 0;
+			if(parts.length > 1) point = parseInt(parts[1]);
+
+			if(point === 0 ){
+				point = 10;
+				int -= 1;
+			}
+			point -= 1;
+			this.foo = `${int}.${point}`;
+		},
 		cancel(){
 			this.$emit('cancel');
 		},
