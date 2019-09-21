@@ -12,11 +12,11 @@
                @changed="onParamsChanged" @submit="submit"
                @edit-strategy="editStrategy" @create-strategy="createStrategy"
             />
-            <div v-if="report.ready">
+            <div id="div-result" v-show="report.ready">
                <h1>回測結果</h1>
-               <Report :trade_results="tradeResults" />
+               <Report :trade_results="tradeResults" v-if="report.ready"/>
             </div>
-            <v-layout v-if="seletedResult" row>
+            <v-layout v-if="seletedResult" row >
                <v-flex sm12>
                   <days-table v-if="tradeResults.length" 
                      :trade_results="[seletedResult]"
@@ -25,7 +25,7 @@
                </v-flex>
             </v-layout>
             <v-layout row>
-               <v-flex xs12 >
+               <v-flex xs12>
                   <charts-default  ref="myChart" v-show="chart.ready"
                      :responsive="responsive" 
                      :strategy_model="strategyModel" :charts_model="chartsModel"
@@ -33,12 +33,11 @@
                   />
                </v-flex>
             </v-layout>
-            <v-layout v-if="false" row>
+            <v-layout v-if="seletedResult" row>
                <v-flex xs12 >
                   <trade-list :result="seletedResult" />
                </v-flex>
             </v-layout>
-
 
             <v-layout row v-if="unSeletedResults.length">
                <v-flex sm12>
@@ -65,6 +64,7 @@
 </template>
 
 <script>
+
 import { mapState, mapGetters } from 'vuex';
 import moment from 'moment';
 import Helper from '@/common/helper';
@@ -76,7 +76,7 @@ import { INIT_RESEARCH, RESOLVE_RESEARCH, INIT_STRATEGY, INIT_CHART,
    DELETE_STRATEGY } from '../store/actions.type';
 
 
-import { SET_RESPONSIVE, SET_RESEARCH_DATE, 
+import { SET_LOADING, SET_RESPONSIVE, SET_RESEARCH_DATE, 
    SET_STRATEGY, CLEAR_ERROR, SET_ERROR 
 } from '../store/mutations.type';
 
@@ -182,9 +182,7 @@ export default {
       this.init();
    },
    methods: {
-		init(){
-         this.menu.ready = false;
-
+      initData(){
          this.settings.action = '';
          this.settings.model = null;
 
@@ -195,6 +193,13 @@ export default {
          this.seletedResult = null;
 
          this.chart.ready = false;
+
+         this.result = 0;
+         this.errMsg = '';
+      },
+		init(){
+         this.menu.ready = false;
+         this.initData();
 
          this.$store.dispatch(INIT_RESEARCH)
             .then(() => {
@@ -221,6 +226,7 @@ export default {
          }
       },
       onParamsChanged(model){
+         this.initData();
          this.model = { ...model };
 
          let strategy = this.strategies.find(item => item.id == model.strategy);
@@ -230,6 +236,7 @@ export default {
          this.$store.commit(SET_RESPONSIVE, Helper.isSmallScreen());
       },
       submit(model){
+         this.initData();
          this.onParamsChanged(model);
          this.$store.dispatch(RESOLVE_RESEARCH, model)
             .then(() => {
@@ -292,15 +299,17 @@ export default {
          this.$store.dispatch(INIT_CHART, this.strategyModel)
             .then(() => {
                this.$refs.myChart.init();
+               this.$scrollTo('#div-result', 1500);
             }).catch(error => {
                Bus.$emit('errors');
             })
       },
       onChartsInitCompleted(){
          this.chart.ready = true;
-         
+         this.$store.commit(SET_LOADING, true);         
          setTimeout(() => {
             this.$refs.myChart.resize();
+            this.$store.commit(SET_LOADING, false);
          },500);
       },
       cancelEditStrategy(){

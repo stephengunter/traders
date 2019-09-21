@@ -12,7 +12,7 @@ class DayTradeResult {
       }
 
       this._totalProfit = totalProfit;
-      this._totalCost = totalCost;
+      this._totalCost = Math.round(totalCost * 10) / 10;
    }
 
    get date() {

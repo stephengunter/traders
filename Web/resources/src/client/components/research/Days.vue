@@ -18,7 +18,7 @@
             <td :style="profitStyle(props.item.grossProfit)">
                {{ props.item.grossProfit }}
             </td>
-            <td :style="profitStyle(props.item.grossProfit)">
+            <td :style="profitStyle(props.item.netProfit)">
                {{ props.item.netProfit }}
             </td>
          </tr>

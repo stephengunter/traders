@@ -13,10 +13,7 @@ import {
 const initialState = {   
    minDate: '',
    maxDate: '',
-   emptyDates: ['2019-08-28', '2019-08-29', '2019-08-30'],
-   date: '',
-   indicators: [],
-   tradeResult: null
+   emptyDates: ['2019-08-28', '2019-08-29', '2019-08-30']
 };
 
 export const state = { ...initialState }; 

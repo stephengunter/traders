@@ -1,3 +1,4 @@
+var VueScrollTo = require('vue-scrollto');
 import Errors from '@/common/errors';
 import { SET_LOADING, SET_RESPONSIVE, 
    SET_ERROR, CLEAR_ERROR } from './mutations.type';

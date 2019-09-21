@@ -38,7 +38,7 @@ namespace Web.Areas.Api.Controllers
 		{
 			var indicators = await indicatorService.GetActiveIndicatorsAsync();
 
-			var strategyView = new StrategyViewModel() { name = this.settings.DefaultStrategyName };
+			var strategyView = new StrategyViewModel() { cost = this.settings.DefaultCost };
 			foreach (var indicator in indicators)
 			{
 				var settings = new IndicatorSettingsView

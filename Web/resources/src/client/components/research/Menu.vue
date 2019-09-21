@@ -228,10 +228,10 @@ export default {
          this.submit();
       },
       editStrategy(){
-
+         this.$emit('edit-strategy');
       },
       createStrategy(){
-
+         this.$emit('create-strategy');
       }
 
    }
