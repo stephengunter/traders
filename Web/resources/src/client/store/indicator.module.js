@@ -1,10 +1,10 @@
 import IndicatorService from '../services/indicator';
 
 import { FETCH_INDICATORS } from './actions.type';
-import { SET_LOADING } from './mutations.type';
+import { SET_LOADING, SET_INDICATORS } from './mutations.type';
 
 const initialState = {
-   
+   indicators: []
 };
 
 export const state = { ...initialState };
@@ -23,7 +23,7 @@ const actions = {
                resolve(model);
             })
             .catch(error => {
-               reject(error);
+               reject(Helper.resolveErrorData(error));
             })
             .finally(() => { 
                context.commit(SET_LOADING, false);
@@ -35,7 +35,9 @@ const actions = {
 
 
 const mutations = {
-   
+   [SET_INDICATORS](state, indicators) {
+      state.indicators = indicators;
+   }
 };
 
 export default {

@@ -1,16 +1,14 @@
-class TradeManager {
-   
-   times = [];
-   trades = [];
-   quotes = [];
-   stpw = 0;
-   stpl = 0;
+import Trade from './trade';
+import DayTradeResult from './dayTradeResult';
 
-   constructor(quotes, stpw, stpl) {
-      this.quotes = quotes;
-      this.stpw = stpw;
-      this.stpl = 0 - stpl;
-      this.trades = [];
+class TradeManager {
+   constructor(stpw, stpl, cost = 0) {
+      this._quotes = [];
+      this._stpw = stpw;
+      this._stpl = 0 - stpl;
+      this._cost = cost;
+      this._tradeItems = [];
+      this._times = [];
 
       let time = 84600;
       while (time <= 134500) {
@@ -20,35 +18,70 @@ class TradeManager {
          else if(time === 116000) time = 120000;
          else if(time === 126000) time = 130000;
 
-         this.times.push(time);
+         this._times.push(time);
          time += 100;
       }
 
    }
 
+   init(date, quotes){
+      this._date = date;
+      this._quotes = quotes;
+      this._tradeItems = [];
+   }
+
+   get tradeItems() {
+      return this._tradeItems;
+   }
+
+   get result() {
+      if(!this._tradeItems) return null;
+      
+      let tradeItems = this._tradeItems;
+      let trades = [];
+      
+      try{
+         for (let i = 0; i < tradeItems.length; i++) {
+         
+            if(i % 2 === 0){
+               let inTrade = tradeItems[i];
+               let outTrade = (i === tradeItems.length - 1) ? null : tradeItems[i + 1];
+   
+               trades.push(new Trade(inTrade, outTrade));
+            }
+         }
+   
+         return new DayTradeResult(this._date, trades, this._cost);
+      }
+      catch(e){
+         console.log(e);
+         return null; 
+      }
+
+
+      
+   }
+
    getTimeIndex(time){
-      return this.times.indexOf(time);
+      return this._times.indexOf(time);
    }
 
    getPrice(index){
-      return this.quotes[index].price;    
+      return this._quotes[index].price;    
    }
 
    getTradePrice(index){
       return this.getPrice(index);
       //return this.prices[index + 1].open;    
    }
-
-   getTrades(){
-      return this.trades;
-   }
+   
 
    getPosition(index){
-      let trades = this.trades;
-      if(index > 0) trades = this.trades.filter(item => item.index <= index);
+      let tradeItems = this._tradeItems;
+      if(index > 0) tradeItems = tradeItems.filter(item => item.index <= index);
 
-      if(trades){
-         return trades[trades.length - 1];
+      if(tradeItems){
+         return tradeItems[tradeItems.length - 1];
       }else{
          return null;
       }
@@ -60,15 +93,15 @@ class TradeManager {
    }
 
    getSignalPosition(index){
-      let trades = this.trades;
-      if(index > 0) trades = this.trades.filter(item => item.index <= index);
+      let tradeItems = this._tradeItems;
+      if(index > 0) tradeItems = tradeItems.filter(item => item.index <= index);
 
-      if(trades){
+      if(tradeItems){
          let signalPosition = null;
-         for (let i = trades.length - 1; i >=0; i--) {
+         for (let i = tradeItems.length - 1; i >=0; i--) {
             
-            if(trades[i].val !== 0 ){
-               signalPosition = trades[i];
+            if(tradeItems[i].val !== 0 ){
+               signalPosition = tradeItems[i];
                break;
             }
          }
@@ -89,13 +122,13 @@ class TradeManager {
    
 
    checkSTP(profit){
-      if(this.stpw !== 0 && profit >= this.stpw) return 1;
-      else if(this.stpl !== 0 && profit <= this.stpl) return -1;
+      if(this._stpw !== 0 && profit >= this._stpw) return 1;
+      else if(this._stpl !== 0 && profit <= this._stpl) return -1;
       return 0;
    }
 
-   isStopTrade(trade){
-      return trade.stp !== 0;
+   isStopTrade(tradeItem){
+      return tradeItem.stp !== 0;
    }
 
    getProfit(index, price = 0){
@@ -109,13 +142,12 @@ class TradeManager {
             profit = currentPosition.price - price;
          }
 
-      }
+   }
 
       return profit;
    }
 
    onSignal(signal, dataIndex){
-      
       this.removeTrade(dataIndex);
 
       let profit = this.getProfit(dataIndex);
@@ -194,11 +226,11 @@ class TradeManager {
 
       this.addTrade({
          index: dataIndex,
-         time: this.times[dataIndex],
+         time: this._times[dataIndex],
          val: 0,
          price: this.getTradePrice(dataIndex),
          text: text,
-         result: profit,
+         profit: profit,
          stp: stp
       }); 
    }
@@ -206,16 +238,16 @@ class TradeManager {
    //平倉出場
    out(dataIndex){
       let text = '平倉出場';
-      let tradePrice = this.getTradePrice(dataIndex);
-      let profit = this.getProfit(dataIndex, tradePrice);
+      let tradeItemPrice = this.getTradePrice(dataIndex);
+      let profit = this.getProfit(dataIndex, tradeItemPrice);
       
       this.addTrade({
          index: dataIndex,
-         time: this.times[dataIndex],
+         time: this._times[dataIndex],
          val: 0,
-         price: tradePrice,
+         price: tradeItemPrice,
          text: text,
-         result: profit,
+         profit: profit,
          stp: 0
       });     
    }
@@ -224,24 +256,24 @@ class TradeManager {
    in(dataIndex, val){
       this.addTrade({
          index: dataIndex,
-         time: this.times[dataIndex],
+         time: this._times[dataIndex],
          val: val,
          price: this.getTradePrice(dataIndex),
          text: val > 0 ? '多單進場' : '空單進場',
-         result: 0,
+         profit: 0,
          stp: 0
       });
    }
 
    removeTrade(dataIndex){
-      let existIndex = this.trades.findIndex(item => item.index === dataIndex);
+      let existIndex = this._tradeItems.findIndex(item => item.index === dataIndex);
       if(existIndex >= 0 ){
-         this.trades.splice(existIndex, 1);
+         this._tradeItems.splice(existIndex, 1);
       }
    }
 
-   addTrade(trade){
-      this.trades.push(trade);      
+   addTrade(tradeItem){
+      this._tradeItems.push(tradeItem);      
    }
 
 

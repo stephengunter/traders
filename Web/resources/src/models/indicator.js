@@ -1,20 +1,20 @@
 class Indicator {
 
    quotes = [];
-   data = [];
+   dataList = [];
    param = 0;
-
    beginTimeIndex = 0;
 
    buySignalIndexes = []
    sellSignalIndexes = [];
 
    constructor(model, param, beginIndex, quotes) {
+      
       for (let property in model) {
          this[property] = model[property];
       }
       this.quotes = quotes;
-      this.data = quotes.map(q => q.dataList.find(data => data.indicator == this.entity));
+      this.dataList = quotes.map(q => q.dataList.find(data => data.indicator == this.entity));
 
       
       if(param)  this.param = param;
@@ -22,6 +22,18 @@ class Indicator {
 
       this.beginTimeIndex = beginIndex;
      
+   }
+
+   setQuotes(quotes){
+      this.quotes = quotes;
+      this.dataList = quotes.map(q => q.dataList.find(data => data.indicator == this.entity));
+      
+      this.buySignalIndexes = [];
+      this.sellSignalIndexes = [];
+   }
+
+   getData(index){
+      return this.dataList[index];
    }
 
    getQuotePrice(index){
@@ -67,15 +79,15 @@ class Indicator {
    getSumVal(index){
       let sum = 0;
       for(let i = 0; i <= index; i++){
-         sum += Number(this.data[i].val);
+         sum += Number(this.dataList[i].val);
       }
       return sum;
    }
 
 
    calculatePowers(startIndex = 0){
-      for(let i = startIndex; i < this.data.length; i++){
-         let item = this.data[i];   
+      for(let i = startIndex; i < this.dataList.length; i++){
+         let item = this.dataList[i];   
          if(this.isDataInTime(item)){
             let sum = this.getSumVal(i);
             item.result = sum;
@@ -92,8 +104,8 @@ class Indicator {
    }
 
    calculatePrices(startIndex = 0){
-      for(let i = startIndex; i < this.data.length; i++){
-         let item = this.data[i];   
+      for(let i = startIndex; i < this.dataList.length; i++){
+         let item = this.dataList[i];   
          if(this.isDataInTime(item)){
             if(this.canCountAvg(i)){
                let avg = this.countAvg(i);
@@ -130,13 +142,13 @@ class Indicator {
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
         
          for(let i = startIndex; i <= index; i++){
-            sum += this.data[i].result;
+            sum += this.dataList[i].result;
          }
        
       }else if(this.entity === 'Prices'){
          
          for(let i = startIndex; i <= index; i++){
-            sum += Number(this.data[i].val);
+            sum += Number(this.dataList[i].val);
          }
          
       }
@@ -147,7 +159,7 @@ class Indicator {
    }
 
    createSignal(index){
-      let data = this.data[index];
+      let data = this.dataList[index];
       if(this.entity === 'BlueChips' || this.entity === 'Powers'){
          if(data.result > data.avg){
             return 1;
@@ -168,8 +180,8 @@ class Indicator {
 
    mapChartResult(startIndex = 0){
       let results = [];
-      for(let i = startIndex; i < this.data.length; i++){
-         let item = this.data[i];
+      for(let i = startIndex; i < this.dataList.length; i++){
+         let item = this.dataList[i];
          if(item.hasOwnProperty('result')){
             results.push({
                index: i,
@@ -187,8 +199,8 @@ class Indicator {
 
    mapChartAvg(startIndex = 0){
       let results = [];
-      for(let i = startIndex; i < this.data.length; i++){
-         let item = this.data[i];
+      for(let i = startIndex; i < this.dataList.length; i++){
+         let item = this.dataList[i];
          results.push({
             index: i,
             avg: item.avg

@@ -12,7 +12,12 @@ namespace Web
 		public string AuthSecret { get; set; }
 		public string UploadPath { get; set; }
 
-	}
+        public string MinDate { get; set; }
+
+        public string DefaultStrategyName { get; set; }
+        public decimal DefaultCost { get; set; }
+
+    }
 
 	public class EmailSettings
 	{

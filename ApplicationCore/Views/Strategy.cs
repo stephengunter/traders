@@ -19,7 +19,9 @@ namespace ApplicationCore.Views
 		
 		public bool isDefault { get; set; }
 
-		public int stpl { get; set; } //停損
+        public decimal cost { get; set; } //交易成本
+
+        public int stpl { get; set; } //停損
 
 		public int stpw { get; set; } //停利
 
@@ -35,7 +37,9 @@ namespace ApplicationCore.Views
 			entity.Description = description;
 			entity.STPW = stpw;
 			entity.STPL = stpl;
-			entity.Default = isDefault;
+            entity.Cost = cost;
+
+            entity.Default = isDefault;
 			entity.UserId = userId;
 		}
 	}

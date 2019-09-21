@@ -18,19 +18,26 @@ namespace Web.Areas.Api.Controllers
 	[Authorize]
 	public class WatchController : BaseApiController
 	{
-		private readonly IHttpContextAccessor accessor;
+        private readonly AppSettings settings;
+
+        private readonly IHttpContextAccessor accessor;
 		private readonly ISubscribeService subscribeService;
 		private readonly IStrategyService strategyService;
-		private readonly IRealTimeService realTimeService;
+        private readonly IIndicatorService indicatorService;
+        private readonly IRealTimeService realTimeService;
 		private readonly IHistoryService dataService;
 
-		public WatchController(IHttpContextAccessor accessor, ISubscribeService subscribeService,
-			IStrategyService strategyService, IRealTimeService realTimeService, IHistoryService dataService)
+		public WatchController(IOptions<AppSettings> settings, IHttpContextAccessor accessor, ISubscribeService subscribeService,
+			IStrategyService strategyService, IIndicatorService indicatorService,
+            IRealTimeService realTimeService, IHistoryService dataService)
 		{
-			this.accessor = accessor;
+            this.settings = settings.Value;
+
+            this.accessor = accessor;
 			this.subscribeService = subscribeService;
 			this.strategyService = strategyService;
-			this.realTimeService = realTimeService;
+            this.indicatorService = indicatorService;
+            this.realTimeService = realTimeService;
 			this.dataService = dataService;
 		}
 
@@ -52,11 +59,15 @@ namespace Web.Areas.Api.Controllers
 			int date = GetLatestDate();
 
 			var strategies = await GetUserStrategiesAsync();
-			var model = new WatchViewModel()
+            var indicators = await indicatorService.GetActiveIndicatorsAsync();
+
+            var model = new WatchViewModel()
 			{
+                minDate = settings.MinDate,
 				date = date,
 				strategies = strategies.Select(s => s.MapViewModel()).ToList(),
-				key = CurrentUserId
+                indicators = indicators.Select(i => i.MapViewModel()).ToList(),
+                key = CurrentUserId
 			};
 
 			return Ok(model);
@@ -67,10 +78,11 @@ namespace Web.Areas.Api.Controllers
 			var strategies = await strategyService.FetchByUserAsync(CurrentUserId);
 			if (strategies.IsNullOrEmpty())
 			{
-				var strategy = await strategyService.CreateDefaultStrategyAsync(CurrentUserId);
+                var name = this.settings.DefaultStrategyName;
+                var cost = this.settings.DefaultCost;
+                var strategy = await strategyService.CreateDefaultStrategyAsync(CurrentUserId, name, cost);
 				return new List<Strategy> { strategy };
 			}
-			
 			else return strategies.GetOrdered();
 
 		}

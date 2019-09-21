@@ -8,10 +8,12 @@
       </v-list-tile-content>
 
       <v-list-tile-content>
-         
+         TOTAL
       </v-list-tile-content>
-      <v-list-tile-content :style="{ width: '75px' ,color: total > 0 ? 'red' : 'green' }">
-         <span class="ml-3" style="text-align: right;">TOTAL &nbsp;&nbsp; {{ total }}</span>
+      <v-list-tile-content :style="{ width: '75px'}">
+         <span :style="profitStyle(model.grossProfit)">毛損益 &nbsp;&nbsp; {{ model.grossProfit }}</span>
+         <span :style="profitStyle(model.netProfit)">淨損益 &nbsp;&nbsp; {{ model.netProfit }}</span>
+       
       </v-list-tile-content>
    </v-list-tile>
 </template>
@@ -22,9 +24,14 @@
 export default {
    name: 'TradeTotal',
    props: {
-      total:{
-         type: Number,
-         default: 0
+      model:{
+         type: Object,
+         default: null
+      }
+   },
+   methods: {
+      profitStyle(val){
+         return { color: val > 0 ? 'red' : 'green' }
       }
    }
 }

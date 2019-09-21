@@ -8,7 +8,37 @@ using Infrastructure.Entities;
 
 namespace ApplicationCore.Models
 {
-	public enum IndicatorType
+    public interface IIndicator
+    {
+        string Name { get; set; }
+
+        string Description { get; set; }
+
+        int Begin { get; set; } //盤中產生信號開始時間  例如 90000
+
+        int End { get; set; } //盤中產生信號結束時間  例如 133000
+
+        string Entity { get; set; }
+
+        string Params { get; set; }
+
+        bool Main { get; set; }
+
+        IndicatorType Type { get; set; }
+
+        SourceType Source { get; set; }
+
+        bool WithAvg { get; set; }
+
+        int CoverId { get; set; }
+
+
+
+        void Init(List<Quote> quotes, IndicatorSettings settings);
+        void Calculate();
+    }
+
+    public enum IndicatorType
 	{
 		None,
 		Curve,
@@ -23,8 +53,8 @@ namespace ApplicationCore.Models
 		Market
 	}
 
-	public class Indicator : BaseRecord
-	{
+	public class Indicator : BaseRecord, IIndicator
+    {
 		public string Name { get; set; }
 
 		public string Description { get; set; }
@@ -63,6 +93,26 @@ namespace ApplicationCore.Models
 		}
 
 
-	}
+
+        private List<Quote> quotes;
+        private IndicatorSettings settings;
+
+        public virtual void Init(List<Quote> quotes, IndicatorSettings settings)
+        {
+            this.quotes = quotes;
+            this.settings = settings;
+        }
+
+        public virtual void Calculate()
+        {
+            
+
+        }
+
+       
+
+        bool IsDataInTime(Data data) => data.Time > this.Begin && data.Time <= this.End;
+
+    }
 	
 }

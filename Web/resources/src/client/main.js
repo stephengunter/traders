@@ -8,6 +8,9 @@ import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 Vue.component('loading', Loading);
 
+var VueScrollTo = require('vue-scrollto');
+Vue.use(VueScrollTo);
+
 
 import '@/plugins/vuetify';
 import '@/plugins/validate';

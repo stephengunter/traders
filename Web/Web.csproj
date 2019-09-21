@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -7,9 +7,21 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <Compile Remove="Areas\Api\Data\**" />
+    <Compile Remove="Areas\Api\Models\**" />
+    <Compile Remove="Areas\Api\Views\**" />
     <Compile Remove="wwwroot\dist\**" />
+    <Content Remove="Areas\Api\Data\**" />
+    <Content Remove="Areas\Api\Models\**" />
+    <Content Remove="Areas\Api\Views\**" />
     <Content Remove="wwwroot\dist\**" />
+    <EmbeddedResource Remove="Areas\Api\Data\**" />
+    <EmbeddedResource Remove="Areas\Api\Models\**" />
+    <EmbeddedResource Remove="Areas\Api\Views\**" />
     <EmbeddedResource Remove="wwwroot\dist\**" />
+    <None Remove="Areas\Api\Data\**" />
+    <None Remove="Areas\Api\Models\**" />
+    <None Remove="Areas\Api\Views\**" />
     <None Remove="wwwroot\dist\**" />
   </ItemGroup>
 
@@ -35,9 +47,6 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Api\Data\" />
-    <Folder Include="Areas\Api\Models\" />
-    <Folder Include="Areas\Api\Views\" />
     <Folder Include="icons\" />
   </ItemGroup>
 

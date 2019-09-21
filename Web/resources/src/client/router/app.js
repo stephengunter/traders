@@ -13,6 +13,18 @@ const links = [
       }        
    },
    {
+      name: 'test',
+      path: '/test',
+      component: () => import('../views/Test'), 
+      meta: { 
+         order: 0,
+         icon: '',
+         title: '',
+         type: 'all',
+         menu: 'none'
+      }        
+   },
+   {
       name: 'home',
       path: '/',
       component: () => import('../views/Home'), 
@@ -66,7 +78,7 @@ const links = [
       component: () => import('../views/Research'),
       meta: { 
          order: 0,
-         icon: 'mdi-monitor-cellphone',
+         icon: 'mdi-database-check',
          title: '研究室',
          type: 'user',
          menu: 'main'

@@ -20,7 +20,8 @@ namespace ApplicationCore.Views
 				description = strategy.Description,
 				userId = strategy.UserId,
 				isDefault = strategy.Default,
-				stpl = strategy.STPL,
+                cost = strategy.Cost,
+                stpl = strategy.STPL,
 				stpw = strategy.STPW
 			};
 

@@ -94,17 +94,7 @@ namespace ApplicationCore.Helpers
 
 		}
 
-		public static DateTime ToDatetime(this int val)
-		{
-			var strVal = val.ToString();
-
-			int year = strVal.Substring(0, 4).ToInt();
-			int month = strVal.Substring(4, 2).ToInt();
-			int day = strVal.Substring(6, 2).ToInt();
-
-			return new DateTime(year, month, day);
-
-		}
+		
 
 		public static bool HasDuplicate(this string[] vals)
 		{

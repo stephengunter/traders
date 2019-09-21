@@ -97,8 +97,16 @@
 								data-vv-as="停利"
 								required
 							/>
+							
 						</v-flex>
-						
+						<v-flex xs6 >
+							<v-text-field label="交易成本(點)"
+								v-model="strategy.cost" readonly
+								prepend-inner-icon="mdi-menu-down" append-icon="mdi-menu-up"
+								@click:prepend-inner="changeCost(false)"								
+								@click:append="changeCost(true)"
+							/>
+						</v-flex>	
 					</v-layout>
 					<ErrorList />
 				</v-container>
@@ -167,6 +175,9 @@ export default {
 		if(!this.strategy.stpl)  this.strategy.stpl = '';
 		if(!this.strategy.stpw)  this.strategy.stpw = '';
 
+		if(this.strategy.cost) this.strategy.cost = String(this.strategy.cost);
+		else this.strategy.cost = '0';
+
 		this.selectedIndicators = this.selected_indicators.slice(0);
 
 		this.strategy.indicatorSettings.forEach(item => {
@@ -177,6 +188,56 @@ export default {
 		});
 	},
 	methods: {
+		changeCost(add){
+			let parts = this.strategy.cost.split('.');
+			let int = parseInt(parts[0]);
+			let point = 0;
+			if(parts.length > 1) point = parseInt(parts[1]);
+
+			if(add){
+				point += 1;
+				if(point === 10){
+					int += 1;
+					point = 0;
+				}
+			}else{
+				if(point === 0 ){
+					point = 10;
+					int -= 1;
+				}
+				point -= 1;
+			}
+
+			let cost = parseFloat(`${int}.${point}`);
+			if(cost < 0 ) this.strategy.cost = '0';
+			else this.strategy.cost = `${int}.${point}`;
+		},
+		addCost(){
+			let parts = this.foo.split('.');
+			let int = parseInt(parts[0]);
+			let point = 0;
+			if(parts.length > 1) point = parseInt(parts[1]);
+				
+			point += 1;
+			if(point === 10){
+				int += 1;
+				point = 0;
+			} 
+			this.foo = `${int}.${point}`;
+		},
+		minusCost(){
+			let parts = this.foo.split('.');
+			let int = parseInt(parts[0]);
+			let point = 0;
+			if(parts.length > 1) point = parseInt(parts[1]);
+
+			if(point === 0 ){
+				point = 10;
+				int -= 1;
+			}
+			point -= 1;
+			this.foo = `${int}.${point}`;
+		},
 		cancel(){
 			this.$emit('cancel');
 		},

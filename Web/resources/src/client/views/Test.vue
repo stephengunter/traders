@@ -1,24 +1,17 @@
 <template>
    <div class="container">
-
-      <ul>
-         <li v-for="(item, index) in trades" :key="index">
-            {{ item.index }} , {{ item.val }}
-         </li>
-      </ul>
+      
 
       <v-dialog v-model="editting" persistent max-width="500px">
          <strategy-edit v-if="editting" 
-         :strategy="model.strategy"
-         :selected_indicators="model.selectedIndicators"
-         :indicators="model.indicators"
-         @submit="submit" @cancel="cancelEdit"
-         @remove="remove"
-         />
+               :strategy="settings.model.strategy"
+               :selected_indicators="settings.model.selectedIndicators"
+               :indicators="settings.model.indicators" 
+               />
       </v-dialog>
       
 
-      <a href="#" @click.prevent="test">Edit</a>
+      <a href="#" @click="test">Edit</a>
       
    </div>
    
@@ -40,29 +33,29 @@ export default {
    data () {
       return {
          editting: false,
-         trades: [{
-            index: 20,
-            val : 1
-         },{
-            index: 120,
-            val : 0
-         }]
+         settings:{
+            action: '',
+            model: null
+         },
       }
    },
    methods:{
       test(){
-         let trade = {
-            index: 120,
-            val : -1
-         };
-         let existIndex = this.trades.findIndex(item => item.index === trade.index);
-         if(existIndex < 0){
-            this.trades.push(trade);
-         }else{
-            this.trades.splice(existIndex, 1);
-           // this.trades.splice(existIndex, 1, trade);
-         }
-      }
+         
+         this.createStrategy();
+      },
+      createStrategy(){
+         
+			this.$store.dispatch(CREATE_STRATEGY)
+				.then(model => {
+               this.settings.model = model;
+               this.settings.action = 'create';
+                this.editting = true;
+				})
+				.catch(error => {
+					Bus.$emit('errors');
+				})
+      },
    }
 }
 </script>

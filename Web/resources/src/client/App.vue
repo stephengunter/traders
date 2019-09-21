@@ -2,7 +2,7 @@
 	<v-app>
 		<loading :active.sync="loading"></loading>
 		<RwvHeader />
-		<v-content class="main-content">
+		<v-content class="main-content" id="container">
 			<router-view></router-view>
 		</v-content>
 		<RwvFooter />
@@ -77,7 +77,7 @@ export default {
       this.onResponsiveInverted()
       window.addEventListener('resize', this.onResponsiveInverted)
 	},
-	beforeDestroy () {
+	beforeDestroy(){
       window.removeEventListener('resize', this.onResponsiveInverted)
    },
 	methods: {

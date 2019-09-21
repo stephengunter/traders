@@ -36,9 +36,21 @@ namespace ApplicationCore.Helpers
 
 		}
 
-		public static string ToDateString(this DateTime input)
+        public static DateTime ToDatetime(this int val)
+        {
+            var strVal = val.ToString();
+
+            int year = strVal.Substring(0, 4).ToInt();
+            int month = strVal.Substring(4, 2).ToInt();
+            int day = strVal.Substring(6, 2).ToInt();
+
+            return new DateTime(year, month, day);
+
+        }
+
+        public static string ToDateString(this DateTime input)
 		{
-			return input.ToString("yyyy/MM/dd");
+			return input.ToString("yyyy-MM-dd");
 		}
 
 		public static string ToDateString(this DateTime? input)
@@ -49,7 +61,7 @@ namespace ApplicationCore.Helpers
 
 		public static string ToDateTimeString(this DateTime input)
 		{
-			return input.ToString("yyyy/MM/dd H:mm:ss");
+			return input.ToString("yyyy-MM-dd H:mm:ss");
 		}
 
 		public static string ToDateTimeString(this DateTime? input)
@@ -58,7 +70,7 @@ namespace ApplicationCore.Helpers
 			return "";
 		}
 
-		public static string GetDateString(DateTime dateTime)
+        public static string GetDateString(DateTime dateTime)
 		{
 			string year = dateTime.Year.ToString();
 			string month = dateTime.Month.ToString();

@@ -143,24 +143,17 @@ namespace Web
 
 			});
 
-			
-
-			// api user claim policy
-			services.AddAuthorization(options =>
-			{
-				options.AddPolicy(Permissions.Admin.ToString(), policy =>
-					policy.Requirements.Add(new HasPermissionRequirement(Permissions.Admin.ToString())));
-			});
-
             services.AddCors(options => options.AddPolicy("api",
-                p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+                   p => p.WithOrigins("http://localhost:8080")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader().AllowCredentials()
             ));
 
-            // Register the Swagger generator, defining 1 or more Swagger documents
+
             services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new Info { Title = "AspNetCoreApiStarter", Version = "v1" });
-				// Swagger 2.+ support
+				
 				c.AddSecurityDefinition("Bearer", new ApiKeyScheme
 				{
 					In = "header",
@@ -206,19 +199,17 @@ namespace Web
 			services.AddSignalR();
 
 
-			// Now register our services with Autofac container.
-			var builder = new ContainerBuilder();
-
-			builder.RegisterModule(new ApplicationCore.Modules());
 			
+			var builder = new ContainerBuilder();
+			builder.RegisterModule(new ApplicationCore.Modules());
 			builder.Populate(services);
+
 			var container = builder.Build();
-			// Create the IServiceProvider based on the container.
 			return new AutofacServiceProvider(container);
 			
 		}
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.		
+		
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
 
@@ -239,11 +230,11 @@ namespace Web
 
 			app.UseCors("api");
 
-			app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(c =>
 			{
 				c.SwaggerEndpoint("/swagger/v1/swagger.json", "AspNetCoreApiStarter V1");
 			});
-			// Enable middleware to serve generated Swagger as a JSON endpoint.
+			
 			app.UseSwagger();
 
 			app.UseAuthentication();
