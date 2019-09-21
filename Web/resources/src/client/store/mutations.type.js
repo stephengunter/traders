@@ -8,12 +8,11 @@ export const SET_USER = 'setUser';
 export const SET_KEY = 'setKEY';
 
 
-export const SET_MINDATE = 'setMinDate';
+
 export const SET_MAXDATE = 'setMaxDate';
 
 
-export const SET_TRADE_RESULT = 'setResearchReport';
-export const SET_RESEARCH_REPORT = 'setResearchReport';
+
 
 //Strategies
 export const SET_STRATEGY = 'setStrategy';
@@ -21,20 +20,23 @@ export const SET_STRATEGIES = 'setStrategies';
 export const SET_STRATEGY_MODEL = 'setStrategyModel';
 
 //Quotes
+export const SET_REALTIME = 'setRealTime';
 export const SET_DATE_QUOTES_LIST = 'setDateQuotesList';
 export const ADD_REALTIME_QUOTES = 'setRealtimeQuotes';
 
 //Charts
 export const SET_CHARTS_MODEL = 'setChartsModel';
-// export const SET_CHARTS_INDICATORS = 'setChartsIndicators';
-// export const SET_CHARTS_QUOTES = 'setChartsQuotes';
-// export const ADD_CHARTS_QUOTE = 'addChartsQuote';
 
 
 //Watch
-export const SET_REALTIME = 'setRealTime';
+export const SET_WATCH_MINDATE = 'setWatchMinDate';
 export const SET_WATCH_DATE = 'setWatchDate';
 
+//Research
+export const SET_RESEARCH_MINDATE = 'setResearchMinDate';
+export const SET_RESEARCH_MAXDATE = 'setResearchMaxDate';
+export const SET_TRADE_RESULT = 'setResearchReport';
+export const SET_RESEARCH_REPORT = 'setResearchReport';
 
 //Indicators
 export const SET_INDICATORS = 'setIndicators';

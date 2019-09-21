@@ -14,6 +14,9 @@ namespace Web
 
         public string MinDate { get; set; }
 
+        public string DefaultStrategyName { get; set; }
+        public decimal DefaultCost { get; set; }
+
     }
 
 	public class EmailSettings

@@ -23,7 +23,7 @@ namespace ApplicationCore.Services
 		Task UpdateAsync(Strategy strategy, ICollection<IndicatorSettings> indicatorSettings);
 		Task DeleteAsync(int id);
 
-		Task<Strategy> CreateDefaultStrategyAsync(string userId);
+		Task<Strategy> CreateDefaultStrategyAsync(string userId, string name, decimal cost);
 
 	}
 
@@ -78,7 +78,7 @@ namespace ApplicationCore.Services
 
 		}
 
-		public async Task<Strategy> CreateDefaultStrategyAsync(string userId)
+		public async Task<Strategy> CreateDefaultStrategyAsync(string userId, string name, decimal cost)
 		{
 			var indicators = await GetActiveIndicatorsAsync();
 
@@ -86,8 +86,9 @@ namespace ApplicationCore.Services
 			{
 				 Default = true,
 				 UserId = userId,
-				 Name = "我的策略"				  
-			};
+				 Name = name,
+                 Cost = cost
+            };
 
 			int order = 0;
 			foreach (var indicator in indicators)

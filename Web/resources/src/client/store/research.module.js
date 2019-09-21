@@ -1,57 +1,27 @@
 import Helper from '@/common/helper';
 import ResearchService from '../services/research';
-import Strategy from '@/models/strategy';
-import ResearchReport from '@/models/researchReport';
 
 import {
    INIT_RESEARCH, RESOLVE_RESEARCH
 } from './actions.type';
 
 import { 
-   SET_LOADING, SET_KEY, SET_MAXDATE, SET_MINDATE, SET_RESEARCH_REPORT,
-   SET_STRATEGY, SET_STRATEGIES, SET_INDICATORS, SET_DATE_QUOTES 
+   SET_LOADING, SET_KEY, SET_RESEARCH_MAXDATE, SET_RESEARCH_MINDATE,
+   SET_STRATEGY, SET_STRATEGIES, SET_INDICATORS, SET_DATE_QUOTES_LIST
 } from './mutations.type';
 
- 
-const state = {
-   key: '',
+const initialState = {   
    minDate: '',
    maxDate: '',
-   strategy: null,
-   strategies: [],
+   emptyDates: ['2019-08-28', '2019-08-29', '2019-08-30'],
+   date: '',
    indicators: [],
-   dateQuotes: [],
-   report: null
+   tradeResult: null
 };
 
-const getters = {
-   
-};
+export const state = { ...initialState }; 
 
-var _context = null;
-var strategyModel = null;
-var dateTrades = [];
-const initStrategy = (indicators, dateQuotes) => strategyModel = new Strategy(state.strategy, indicators, dateQuotes);
-
-const calculate = (dates, resolve, reject) => {
-   let date  = dates.shift();
-   strategyModel.init(date);
-
-   strategyModel.calculate()
-   .then(() => {
-      let tradeResult = strategyModel.getTradeResult();
-      dateTrades.push({
-         date, tradeResult
-      });
-      if(dates.length) calculate(dates, resolve, reject);
-      else{
-         _context.commit(SET_RESEARCH_REPORT, new ResearchReport(dateTrades));
-         resolve(true);
-      }
-   }).catch(error => {
-      reject(error);
-   })
-}
+const getters = {};
 
 const actions = {
    [INIT_RESEARCH](context) {
@@ -59,13 +29,13 @@ const actions = {
       return new Promise((resolve, reject) => {
          ResearchService.init()
          .then(model => {
-           
-            context.commit(SET_MINDATE, model.minDate);
-            context.commit(SET_MAXDATE, model.maxDate);
+            context.commit(SET_RESEARCH_MINDATE, model.minDate);
+            context.commit(SET_RESEARCH_MAXDATE, model.maxDate);
             context.commit(SET_KEY, model.key);
             context.commit(SET_STRATEGY, model.strategies[0]);
             context.commit(SET_STRATEGIES, model.strategies);
-            resolve(model);
+            context.commit(SET_INDICATORS, model.indicators);
+            resolve(true);
          })
          .catch(error => {
             reject(Helper.resolveErrorData(error));           
@@ -73,60 +43,33 @@ const actions = {
          .finally(() => { 
             context.commit(SET_LOADING, false);
          });
-      });  
+      });
    },
    [RESOLVE_RESEARCH](context, model) {
       context.commit(SET_LOADING, true);
-      context.commit(SET_RESEARCH_REPORT, null);
       return new Promise((resolve, reject) => {
          ResearchService.resolve(model)
-            .then(model => {
-               _context = context;
-               
-               initStrategy(model.indicators, model.dateQuotes);
-              
-               context.commit(SET_INDICATORS, model.indicators);
-               context.commit(SET_DATE_QUOTES, model.dateQuotes);
-
-               let dates = model.dateQuotes.map(item => item.date);
-               calculate(dates, resolve, reject);
-               
-            })
-            .catch(error => {
-               reject(Helper.resolveErrorData(error)); 
-            })
-            .finally(() => { 
-               context.commit(SET_LOADING, false);
-            });
+         .then(dateQuotesList => {
+            context.commit(SET_DATE_QUOTES_LIST, dateQuotesList);
+            resolve(true);
+         })
+         .catch(error => {
+            reject(Helper.resolveErrorData(error));           
+         })
+         .finally(() => { 
+            context.commit(SET_LOADING, false);
+         });
       });
-   },
+   }
 };
 
 
 const mutations = {
-   [SET_KEY](state, key) {
-      state.key = key;
-   },
-   [SET_MINDATE](state, val) {
+   [SET_RESEARCH_MINDATE](state, val) {
       state.minDate = val;
    },
-   [SET_MAXDATE](state, val) {
+   [SET_RESEARCH_MAXDATE](state, val) {
       state.maxDate = val;
-   },
-   [SET_STRATEGY](state, strategy) {
-      state.strategy = strategy;
-   },
-   [SET_STRATEGIES](state, strategies) {
-      state.strategies = strategies;
-   },
-   [SET_INDICATORS](state, indicators) {
-      state.indicators = indicators;
-   },
-   [SET_DATE_QUOTES](state, dateQuotes) {
-      state.dateQuotes = dateQuotes;
-   },
-   [SET_RESEARCH_REPORT](state, report) {
-      state.report = report;
    }
 };
 

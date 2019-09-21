@@ -39,21 +39,27 @@ class TradeManager {
       
       let tradeItems = this._tradeItems;
       let trades = [];
-      let sum = 0;
-      for (let i = 0; i < tradeItems.length; i++) {
+      
+      try{
+         for (let i = 0; i < tradeItems.length; i++) {
          
-         if(i % 2 === 0){
-            let inTrade = tradeItems[i];
-            let outTrade = (i === tradeItems.length - 1) ? null : tradeItems[i + 1];
-
-            let trade = new Trade(inTrade, outTrade);
-            
-            trades.push(trade);
-            sum += trade.profit;
+            if(i % 2 === 0){
+               let inTrade = tradeItems[i];
+               let outTrade = (i === tradeItems.length - 1) ? null : tradeItems[i + 1];
+   
+               trades.push(new Trade(inTrade, outTrade));
+            }
          }
+   
+         return new DayTradeResult(this._date, trades, this._cost);
+      }
+      catch(e){
+         console.log(e);
+         return null; 
       }
 
-      return new DayTradeResult(this._date, trades);
+
+      
    }
 
    getTimeIndex(time){

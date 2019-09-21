@@ -13,8 +13,10 @@ namespace ApplicationCore.Views
         public string key { get; set; }
 
 		public ICollection<StrategyViewModel> strategies { get; set; } = new List<StrategyViewModel>();
-		
-	}
+
+        public ICollection<IndicatorViewModel> indicators { get; set; } = new List<IndicatorViewModel>();
+
+    }
 
     public class ResearchRequestModel
     {

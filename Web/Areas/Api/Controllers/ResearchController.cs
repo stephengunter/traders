@@ -57,15 +57,18 @@ namespace Web.Areas.Api.Controllers
             if (maxDate == 0) maxDate = DateTime.Today.ToDateNumber();
 
             var strategies = await GetUserStrategiesAsync();
-			var model = new ResearchIndexViewModel()
+            var indicators = await indicatorService.GetActiveIndicatorsAsync();
+
+            var model = new ResearchIndexViewModel()
 			{
                 minDate = settings.MinDate,
 				maxDate = maxDate.ToDatetime().ToDateString(),
 				strategies = strategies.Select(s => s.MapViewModel()).ToList(),
-				key = CurrentUserId
+                indicators = indicators.Select(i => i.MapViewModel()).ToList(),
+                key = CurrentUserId
 			};
 
-			return Ok(model);
+            return Ok(model);
 		}
 
         [HttpPost("Resolve")]
@@ -87,13 +90,16 @@ namespace Web.Areas.Api.Controllers
             var model = new ResearchViewModel { indicators = indicators.Select(i => i.MapViewModel()).ToList() };
 
             var dates = quotes.Select(q => q.Date).Distinct().OrderBy(date => date);
-            foreach (var date in dates)
+
+			var dateQuotesList = new List<DateQuotesViewModel>();
+
+			foreach (var date in dates)
             {
                 var dateQuotes = quotes.Where(q => q.Date == date);
                 dateQuotes = dateQuotes.GetOrdered();
                 dateQuotes.Select(q => q.MapViewModel(q.DataList.Where(d => inidatorEntities.Contains(d.Indicator)))).ToList();
 
-                model.dateQuotes.Add(
+				dateQuotesList.Add(
                     new DateQuotesViewModel
                     {
                         date = date,
@@ -104,7 +110,7 @@ namespace Web.Areas.Api.Controllers
 
             
 
-            return Ok(model);
+            return Ok(dateQuotesList);
         }
 
         async Task<IEnumerable<Strategy>> GetUserStrategiesAsync()
@@ -112,7 +118,9 @@ namespace Web.Areas.Api.Controllers
 			var strategies = await strategyService.FetchByUserAsync(CurrentUserId);
 			if (strategies.IsNullOrEmpty())
 			{
-				var strategy = await strategyService.CreateDefaultStrategyAsync(CurrentUserId);
+                var name = this.settings.DefaultStrategyName;
+                var cost = this.settings.DefaultCost;
+                var strategy = await strategyService.CreateDefaultStrategyAsync(CurrentUserId, name, cost);
 				return new List<Strategy> { strategy };
 			}
 			else return strategies.GetOrdered();
@@ -124,7 +132,7 @@ namespace Web.Areas.Api.Controllers
             string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
             if (!subscribeService.CheckKey(CurrentUserId, ip)) ModelState.AddModelError("user", "權限不足或重複登入");
 
-            if(model.beginDate > model.endDate) ModelState.AddModelError("date", "日期錯誤");
+			if (model.beginDate > model.endDate) ModelState.AddModelError("date", "日期錯誤");
 
         }
 

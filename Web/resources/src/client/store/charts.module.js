@@ -39,22 +39,7 @@ const actions = {
 const mutations = {
    [SET_CHARTS_MODEL](state, chartsModel) {
       state.chartsModel = chartsModel;
-   },
-   // [SET_CHART_INDICATORS](state, indicators) {
-   //    state.indicators = indicators;
-   // },
-   // [SET_CHART_QUOTES](state, quotes) {
-   //    console.log(SET_CHART_QUOTES)
-   //    state.quotes = quotes;
-   // },
-   // [ADD_CHART_QUOTE](state, quote) {
-   //    let existIndex = state.quotes.findIndex(q => q.time == quote.time);
-   //    if(existIndex < 0){
-   //       state.quotes.push(quote);
-   //    }else{
-   //       state.quotes.splice(existIndex, 1, quote);
-   //    }
-   // }   
+   }
 };
 
 export default {

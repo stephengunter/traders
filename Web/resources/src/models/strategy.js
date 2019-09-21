@@ -14,7 +14,7 @@ class Strategy {
 
       this._dateQuotesList = dateQuotesList;
       
-      this._tradeManager = new TradeManager(this.stpw, this.stpl);
+      this._tradeManager = new TradeManager(this.stpw, this.stpl, this.cost);
 
       
       for (let i = 0; i < indicators.length; i++) {

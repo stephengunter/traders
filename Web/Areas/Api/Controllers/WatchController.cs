@@ -78,7 +78,9 @@ namespace Web.Areas.Api.Controllers
 			var strategies = await strategyService.FetchByUserAsync(CurrentUserId);
 			if (strategies.IsNullOrEmpty())
 			{
-				var strategy = await strategyService.CreateDefaultStrategyAsync(CurrentUserId);
+                var name = this.settings.DefaultStrategyName;
+                var cost = this.settings.DefaultCost;
+                var strategy = await strategyService.CreateDefaultStrategyAsync(CurrentUserId, name, cost);
 				return new List<Strategy> { strategy };
 			}
 			else return strategies.GetOrdered();

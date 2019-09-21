@@ -64,6 +64,7 @@ const mutations = {
       state.realTime = realTime;
    },
    [SET_DATE_QUOTES_LIST](state, dateQuotesList) {
+      console.log(SET_DATE_QUOTES_LIST, dateQuotesList);
       state.dateQuotesList = dateQuotesList;
    },
    [ADD_REALTIME_QUOTES](state, quotes) {

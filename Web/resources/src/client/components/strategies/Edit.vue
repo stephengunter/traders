@@ -99,9 +99,9 @@
 							/>
 							
 						</v-flex>
-						<v-flex xs6>
+						<v-flex xs6 >
 							<v-text-field label="交易成本(點)"
-								v-model="foo" readonly
+								v-model="strategy.cost" readonly
 								prepend-inner-icon="mdi-menu-down" append-icon="mdi-menu-up"
 								@click:prepend-inner="changeCost(false)"								
 								@click:append="changeCost(true)"
@@ -156,7 +156,6 @@ export default {
 	},
 	data () {
 		return {
-			foo: String(2.0),
 			selectedIndicators: []
 		}
 	},
@@ -176,6 +175,9 @@ export default {
 		if(!this.strategy.stpl)  this.strategy.stpl = '';
 		if(!this.strategy.stpw)  this.strategy.stpw = '';
 
+		if(this.strategy.cost) this.strategy.cost = String(this.strategy.cost);
+		else this.strategy.cost = '0';
+
 		this.selectedIndicators = this.selected_indicators.slice(0);
 
 		this.strategy.indicatorSettings.forEach(item => {
@@ -187,7 +189,7 @@ export default {
 	},
 	methods: {
 		changeCost(add){
-			let parts = this.foo.split('.');
+			let parts = this.strategy.cost.split('.');
 			let int = parseInt(parts[0]);
 			let point = 0;
 			if(parts.length > 1) point = parseInt(parts[1]);
@@ -206,7 +208,9 @@ export default {
 				point -= 1;
 			}
 
-			this.foo = `${int}.${point}`;
+			let cost = parseFloat(`${int}.${point}`);
+			if(cost < 0 ) this.strategy.cost = '0';
+			else this.strategy.cost = `${int}.${point}`;
 		},
 		addCost(){
 			let parts = this.foo.split('.');

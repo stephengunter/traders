@@ -79,9 +79,6 @@
 
          <v-btn @click.prevent="refresh" color="info" >開始回測</v-btn>
       </v-flex>
-      <!-- <v-flex xs2 class="text-sm-right">
-         <v-btn @click.prevent="refresh" color="info" >開始回測</v-btn>
-      </v-flex> -->
    </v-layout>
    <v-layout v-else row>
       <v-flex xs10 class="d-inline-flex">
@@ -191,10 +188,8 @@ export default {
          }],
       }
    },
-   watch: {
-      strategy_id(val){
-         this.strategyId = val;
-      }
+   beforeMount(){
+      this.init();
    },
    methods: {
       init(){
@@ -209,20 +204,28 @@ export default {
          return this.empty_dates.indexOf(val) < 0
       },
       onStrategyChanged(){
-         this.$emit('strategy-changed', this.strategyId);
+         this.onParamsChanged();
       },
       onDateChanged(){
-         // this.showDatePicker = false;
-         // this.$store.commit(SET_DATE, Helper.dateNumber(this.dateString));
-         // this.fetchQuotes();
+         this.onParamsChanged();
       },
-      refresh(){
-         let model = {
+      onParamsChanged(){
+         let model = this.resolveModel();
+         this.$emit('changed', model);
+      },
+      resolveModel(){
+         return {
             strategy: this.strategyId,
             beginDate: Helper.dateNumber(this.datePickers[0].val),
             endDate: Helper.dateNumber(this.datePickers[1].val)
          };
+      },
+      submit(){
+         let model = this.resolveModel();
          this.$emit('submit', model);
+      },
+      refresh(){
+         this.submit();
       },
       editStrategy(){
 

@@ -1,25 +1,19 @@
 import Helper from '@/common/helper';
 import WatchService from '../services/watch';
-import QuoteService from '../services/quote';
-import Hub from '@/models/hub';
-import { WATCH_URL } from '@/common/config';
 
 import {
-   INIT_WATCH, FETCH_QUOTES, GET_QUOTES
+   INIT_WATCH
 } from './actions.type';
 
 import { 
-   SET_LOADING, SET_KEY, SET_WATCH_DATE, SET_MINDATE,
+   SET_LOADING, SET_KEY, SET_WATCH_DATE, SET_WATCH_MINDATE,
    SET_STRATEGY, SET_STRATEGIES, SET_INDICATORS
 } from './mutations.type';
-import { Number } from 'core-js';
 
 const initialState = {   
    minDate: '',
    emptyDates: ['2019-08-28', '2019-08-29', '2019-08-30'],
    date: '',
-   realTime: false,
-   strategyModel: null,
    indicators: [],
    tradeResult: null
 };
@@ -34,7 +28,7 @@ const actions = {
       return new Promise((resolve, reject) => {
          WatchService.init()
          .then(model => {
-            context.commit(SET_MINDATE, model.minDate);
+            context.commit(SET_WATCH_MINDATE, model.minDate);
             context.commit(SET_KEY, model.key);
             context.commit(SET_WATCH_DATE, model.date);
             context.commit(SET_STRATEGY, model.strategies[0]);
@@ -54,7 +48,7 @@ const actions = {
 
 
 const mutations = {
-   [SET_MINDATE](state, val) {
+   [SET_WATCH_MINDATE](state, val) {
       state.minDate = val;
    },
    [SET_WATCH_DATE](state, date) {

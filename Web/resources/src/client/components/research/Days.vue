@@ -1,23 +1,27 @@
 <template>
-   <v-data-table :headers="headers" :items="trades" hide-actions class="trades-table">
+   <v-data-table :headers="headers" :items="trade_results" hide-actions class="trades-table">
       <template slot="headerCell" slot-scope="{ header }">
          <span class="subheading font-weight-light text-success text--darken-3 cn">
             {{ header.text }}
          </span>
       </template>
       <template slot="items" slot-scope="props">
-         <td>
-            <v-tooltip top content-class="top">
-               <a href="#" @click.prevent="details" slot="activator" style="text-decoration: none;">
-                  {{ props.item.date }}
-               </a>
-               <span>查看詳情</span>
-            </v-tooltip>
-
-
-         </td>
-         <td>{{ props.item.profit }}</td>
-         <td>{{ props.item.counts }}</td>
+         <tr>
+            <td>
+               <v-tooltip top content-class="top">
+                  <a href="#" @click.prevent="details(props.item.date)" slot="activator" style="text-decoration: none;">
+                     {{ props.item.date }}
+                  </a>
+                  <span>查看詳情</span>
+               </v-tooltip>
+            </td>
+            <td :style="profitStyle(props.item.grossProfit)">
+               {{ props.item.grossProfit }}
+            </td>
+            <td :style="profitStyle(props.item.grossProfit)">
+               {{ props.item.netProfit }}
+            </td>
+         </tr>
       </template>
    </v-data-table>
 </template>
@@ -26,9 +30,13 @@
    export default {
       name: 'ResearchDays',
       props:{
-         trades: {
+         trade_results: {
             type: Array,
             default: null
+         },
+         selected_date: {
+            type: Number,
+            default: 0
          }
       },
       data(){
@@ -40,20 +48,29 @@
             },
             {
                sortable: false,
-               text: '損益',
-               value: 'profit'
+               text: '毛損益',
+               value: 'grossProfit'
             },
             {
                sortable: false,
-               text: '交易回數',
-               value: 'counts'
+               text: '淨損益',
+               value: 'netProfit'
             }],
+
+            date: 0
             
          }
       },
+      beforeMount(){
+         this.date = this.selected_date;
+      },
       methods:{
-         details(){
-
+         profitStyle(val){
+            return { color: val > 0 ? 'red' : 'green' }
+         },
+         details(date){
+            this.date = date;
+            this.$emit('details',date);
          }
       }
    }

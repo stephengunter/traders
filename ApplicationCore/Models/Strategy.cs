@@ -21,7 +21,9 @@ namespace ApplicationCore.Models
 
 		public bool Default { get; set; }
 
-		public int STPL { get; set; } //停損
+        public decimal Cost { get; set; } //交易成本
+
+        public int STPL { get; set; } //停損
 
 		public int STPW { get; set; } //停利
 

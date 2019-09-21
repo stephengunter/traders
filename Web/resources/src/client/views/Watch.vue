@@ -92,7 +92,6 @@ export default {
       Bread,
       Menu,
       'charts-default' : ChartsDefault,
-      'charts-default' : ChartsDefault,
       'strategy-edit' : StrategyEdit,
       'trade-list' : TradeList
    },

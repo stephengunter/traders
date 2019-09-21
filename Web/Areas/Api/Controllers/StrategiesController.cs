@@ -19,12 +19,16 @@ namespace Web.Areas.Api.Controllers
 	[Authorize]
 	public class StrategiesController : BaseApiController
 	{
-		private readonly IStrategyService strategyService;
+        private readonly AppSettings settings;
+
+        private readonly IStrategyService strategyService;
 		private readonly IIndicatorService indicatorService;
 
-		public StrategiesController(IStrategyService strategyService, IIndicatorService indicatorService)
+		public StrategiesController(IOptions<AppSettings> settings,  IStrategyService strategyService, IIndicatorService indicatorService)
 		{
-			this.strategyService = strategyService;
+            this.settings = settings.Value;
+
+            this.strategyService = strategyService;
 			this.indicatorService = indicatorService;
 		}
 
@@ -34,7 +38,7 @@ namespace Web.Areas.Api.Controllers
 		{
 			var indicators = await indicatorService.GetActiveIndicatorsAsync();
 
-			var strategyView = new StrategyViewModel();
+			var strategyView = new StrategyViewModel() { name = this.settings.DefaultStrategyName };
 			foreach (var indicator in indicators)
 			{
 				var settings = new IndicatorSettingsView
