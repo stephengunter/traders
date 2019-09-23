@@ -6,40 +6,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using ApplicationCore.Services;
 using ApplicationCore.Models;
+using ApplicationCore.Indicators;
 
 namespace Web.Areas.Api.Controllers
 {
     public class ValuesController : BaseApiController
 	{
 		private readonly IHostingEnvironment hostingEnv;
+        private readonly IIndicatorService indicatorService;
 
-		public ValuesController(IHostingEnvironment hostingEnv)
+        public ValuesController(IHostingEnvironment hostingEnv, IIndicatorService indicatorService)
 		{
 			this.hostingEnv = hostingEnv;
-		}
+            this.indicatorService = indicatorService;
+        }
 
 		[HttpGet("")]
-		public IActionResult Index()			 
+		public async Task<IActionResult> Index()			 
 		{
-			var positionFilePath = @"C:\position.txt";
-			var fileNames = new List<string>();
+            var indicators = await indicatorService.FetchAsync(true);
+            var indicator = indicators.FirstOrDefault();
+            return Ok(indicator as Prices);
 
-			var accounts = "0067662,9800191".Split(',');
-			foreach (var account in accounts)
-			{
-				fileNames.Add(positionFilePath.Replace("position", $"position_{account}"));
-			};
-
-
-		
-			return Ok(fileNames);
-			//int min = 1;
-			//int max = 90;
-			//int d = 5;
-			//var arr = new string[] { min.ToString(), max.ToString(), d.ToString() };
-			//return Ok(String.Join(",", arr));
-			//return list
-		}
+        }
 
 
 		[HttpGet("env")]

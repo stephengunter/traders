@@ -1,5 +1,5 @@
-export const SITE_URL = 'https://localhost:44300';
-//export const SITE_URL = 'https://traders-waterapp.nctu.me';
+//export const SITE_URL = 'https://localhost:44300';
+export const SITE_URL = 'https://traders-waterapp.nctu.me';
 
 export const LOGIN_URL = `${SITE_URL}/#/login`;
 
