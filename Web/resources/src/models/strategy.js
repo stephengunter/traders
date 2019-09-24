@@ -64,6 +64,7 @@ class Strategy {
    }
 
    addDataList(dataList){
+      
       for (let i = 0; i < dataList.length; i++) {
          let data = dataList[i];
          let indicator = this.getIndicator(data.indicator);
@@ -72,11 +73,14 @@ class Strategy {
    }
 
    updateDataList(quote){
+      
       let dataList = quote.dataList;
+      
       for (let i = 0; i < dataList.length; i++) {
          let data = dataList[i];
          let indicator = this.getIndicator(data.indicator);
          let index = indicator.dataList.findIndex(d => d.time == quote.time);
+         
          indicator.dataList.splice(index, 1, data);
       }
    }
@@ -107,6 +111,7 @@ class Strategy {
             let dataList = [];
             for (let j = 0; j < this._indicators.length; j++) {
                let data = this._indicators[j].getData(index);
+               
                dataList.push({
                   indicator: data.indicator,
                   signal : data.signal

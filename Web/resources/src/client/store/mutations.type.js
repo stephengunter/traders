@@ -22,7 +22,7 @@ export const SET_STRATEGY_MODEL = 'setStrategyModel';
 //Quotes
 export const SET_REALTIME = 'setRealTime';
 export const SET_DATE_QUOTES_LIST = 'setDateQuotesList';
-export const ADD_REALTIME_QUOTES = 'setRealtimeQuotes';
+export const ADD_REALTIME_QUOTES = 'addRealtimeQuotes';
 
 //Charts
 export const SET_CHARTS_MODEL = 'setChartsModel';

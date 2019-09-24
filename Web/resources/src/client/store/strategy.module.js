@@ -115,7 +115,6 @@ const actions = {
       });
    },
    [INIT_STRATEGY](context, model) {
-      console.log(INIT_STRATEGY,model);
       let date = model.date;
       let indicators = model.indicators;
       let dateQuotesList = model.dateQuotesList;
