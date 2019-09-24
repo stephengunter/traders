@@ -33,12 +33,12 @@ class Charts {
          let mainIndicators = this._strategy.getMainIndicators();
          let subIndicators = this._strategy.getSubIndicators();
          
-         this.xAxis = this.initXAxis(subIndicators, this._times);
-         this.yAxis = this.initYAxis(subIndicators);
+         this._xAxis = this.initXAxis(subIndicators, this._times);
+         this._yAxis = this.initYAxis(subIndicators);
          
-         this.grids = this.initGrids(subIndicators);
+         this._grids = this.initGrids(subIndicators);
          
-         this.series = this.initSeries(mainIndicators, subIndicators);
+         this._series = this.initSeries(mainIndicators, subIndicators);
          
          resolve(true);         
       });  
@@ -62,23 +62,25 @@ class Charts {
       for (let i = 0; i < newQuotes.length; i++) {
          this.addUpdateQuote(newQuotes[i]);
       }
+      
       let startIndex = this.quotes.length - newQuotes.length ;
+      
       return new Promise((resolve, reject) => {
          this._strategy.calculate(startIndex)
          .then(() => {
             let mainIndicators = this._strategy.getMainIndicators();
             let subIndicators = this._strategy.getSubIndicators();
 
-            for (let i = 0; i < this.xAxis; i++) {
-               this.xAxis[i].data = this._times;
+            for (let i = 0; i < this._xAxis; i++) {
+               this._xAxis[i].data = this._times;
             }
-            this.series[0].data = this._prices;
+            this._series[0].data = this._prices;
 
-            this.series[0].itemStyle = this._kLineStyle;
+            this._series[0].itemStyle = this._kLineStyle;
             let mainSignals = this.resolveMainSignals();
            
             let markPoints = mainSignals.map(item => this.convertToMarkPoint(item));
-            this.series[0].markPoint.data = markPoints;
+            this._series[0].markPoint.data = markPoints;
 
 
             let seriesIndex = 1;
@@ -87,10 +89,10 @@ class Charts {
                let indicator = mainIndicators[i];
                let vals = indicator.mapChartResult(startIndex);
                vals.forEach(item => {
-                  if(item.index > this.series[seriesIndex].data.length - 1){
-                     this.series[seriesIndex].data.push(item.result);
+                  if(item.index > this._series[seriesIndex].data.length - 1){
+                     this._series[seriesIndex].data.push(item.result);
                   }else{
-                     this.series[seriesIndex].data[item.index] = item.result;
+                     this._series[seriesIndex].data[item.index] = item.result;
                   }
                });
                seriesIndex++;
@@ -101,16 +103,16 @@ class Charts {
                let indicator = subIndicators[i];
                let vals = indicator.mapChartResult(startIndex);
                vals.forEach(item => {
-                  if(item.index > this.series[seriesIndex].data.length - 1){
-                     this.series[seriesIndex].data.push(item.result);
+                  if(item.index > this._series[seriesIndex].data.length - 1){
+                     this._series[seriesIndex].data.push(item.result);
                   }else{
-                     this.series[seriesIndex].data[item.index] = item.result;
+                     this._series[seriesIndex].data[item.index] = item.result;
                   }
                });
                let colorUp = this.getColor(1);
                let colorDown = this.getColor(-1);
                let colorZero = this.getColor(0);
-               this.series[seriesIndex].itemStyle = {
+               this._series[seriesIndex].itemStyle = {
                   normal: {
                      color: function(params) {
                         if(indicator.buySignalIndexes.includes(params.dataIndex)){
@@ -126,10 +128,10 @@ class Charts {
                if(indicator.withAvg){
                   let avgs = indicator.mapChartAvg(startIndex);
                   avgs.forEach(item => {
-                     if(item.index > this.series[seriesIndex].data.length - 1){
-                        this.series[seriesIndex].data.push(item.avg);
+                     if(item.index > this._series[seriesIndex].data.length - 1){
+                        this._series[seriesIndex].data.push(item.avg);
                      }else{
-                        this.series[seriesIndex].data[item.index] = item.avg;
+                        this._series[seriesIndex].data[item.index] = item.avg;
                      }
                   });
                   
@@ -229,7 +231,12 @@ class Charts {
       {
          yAxis.push({
             gridIndex: i+1,
-            axisLine: { onZero: false },
+            name: subIndicators[i].name,
+            nameTextStyle:{
+               color: '#8392A5'
+            },
+            nameLocation: 'middle',
+            axisLine: { onZero: false},
             axisTick: { show: false },
             splitLine: { show: false },
             axisLabel: { show: false }
@@ -506,9 +513,9 @@ class Charts {
                backgroundColor: '#777'
             }
          },
-         xAxis: this.xAxis,
-         yAxis: this.yAxis,
-         grid: this.grids,
+         xAxis: this._xAxis,
+         yAxis: this._yAxis,
+         grid: this._grids,
          dataZoom: [{
             type: 'inside',
             xAxisIndex: [0, 1],
@@ -539,7 +546,7 @@ class Charts {
             y: '92%',
          }],
          animation: false,
-         series: this.series,
+         series: this._series,
       };
 
      

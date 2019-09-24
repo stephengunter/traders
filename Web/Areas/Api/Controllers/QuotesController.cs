@@ -41,70 +41,133 @@ namespace Web.Areas.Api.Controllers
 			this.dayService = dayService;
 		}
 
-		[HttpGet("")]
-		public async Task<IActionResult> Index(string user, int date, int strategy)
-		{
-			string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
-			if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
+        [HttpGet("")]
+        public async Task<IActionResult> Index(string user, int date, int strategy)
+        {
+            string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
 
-			var selectedStrategy = strategyService.GetById(strategy);
-			if (selectedStrategy == null) throw new Exception("Action: Api/Quotes/Index , Strategy Not Found. id = " + strategy.ToString());
+            var selectedStrategy = strategyService.GetById(strategy);
+            if (selectedStrategy == null) throw new Exception("Action: Api/Quotes/Index , Strategy Not Found. id = " + strategy.ToString());
 
-			
 
-			bool realTime = false;
-			var quotes = await historyService.FetchAsync(date);
-			if (quotes.IsNullOrEmpty())
-			{
-				realTime = true;
-				quotes = await realTimeService.FetchAsync();
-			}
+            bool realTime = false;
+            var quotes = await historyService.FetchAsync(date);
+            if (quotes.IsNullOrEmpty())
+            {
+                realTime = true;
+                quotes = await realTimeService.FetchAsync();
+            }
 
-			if (quotes.IsNullOrEmpty())
-			{
-				if (date == DateTime.Today.ToDateNumber())
-				{
-					bool todayIsBusinessDay = await IsBusinessDay(DateTime.Today);
-					if (todayIsBusinessDay)
-					{
-						return Ok(new QuoteIndexViewModel() { realTime = true });
-					}
-				}
+            if (quotes.IsNullOrEmpty())
+            {
+                if (date == DateTime.Today.ToDateNumber())
+                {
+                    bool todayIsBusinessDay = await IsBusinessDay(DateTime.Today);
+                    if (todayIsBusinessDay)
+                    {
+                        return Ok(new QuoteIndexViewModel() { realTime = true });
+                    }
+                }
 
-				return Ok(new QuoteIndexViewModel());
-			}
-			else
-			{
-				if (quotes.FirstOrDefault().Date != date)
-				{
-					return Ok(new QuoteIndexViewModel());
-				}
-			}
+                return Ok(new QuoteIndexViewModel());
+            }
+            else
+            {
+                if (quotes.FirstOrDefault().Date != date)
+                {
+                    return Ok(new QuoteIndexViewModel());
+                }
+            }
 
-			var hasDataIndicatorEntities = quotes.First().DataList.Select(d => d.Indicator).ToList();
-			var indicators = await indicatorService.FetchByEntitiesAsync(hasDataIndicatorEntities);
+            var hasDataIndicatorEntities = quotes.First().DataList.Select(d => d.Indicator).ToList();
+            var indicators = await indicatorService.FetchByEntitiesAsync(hasDataIndicatorEntities);
 
-			var inidatorEntities = GetInidatorEntities(selectedStrategy, indicators);
+            var inidatorEntities = GetInidatorEntities(selectedStrategy, indicators);
 
             quotes = quotes.OrderBy(q => q.Time);
 
-			var dateQuotes = new DateQuotesViewModel
-			{
-				date = date,
-				quotes = quotes.Select(q => q.MapViewModel(q.DataList.Where(d => inidatorEntities.Contains(d.Indicator)))).ToList()
-			};
-			var model = new QuoteIndexViewModel
-			{
-				realTime = realTime,
+            var dateQuotes = new DateQuotesViewModel
+            {
+                date = date,
+                quotes = quotes.Select(q => q.MapViewModel(q.DataList.Where(d => inidatorEntities.Contains(d.Indicator)))).ToList()
+            };
+            var model = new QuoteIndexViewModel
+            {
+                realTime = realTime,
                 dateQuotesList = new List<DateQuotesViewModel> { dateQuotes }
-				
-			};
 
-			return Ok(model);
+            };
 
-		}
+            return Ok(model);
 
-		async Task<bool> IsBusinessDay(DateTime day)
+        }
+
+        //[HttpGet("")]
+        //public async Task<IActionResult> Index(string user, int date, int strategy)
+        //{
+        //    string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
+        //    if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
+
+        //    var selectedStrategy = strategyService.GetById(strategy);
+        //    if (selectedStrategy == null) throw new Exception("Action: Api/Quotes/Index , Strategy Not Found. id = " + strategy.ToString());
+        
+        //    date = 20190906;
+        //    bool realTime = true;
+        //    var quotes = await historyService.FetchAsync(date);
+        //    if (quotes.IsNullOrEmpty())
+        //    {
+        //        realTime = true;
+        //        quotes = await realTimeService.FetchAsync();
+        //    }
+
+        //    if (quotes.IsNullOrEmpty())
+        //    {
+        //        if (date == DateTime.Today.ToDateNumber())
+        //        {
+        //            bool todayIsBusinessDay = await IsBusinessDay(DateTime.Today);
+        //            if (todayIsBusinessDay)
+        //            {
+        //                return Ok(new QuoteIndexViewModel() { realTime = true });
+        //            }
+        //        }
+
+        //        return Ok(new QuoteIndexViewModel());
+        //    }
+        //    else
+        //    {
+        //        if (quotes.FirstOrDefault().Date != date)
+        //        {
+        //            return Ok(new QuoteIndexViewModel());
+        //        }
+        //    }
+
+        //    var hasDataIndicatorEntities = quotes.First().DataList.Select(d => d.Indicator).ToList();
+        //    var indicators = await indicatorService.FetchByEntitiesAsync(hasDataIndicatorEntities);
+
+        //    var inidatorEntities = GetInidatorEntities(selectedStrategy, indicators);
+
+        //    quotes = quotes.Where(q => q.Time < 112500);
+
+        //    quotes = quotes.OrderBy(q => q.Time);
+
+        //    var dateQuotes = new DateQuotesViewModel
+        //    {
+        //        date = date,
+        //        quotes = quotes.Select(q => q.MapViewModel(q.DataList.Where(d => inidatorEntities.Contains(d.Indicator)))).ToList()
+        //    };
+        //    var model = new QuoteIndexViewModel
+        //    {
+        //        realTime = realTime,
+        //        dateQuotesList = new List<DateQuotesViewModel> { dateQuotes }
+
+        //    };
+
+        //    return Ok(model);
+
+        //}
+
+        async Task<bool> IsBusinessDay(DateTime day)
 		{
 			if (day.DayOfWeek == DayOfWeek.Saturday) return false;
 			if (day.DayOfWeek == DayOfWeek.Sunday) return false;
@@ -117,13 +180,13 @@ namespace Web.Areas.Api.Controllers
 			return match == null;
 		}
 
-		[HttpGet("get")]
-		public async Task<IActionResult> Get(string user, int time)
-		{
-			string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
-			if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
+        [HttpGet("get")]
+        public async Task<IActionResult> Get(string user, int time)
+        {
+            string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
 
-			if (time == 0) time = 84500;
+            if (time == 0) time = 84500;
 
             var quotes = await realTimeService.GetLatestAsync(time);
 
@@ -136,8 +199,28 @@ namespace Web.Areas.Api.Controllers
 
         }
 
+        //[HttpGet("get")]
+        //public async Task<IActionResult> Get(string user, int time)
+        //{
+        //    string ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
+        //    if (!subscribeService.CheckKey(user, ip)) return RequestError("user", "權限不足或重複登入");
 
-		IList<string> GetInidatorEntities(Strategy strategy, IEnumerable<Indicator> indicators)
+        //    if (time == 0) time = 84500;
+
+        //    int date = 20190906;
+        //    var quotes = await historyService.FetchAsync(date);
+
+        //    if (quotes.IsNullOrEmpty()) return Ok(new List<QuoteViewModel>());
+
+        //    quotes = quotes.Where(q => q.Time >= time).Take(2);
+        //    quotes = quotes.OrderBy(q => q.Time);
+
+        //    return Ok(quotes.Select(q => q.MapViewModel(q.DataList)).ToList());
+
+        //}
+
+
+        IList<string> GetInidatorEntities(Strategy strategy, IEnumerable<Indicator> indicators)
 		{
 			var ids = strategy.IndicatorSettings.Select(s => s.IndicatorId);
 			return indicators.Where(i => ids.Contains(i.Id)).Select(i => i.Entity).ToList();

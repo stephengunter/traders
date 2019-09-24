@@ -288,6 +288,7 @@ export default {
                this.$refs.myChart.update();
                this.loadTrades();
             }).catch(error => {
+               console.log(error);
                Bus.$emit('errors');
             })
       },

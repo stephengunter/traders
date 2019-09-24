@@ -64,13 +64,16 @@ const mutations = {
       state.realTime = realTime;
    },
    [SET_DATE_QUOTES_LIST](state, dateQuotesList) {
-      console.log(SET_DATE_QUOTES_LIST, dateQuotesList);
       state.dateQuotesList = dateQuotesList;
    },
-   [ADD_REALTIME_QUOTES](state, quotes) {
-      for (let i = 0; i < quotes.length; i++) {
-         state.dateQuotesList[0].quotes.push(quotes[i]);
-      }
+   [ADD_REALTIME_QUOTES](state, newQuotes) {
+      let test = 0;
+      let quotes = state.dateQuotesList[0].quotes;
+      newQuotes.forEach(quote => {
+         let index = quotes.findIndex(q => q.time == quote.time);
+         if(index >= 0) quotes.splice(index, 1, quote);
+         else quotes.push(quote);         
+      })
    }  
 };
 
