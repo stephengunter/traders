@@ -181,6 +181,9 @@ export default {
    beforeMount(){
       this.init();
    },
+   beforeDestroy(){
+      if(this.hubModel) this.hubModel.disconnect();
+   },
    methods: {
 		init(){
          this.menu.ready = false;
@@ -283,6 +286,8 @@ export default {
             })
       },
       updateRealTimeQuotes(quotes){
+         if(!this.chartsModel) return;
+
          this.chartsModel.updateRealTimeQuotes(quotes)
             .then(() => {
                this.$refs.myChart.update();
